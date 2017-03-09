@@ -1,0 +1,9 @@
+{
+  "name": "sites",
+  "version": "1.0.0",
+  "description": "Simple Construction Site Communication.",
+  "main": "index.js",
+  "repository": "git@github.com:timLoewel/sites.git",
+  "author": "Tim Loewel",
+  "license": "MIT"
+}
