@@ -5,7 +5,7 @@ then
     echo "emulator Running"
 else
     echo "starting emulator"
-    emulator -avd phone &
+    ~/Android/Sdk/emulator/emulator -avd PhoneAPI23 &
     sleep 20s
 fi
 
@@ -19,5 +19,5 @@ else
 fi
 
 
-npm run android
-npm start
+react-native run-android
+react-native start
