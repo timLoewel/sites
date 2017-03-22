@@ -1,31 +1,47 @@
 {
-	"name": "sites",
-	"version": "0.0.1",
-	"private": true,
-	"scripts": {
-		"start": "node node_modules/react-native/local-cli/cli.js start",
-		"test": "jest"
-	},
-	"dependencies": {
-		"axios": "^0.15.3",
-		"react": "~15.4.2",
-		"react-native": "0.42.0",
-		"react-native-fetch-blob": "^0.10.2",
-		"react-native-i18n": "^1.0.0",
-		"react-navigation": "^1.0.0-beta.6",
-		"react-redux": "^5.0.3",
-		"redux": "^3.6.0",
-		"redux-devtools-extension": "^2.13.0",
-		"redux-form": "^6.5.0",
-		"redux-persist": "^4.4.2",
-		"seamless-immutable": "^7.0.1"
-	},
-	"devDependencies": {
-		"babel-jest": "19.0.0",
-		"babel-preset-react-native": "1.9.1",
-		"jest": "19.0.2"
-	},
-	"jest": {
-		"preset": "react-native"
-	}
+  "name": "sites",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node node_modules/react-native/local-cli/cli.js start",
+    "test": "jest",
+    "storybook": "storybook start -p 7007"
+  },
+  "dependencies": {
+    "color": "^1.0.3",
+    "moment": "^2.17.1",
+    "react": "~15.4.2",
+    "react-native": "0.42.0",
+    "react-native-background-geolocation": "^2.7.0",
+    "react-native-camera": "^0.6.0",
+    "react-native-exif": "^0.1.0",
+    "react-native-extra-dimensions-android": "^0.20.1",
+    "react-native-fetch-blob": "^0.10.2",
+    "react-native-geocoder": "^0.4.6",
+    "react-native-i18n": "^1.0.0",
+    "react-native-snackbar-dialog": "^1.2.5",
+    "react-native-vector-icons": "^4.0.0",
+    "react-native-view-shot": "^1.9.1",
+    "react-navigation": "^1.0.0-beta.6",
+    "react-redux": "^5.0.3",
+    "redux": "^3.6.0",
+    "redux-act": "^1.1.1",
+    "redux-devtools-extension": "^2.13.0",
+    "redux-form": "^6.5.0",
+    "redux-form-actions": "^1.1.0",
+    "redux-observable": "^0.14.1",
+    "redux-persist": "^4.4.2",
+    "rxjs": "^5.2.0",
+    "seamless-immutable": "^7.0.1",
+    "styled-components": "^1.4.4"
+  },
+  "devDependencies": {
+    "@kadira/react-native-storybook": "^2.0.0",
+    "babel-jest": "19.0.0",
+    "babel-preset-react-native": "1.9.1",
+    "jest": "19.0.2"
+  },
+  "jest": {
+    "preset": "react-native"
+  }
 }

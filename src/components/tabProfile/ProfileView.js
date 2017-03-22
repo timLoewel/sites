@@ -1,46 +1,34 @@
-/**
- * Created by tim on 10/03/17.
- */
-import {connect} from 'react-redux';
-
 import React from 'react';
-import {
-	AppRegistry,
-	AsyncStorage,
-	Button,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
-import {setNewRawPhotoLocalData} from '../../model/ui/newPhotoViewReducer';
+import { ScrollView, Text, Button } from 'react-native';
+import {connect} from 'react-redux';
+import I18n from '../../assets/translations';
+
+import ProfileForm from './ProfileForm';
+import { submitProfileForm, SUBMIT_PROFILE_OK, SUBMIT_PROFILE_FAILED } from '../../model/profile/profileReducer'
+
+
+const formStates = ['asyncValidating', 'dirty', 'pristine', 'valid', 'invalid', 'submitting',
+	'submitSucceeded', 'submitFailed'];
 
 
 class ProfileView extends React.Component {
-	static navigationOptions = {
-		tabBar: {
-			label: 'Profile',
-			// visible: false,
-		},
-	}
 
 	render() {
-		return (
-				<Button
-						onPress={() => this.props.navigation.navigate('Contacts')}
-						title="go to contacts"
-				/>
+	const { handleSubmit,reset, submitting, cancellation } = this.props;
+	const submit =this.props.submitProfileForm;
+	return (
+				<ScrollView keyboardShouldPersistTaps={'handled'}>
+					<ProfileForm
+							onSubmit={submit}
+							succeededAction={SUBMIT_PROFILE_OK}
+							failedAction={SUBMIT_PROFILE_FAILED}
+					/>
+
+				</ScrollView>
 		);
 	}
 }
 
-const mapStateToProps = state => ({
-});
-
-function bindAction(dispatch) {
-	return {
-		setCurrentPhoto: (photoUri, photoWidth, photoHeight, orientation) =>
-				dispatch(setNewRawPhotoLocalData({uri: photoUri, photoWidth: photoWidth, photoHeight: photoHeight, orientation:orientation})),
-	};
-}
-
-export default connect(mapStateToProps, bindAction)(ProfileView);
+export default connect(
+		state => ({}), { submitProfileForm }
+)(ProfileView);

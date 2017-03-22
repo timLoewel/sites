@@ -6,7 +6,9 @@ import {combineReducers} from 'redux';
 // import geoLocationReducer from './geoLocationReducer';
 // import allSitesViewReducer from './allSitesViewReducer';
 import navigation from './navigation/navigationReducer';
+import cameraReducer from './camera/cameraReducer';
 
 export default combineReducers({
 	navigation,
+	cameraReducer,
 });

@@ -27,7 +27,6 @@ const initialAuthState = {isLoggedIn: false};
 
 const initialNavState = AppNavigator.router.getStateForAction({ type: NavigationActions.INIT });
 
-console.log('initialNavState ' +initialNavState);
 
 // const initialNavState = {
 // 	index: 1,

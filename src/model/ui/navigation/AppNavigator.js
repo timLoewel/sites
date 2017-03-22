@@ -41,43 +41,25 @@ import SingleSiteView from '../../../components/singleSite/SingleSiteView';
  */
 
 
-const Screen = (title, next) => {
-	if (!next) {
-		next = 'Camera'
-	}
-	const result = () => (
-			<View style={styles.container}>
-				<Text style={styles.welcome}>
-					{title}
-				</Text>
-				<Button
-						onPress={() => this.props.navigation.navigate('Notifications')}
-						title={next}
-				/>
-			</View>
-	);
-	result.navigationOptions = {
-		title: title,
-	};
-	return result;
-}
 
 export const MainTabsScreen = TabNavigator({
 	Camera: {screen: CameraView,},
 	Photos: {screen: PhotosView,},
-	Sites: { screen: SitesView,},
-	Profile: {
-		screen: ProfileView,
-	},
+	// Sites: { screen: SitesView,},
+	// Profile: {
+	// 	screen: ProfileView,
+	// },
 }, {
 	tabBarOptions: {
+		visible:false,
 		activeTintColor: '#e91e63',
 		tabBarPosition: 'top',
 		swipeEnabled: true,
 		animationEnabled: true,
 		lazyLoad: false,
 		initialRouteName: 'Camera',
-		order: ['Camera', 'Photos', 'Sites', 'Profile']
+		order: ['Camera', 'Photos'],// 'Sites', 'Profile']
+		style: {height:0}
 	},
 
 });
@@ -85,33 +67,33 @@ export const MainTabsScreen = TabNavigator({
 
 // the stack is the main navigation
 export const AppNavigator = StackNavigator({
+	// Login: {screen: Screen('Login')},
 			MainTabs: {
-				screen: MainTabsScreen,
-				navigationOptions: {
-					header: {
-						visible: false,
-					}
-				},
-			},
-			Login: {screen: Screen('Login')},
-			SingleSite: {
-				screen: SingleSiteView,
-				path: 'site/:name',
-				navigationOptions: {
-					cardStack: {
-						gesturesEnabled: true
-					}
-				}
-			},
-			SingleAlbum: {
-				screen: SingleAlbumView,
-				path: 'album/:name',
-				navigationOptions: {
-					cardStack: {
-						gesturesEnabled: true
-					}
-				}
-			},
+						screen: MainTabsScreen,
+						navigationOptions: {
+							header: {
+								visible: false,
+							}
+						},
+					},
+			// SingleSite: {
+			// 	screen: SingleSiteView,
+			// 	path: 'site/:name',
+			// 	navigationOptions: {
+			// 		cardStack: {
+			// 			gesturesEnabled: true
+			// 		}
+			// 	}
+			// },
+			// SingleAlbum: {
+			// 	screen: SingleAlbumView,
+			// 	path: 'album/:name',
+			// 	navigationOptions: {
+			// 		cardStack: {
+			// 			gesturesEnabled: true
+			// 		}
+			// 	}
+			// },
 			SinglePhoto: {
 				screen: SinglePhotoView,
 				path: 'photo/:name',
@@ -122,39 +104,19 @@ export const AppNavigator = StackNavigator({
 				}
 			},
 			NewPhoto: {screen: NewPhotoView},
-			NewAlbum: {screen: NewAlbumView},
-			SelectForExport: {screen: SelectForExportView},
-			Comments: {screen: CommentsView},
-			SelectContact: {screen: SelectContactView},
-			SelectSite: {screen: SelectSiteView},
-			SelectLocation: {screen: SelectLocationView},
-			Contacts: {screen: ContactsView,navigationOptions: {
-				cardStack: {
-					gesturesEnabled: true
-				}
-			}},
+			// NewAlbum: {screen: NewAlbumView},
+			// SelectForExport: {screen: SelectForExportView},
+			// Comments: {screen: CommentsView},
+			// SelectContact: {screen: SelectContactView},
+			// SelectSite: {screen: SelectSiteView},
+			// SelectLocation: {screen: SelectLocationView},
+			// Contacts: {screen: ContactsView,navigationOptions: {
+			// 	cardStack: {
+			// 		gesturesEnabled: true
+			// 	}
+			//}},
 		}
 );
-
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: '#F5FCFF',
-	},
-	welcome: {
-		fontSize: 20,
-		textAlign: 'center',
-		margin: 10,
-	},
-	instructions: {
-		textAlign: 'center',
-		color: '#333333',
-		marginBottom: 5,
-	},
-});
 
 export const AppWithNavigationState = connect(state => ({
 	nav: state.ui.navigation,

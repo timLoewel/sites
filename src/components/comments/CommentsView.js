@@ -12,7 +12,6 @@ import {
 	Text,
 	View,
 } from 'react-native';
-import {setNewRawPhotoLocalData} from '../../model/ui/newPhotoViewReducer';
 
 
 class CommentsView extends React.Component {

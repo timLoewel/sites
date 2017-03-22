@@ -1,4 +1,4 @@
-import {logOut as parseLogout} from '../../utils/ParseServer';
+import {logOut as parseLogout} from '../../server/ParseServer';
 
 // Actions
 export const USER_LOGIN_SUCCESS = 'auth.USER_LOGIN_SUCCESS';

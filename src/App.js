@@ -2,6 +2,7 @@
  * @flow
  */
 import React from 'react';
+
 import {
 	AppRegistry,
 } from 'react-native';
@@ -15,6 +16,7 @@ import {
 import {AppWithNavigationState} from './model/ui/navigation/AppNavigator';
 
 import configureStore from './configureStore';
+import {startGPS, stopGPS} from './model/geolocation/geolocationReducer';
 
 class ReduxExampleApp extends React.Component {
 	store = configureStore();
@@ -25,6 +27,14 @@ class ReduxExampleApp extends React.Component {
 					<AppWithNavigationState />
 				</Provider>
 		);
+	}
+
+	componentDidMount() {
+		this.store.dispatch(startGPS());
+	}
+
+	componentWillUnmount() {
+		this.store.dispatch(stopGPS());
 	}
 }
 

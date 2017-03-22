@@ -12,7 +12,6 @@ import {
 	Text,
 	View,
 } from 'react-native';
-import {setNewRawPhotoLocalData} from '../../model/ui/newPhotoViewReducer';
 
 
 class ContactsView extends React.Component {
@@ -38,8 +37,6 @@ const mapStateToProps = state => ({
 
 function bindAction(dispatch) {
 	return {
-		setCurrentPhoto: (photoUri, photoWidth, photoHeight, orientation) =>
-				dispatch(setNewRawPhotoLocalData({uri: photoUri, photoWidth: photoWidth, photoHeight: photoHeight, orientation:orientation})),
 	};
 }
 

@@ -12,10 +12,20 @@ I18n.translations = {
 	en: {
 		profile: {
 			title: 'Profile',
-			name: 'Name',
+			firstNameTitle: 'First Name',
+			firstNamePlaceholder: 'John',
+			lastNameTitle: 'Last Name',
+			lastNamePlaceholder: 'Smith',
 			userNameValidationErrorMissing: 'Please provide a name, so that your photos can be attributed.',
 			userNameValidationErrorShort: 'Name is too short. Please provide at least two names. (e.g. John Doe)',
-			email: 'Email'
+			emailTitle: 'Email',
+			emailPlaceholder: 'john@smith.com',
+			phoneTitle: 'Phone',
+			phonePlaceholder: '+49 89 32 16 8',
+			companyTitle: 'Company',
+			companyName: 'Name',
+			saveButtonTitle: 'Update Profile',
+			cancelButtonTitle: 'Discard Changes',
 		},
 		tasks: {
 			title: 'Chats',
@@ -25,6 +35,15 @@ I18n.translations = {
 		allSites: {
 			siteNameValidationErrorMissing: 'Site name is too short.',
 			noSiteFound: 'No Site found.'
+		},
+		camera: {
+			thisIsAppendedToPhoto: 'Information you enter here is appended to your photo.',
+			descriptionTitle: 'Description',
+			descriptionPlaceholder: 'Description',
+			locationTitle: 'Location',
+			locationPlaceholder: 'Please select a location',
+			messagePhotoTaken: 'Photo saved',
+			photoCouldNotBeTaken: 'Error taking Photo.',
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Please add photo context information',
@@ -37,7 +56,7 @@ I18n.translations = {
 			noSite: 'NO site',
 			tags: 'Tags',
 			description: 'Description',
-			descriptionPlaceholder:'What is this photo about?',
+			descriptionPlaceholder: 'What is this photo about?',
 		},
 		MessagesView: {
 			title: 'Album',
@@ -59,10 +78,18 @@ I18n.translations = {
 	de: {
 		profile: {
 			title: 'Profil',
-			name: 'Name',
-			userNameValidationErrorMissing: 'Bitte gib deinen Namen an, damit die Fotos zugeordnet werden können.',
-			userNameValidationErrorShort: 'Der Name ist zu kurz. Bitte gib Vor- und Nachname ein. (z.B. Hans Müller)',
-			email: 'Email'
+			firstNameTitle: 'Vorname',
+			firstNamePlaceholder: 'Hans',
+			lastNameTitle: 'Nachname',
+			lastNamePlaceholder: 'Schmidt',
+			emailTitle: 'Email',
+			emailPlaceholder: 'Hans@Schmidt.de',
+			phoneTitle: 'Telefon',
+			phonePlaceholder: '+49 89 32 16 8',
+			companyTitle: 'Firma',
+			companyName: 'Name der Firma',
+			saveButtonTitle: 'Profil Speichern',
+			cancelButtonTitle: 'Änderungen verwerfen',
 		},
 		tasks: {
 			title: 'Chats',
@@ -83,7 +110,7 @@ I18n.translations = {
 			noSiteFound: 'Ist dieses Foto auf einer Baustelle? Bitte zufügen.',
 			tags: 'Tags',
 			description: 'Beschreibung',
-			descriptionPlaceholder:'Was zeigt dieses Foto?',
+			descriptionPlaceholder: 'Was zeigt dieses Foto?',
 		},
 		SiteEditorView: {
 			description: 'Beschreibung',
@@ -102,6 +129,6 @@ I18n.translations = {
 			title: 'Aufgabe',
 		}
 	},
-}
+};
 
 export default I18n;
