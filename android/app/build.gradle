@@ -85,7 +85,10 @@ def enableProguardInReleaseBuilds = true
 android {
     compileSdkVersion 23
     buildToolsVersion "23.0.1"
-
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
     defaultConfig {
         applicationId "com.sites"
         minSdkVersion 16
@@ -123,6 +126,9 @@ android {
             }
         }
     }
+    dexOptions {
+        jumboMode true
+    }
 }
 
 repositories {
@@ -130,7 +136,9 @@ repositories {
         dirs "../../node_modules/react-native-background-geolocation/android/libs"
     }
 }
+
 dependencies {
+    compile project(':react-native-lock')
     compile project(':react-native-background-geolocation')
     compile project(':react-native-geocoder')
     compile project(':react-native-view-shot')

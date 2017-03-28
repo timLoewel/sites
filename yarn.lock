@@ -1791,6 +1791,10 @@ crypto-browserify@3.3.0:
     ripemd160 "0.2.0"
     sha.js "2.2.6"
 
+crypto-js@^3.1.9-1:
+  version "3.1.9-1"
+  resolved "https://registry.yarnpkg.com/crypto-js/-/crypto-js-3.1.9-1.tgz#fda19e761fc077e01ffbfdc6e9fdfc59e8806cd8"
+
 csrf@~3.0.0:
   version "3.0.5"
   resolved "https://registry.yarnpkg.com/csrf/-/csrf-3.0.5.tgz#3c3aa86f395dd39f86d68fcf1734a2380f466112"
@@ -4629,6 +4633,10 @@ react-modal@^1.2.1:
     exenv "1.2.0"
     lodash.assign "^4.2.0"
 
+react-native-auth0@^0.0.1:
+  version "0.0.1"
+  resolved "https://registry.yarnpkg.com/react-native-auth0/-/react-native-auth0-0.0.1.tgz#6a712cc0f00740337396205bc3da453f52d25026"
+
 react-native-background-fetch@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/react-native-background-fetch/-/react-native-background-fetch-2.0.3.tgz#f85c67a2a62cdb770c6273c8a9d9b5e1a822599e"
@@ -4683,6 +4691,12 @@ react-native-geocoder@^0.4.6:
 react-native-i18n@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/react-native-i18n/-/react-native-i18n-1.0.0.tgz#0c407d9ebb846aae1aa5e05de6503008553f02fd"
+
+react-native-lock@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/react-native-lock/-/react-native-lock-0.5.0.tgz#2ef857220339e238ca262af12410e738dc6da54a"
+  dependencies:
+    react-native-auth0 "^0.0.1"
 
 react-native-root-siblings@^1.1.2:
   version "1.2.0"

@@ -75,18 +75,14 @@ const startBackgroundGeolocationObservable = () => Observable.fromPromise(
 /**
  * starts the background thread
  */
-const stopBackgroundGeolocationObservable = () => Observable.fromPromise(
-		new Promise((resolve, reject) => BackgroundGeolocation.stop(() => resolve(), error => reject(error))
-		));
+const stopBackgroundGeolocationObservable = () => Observable.create(observer =>
+		BackgroundGeolocation.stop(() => observer.onComplete(), error => observer.onError(error)));
+
 function watchPosition(geolocationOptions) {
 	return Rx.Observable.create(observer => {
 		var watchId = window.navigator.geolocation.watchPosition(
-				function successHandler (loc) {
-					observer.onNext(loc);
-				},
-				function errorHandler (err) {
-					observer.onError(err);
-				},
+				(loc) => observer.next(loc),
+				(error) => observer.error(error),
 				geolocationOptions);
 
 		return () => {
@@ -104,7 +100,7 @@ const getCurrentPositionObservable = () => Observable.create(observer =>
 				desiredAccuracy: 0,
 				maximumAge: 0,
 				persist: false
-			}, location => observer.onNext(location), error => onError(error))
+			}, location => observer.next(location), error => gpsError(error))
 		);
 
 

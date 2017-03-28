@@ -3,6 +3,7 @@ package com.sites;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.auth0.lock.react.LockReactPackage;
 import com.transistorsoft.rnbackgroundgeolocation.RNBackgroundGeolocation;
 import com.devfd.RNGeocoder.RNGeocoderPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
@@ -32,6 +33,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new LockReactPackage(),
             new RNBackgroundGeolocation(),
             new RNGeocoderPackage(),
             new RNViewShotPackage(),

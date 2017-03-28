@@ -10,9 +10,12 @@ import { reduxFormMiddleware } from 'redux-form-actions';
 
 import reducer from './model/reducer';
 import rootEpic from './model/epics';
+import { createAction, createReducer } from 'redux-act';
 
 
 var persistor;
+
+export const storeInitialized = createAction('store has been initialized');
 
 export default function configureStore(onCompletion: ()=>void): any {
 
@@ -24,8 +27,10 @@ export default function configureStore(onCompletion: ()=>void): any {
 	const store = createStore(reducer, enhancer);
 	persistor = persistStore(store, {storage: AsyncStorage}, onCompletion);
 
-	//TODO TL remove
+	//TODO TL remove this line,
 	persistor.purge();
+	// persistor.rehydrate();
+	store.dispatch(storeInitialized());
 	return store;
 }
 

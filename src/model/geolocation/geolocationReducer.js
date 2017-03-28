@@ -22,13 +22,13 @@ export const addressError = createAction('error while getting address for locati
 
 
 const reducer = createReducer({
-	[setCurrentLocation]: (state, payload) => Immutable.merge(state, {location: payload.coords, gpsRunning: true, updating: false}),
-	[setCurrentAddress]: (state, payload) => Immutable.merge(state, payload),
+	[setCurrentLocation]: (state, payload) => Immutable.merge(state, {position: payload.coords, gpsRunning: true, updating: false}),
+	[setCurrentAddress]: (state, payload) => Immutable.merge(state, {address: payload}),
 	[updateLocation]:  (state, payload) => Immutable.merge(state, {updating: true}),
 	[gpsError]: (state, payload) => Immutable.merge(state, {lastGpsError: payload}),
 	[addressError]: (state, payload) => Immutable.merge(state, {lastAddressError: payload}),
 	[startGPS]: (state, payload) => Immutable.merge(state, {lastGpsError: null, lastAddressError:null}),
 	[stopGPS]: (state, payload) => Immutable.merge(state, {lastGpsError: null, lastAddressError:null}),
-}, Immutable.from({gpsRunning: false, updating: false, lastGpsError:null, lastAddressError: null, location:{}}));
+}, Immutable.from({gpsRunning: false, updating: false, lastGpsError:null, lastAddressError: null, position:{}, address:{}}));
 
 export default reducer;

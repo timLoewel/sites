@@ -13,24 +13,33 @@ import {
 	persistStore,
 } from 'redux-persist';
 
-import {AppWithNavigationState} from './model/ui/navigation/AppNavigator';
+import {AppWithNavigationState} from './components/appNavigator/AppNavigator';
 
-import configureStore from './configureStore';
+import SignedInCheck from './components/basics/SignedInCheck';
+
+import configureStore from './store';
 import {startGPS, stopGPS} from './model/geolocation/geolocationReducer';
 
-class ReduxExampleApp extends React.Component {
+
+class App extends React.Component {
 	store = configureStore();
 
+
 	render() {
-		return (
+			return (
 				<Provider store={this.store}>
-					<AppWithNavigationState />
+					<SignedInCheck>
+						<AppWithNavigationState />
+					</SignedInCheck>
 				</Provider>
 		);
 	}
 
 	componentDidMount() {
+//		SplashScreen.hide();
+
 		this.store.dispatch(startGPS());
+
 	}
 
 	componentWillUnmount() {
@@ -38,4 +47,4 @@ class ReduxExampleApp extends React.Component {
 	}
 }
 
-AppRegistry.registerComponent('sites', () => ReduxExampleApp);
+AppRegistry.registerComponent('sites', () => App);

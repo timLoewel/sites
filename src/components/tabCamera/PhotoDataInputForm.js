@@ -6,62 +6,67 @@
  */
 
 import React from 'react';
-import {ScrollView, TextInput, Text, View,KeyboardAvoidingView, Button} from 'react-native';
+import {connect} from 'react-redux';
+
+import {ScrollView, TextInput, Text, View, KeyboardAvoidingView, Button} from 'react-native';
 import I18n from '../../assets/translations';
-import {Field, reduxForm, propTypes} from 'redux-form-actions';
 import theme from '../../assets/themes/sites-theme';
-
-
-function descriptionInput(props) {
-	const {input, ...inputProps} = props;
-	return (
-			<View style={{flex:1, flexDirection:'column', justifyContent: 'flex-start', alignItems:'flex-start'}}>
-				<Text style={{fontSize:theme.fontSizeBase, fontWeight:'bold'}}>{I18n.t('camera.descriptionTitle')}</Text>
-				<View style={{flexDirection:'row', justifyContent:'flex-start'}}>
-					<TextInput
-							placeholderTextColor={theme.subtitleColor}
-							style={{flex:1, backgroundColor:theme.inputBGColor, textAlign:'left', textAlignVertical: 'top'}}
-							{...inputProps}
-							onChangeText={input.onChange}
-							onBlur={input.onBlur}
-							onFocus={input.onFocus}
-							value={input.value}
-							placeholder={I18n.t('camera.thisIsAppendedToPhoto')}
-							multiline={true}
-							numberOfLines = {3}
-							maxLength = {280}
-							selectTextOnFocus={true}
-					/>
-				</View>
-			</View>
-	);
-}
+import {setPhotoLocation, setPhotoDescription} from '../../model/ui/camera/cameraReducer';
 
 
 class PhotoDataInputForm extends React.Component {
-	static propTypes = {
-		...propTypes,
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			collapsed : true,
+		}
 	}
 
+	collapse() {
+		this.setState({collapsed: true});
+	}
+	expand() {
+		this.setState({collapsed: false});
+	}
 	render() {
+		const fontSize = this.state.collapsed ? theme.fontSizeSmall : theme.inputFontSize;
 		return (
+				<View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch',}}>
+					<View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
+						<Text style={{fontSize: theme.fontSizeBase, fontWeight: 'bold'}}>{I18n.t('camera.descriptionTitle')}</Text>
+						<View style={{flexDirection: 'row', justifyContent: 'flex-start'}}>
+							<TextInput
+									placeholderTextColor={theme.subtitleColor}
+									style={{flex: 1, fontSize: fontSize, backgroundColor: theme.inputBGColor, textAlign: 'left', textAlignVertical: 'top'}}
+									onChangeText={this.props.setPhotoDescription}
+									onBlur={this.collapse.bind(this)}
+									onFocus={this.expand.bind(this)}
+									value={this.props.photoDescription}
+									placeholder={I18n.t('camera.thisIsAppendedToPhoto')}
+									multiline={this.state.collapsed}
+									numberOfLines={10}
+									maxLength={280}
+									selectTextOnFocus={true}
+							/>
+						</View>
+					</View>
 
-			<View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch', }}>
-				<Field
-						name={'description'}
-						component={descriptionInput}
-
-				/>
-
-			</View>
+				</View>
 		);
 	}
 }
+const mapStateToProps = state => ({
+	// currentLocation: state.ui.geoLocationReducer.get('position'),
+	location: state.ui.cameraReducer.location,
+	photoDescription: state.ui.cameraReducer.photoDescription,
+});
 
-
-export default reduxForm({
-	form: 'PhotoDataInputForm',
-	initialValues: {
-
+function bindAction(dispatch) {
+	return {
+		//newLocation: { formattedAddress, location: { latitude, longitude } }
+		setPhotoLocation: (newLocation) => dispatch(setPhotoLocation(newLocation)),
+		setPhotoDescription: (description) => dispatch(setPhotoDescription(description))
 	}
-})(PhotoDataInputForm);
+}
+export default connect(mapStateToProps, bindAction)(PhotoDataInputForm);

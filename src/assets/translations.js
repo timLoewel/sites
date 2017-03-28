@@ -44,6 +44,7 @@ I18n.translations = {
 			locationPlaceholder: 'Please select a location',
 			messagePhotoTaken: 'Photo saved',
 			photoCouldNotBeTaken: 'Error taking Photo.',
+			locationUnknown: 'Location unknown'
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Please add photo context information',
@@ -58,12 +59,15 @@ I18n.translations = {
 			description: 'Description',
 			descriptionPlaceholder: 'What is this photo about?',
 		},
+		photoRenderer: {
+			locationUnknown: 'Location unknown.'
+		},
 		MessagesView: {
 			title: 'Album',
 		},
 		SiteEditorView: {
 			description: 'Description',
-			siteCreatedByOn: 'Site was created by {{creatorName}} on {{creationDate}}.',
+			siteCreatedByOn: 'Site was created by {{creatorName}} on {{createdAt}}.',
 			developer: 'Developer',
 			siteManager: 'Site Manager',
 			clickToAddPhoto: 'Change Cover Photo',
@@ -116,7 +120,7 @@ I18n.translations = {
 			description: 'Beschreibung',
 			developer: 'Bauherr',
 			siteManager: 'Bauleiter',
-			siteCreatedByOn: 'Baustelle wurde von {{creatorName}} am {{creationDate}} erstellt.',
+			siteCreatedByOn: 'Baustelle wurde von {{creatorName}} am {{createdAt}} erstellt.',
 			clickToAddPhoto: 'Bild ändern',
 			location: 'Ort',
 			chooseSiteImageTitle: 'Quelle für Bild:',
@@ -124,6 +128,9 @@ I18n.translations = {
 			takePhotoButtonTitle: 'Kamera',
 			cancelButtonTitle: 'Abbrechen',
 
+		},
+		photoRenderer: {
+			locationUnknown: 'Ort nicht bekannt.'
 		},
 		MessagesView: {
 			title: 'Aufgabe',

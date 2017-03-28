@@ -3,9 +3,13 @@
  */
 import moment from 'moment';
 import RNFetchBlob from 'react-native-fetch-blob';
+import {Observable} from 'rxjs/Observable';
+
 
 const IMAGE_FILE_SUFFIX = '.jpg';
 const PHOTO_CLASS = 'Photo';
+
+const PHOTOPATH = RNFetchBlob.fs.dirs.DocumentDir + '/';
 
 function checkFile(photoPath, fileName, i) {
 	const resultFileName = fileName + '_' + (i < 10 ? '0' : '') + (i < 100 ? '0' : '') + i;
@@ -16,16 +20,16 @@ function checkFile(photoPath, fileName, i) {
 				if (exists) {
 					return checkFile(photoPath, fileName, i + 1);
 				} else {
-					return {photoPath: photoPath, uniquePhotoName: resultFileName + IMAGE_FILE_SUFFIX};
+					return photoPath + resultFileName + IMAGE_FILE_SUFFIX;
 				}
 			}).catch((err) => {
-		console.log('could not create unique filename ' + err);
-	});
+				console.log('could not create unique filename ' + err);
+			});
 }
 
-// creates a unique name
-export function createUniqueLocalPhotoFilename(photoTakenAt) {
-	const fileName = 'sites_work_' + moment(photoTakenAt).format('Y_MMM_d_HH_mm_ss')
+// returns a promise, that will resolve into a unique filename
+export function createUniqueLocalPhotoFilename(photoTakenAtMillis) {
+	const fileName = 'obob_work_' + moment(photoTakenAtMillis).format('Y_MMM_d_HH_mm_ss');
 	var i = 0;
 	var resultFileName = fileName + '00';
 	// console.log('1' + fs.MainBundlePath);
@@ -34,6 +38,6 @@ export function createUniqueLocalPhotoFilename(photoTakenAt) {
 	// console.log('4' + fs.PicturesDirectoryPath);
 	// console.log('5' + fs.ExternalDirectoryPath);
 	// console.log('6' + fs);
-	const photoPath = RNFetchBlob.fs.dirs.DocumentDirectoryPath + '/';
-	return checkFile(photoPath, fileName, 0);
+	const photoPath = PHOTOPATH;
+	return Observable.fromPromise(checkFile(photoPath, fileName, 0));
 }

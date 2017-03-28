@@ -4,9 +4,14 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
-import {photographing} from '../../model/ui/camera/cameraReducer';
+import {
+	photographing,
+	setAnnotatedPhotoData,
+	resetLastPhoto,
+ 	errorOnPhoto
+} from '../../model/ui/camera/cameraReducer';
 import {updateLocation} from '../../model/geolocation/geolocationReducer';
-
+import RenderImage from '../../utils/sitesPhotoRenderer';
 import {
 	AppRegistry,
 	Dimensions,
@@ -57,13 +62,13 @@ class CameraView extends Component {
 				<View style={{flexDirection: 'row', justifyContent: 'center', height: theme.footerHeight, paddingTop: 5}}>
 					<TouchableHighlight
 							style={{
-							backgroundColor: theme.brandPrimary,
-							borderRadius: theme.footerHeight- 5,
-							width: theme.footerHeight - 5,
-							height: theme.footerHeight - 5,
-							flexDirection: 'column',
-							justifyContent: 'center',
-							alignItems: 'center',
+								backgroundColor: theme.brandPrimary,
+								borderRadius: theme.footerHeight - 5,
+								width: theme.footerHeight - 5,
+								height: theme.footerHeight - 5,
+								flexDirection: 'column',
+								justifyContent: 'center',
+								alignItems: 'center',
 							}}
 							key="shutterButton"
 							onPress={this.takePicture.bind(this)}
@@ -71,8 +76,8 @@ class CameraView extends Component {
 							underlayColor="red"
 					>
 						<View>
-							<Text style={{flexDirection: 'row', justifyContent: 'center', alignItems:'center'}}>
-								<Icon name="camera" style={{fontSize: theme.fontSizeH1, color: 'black'}}/>
+							<Text style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+								<Icon name="camera" style={{fontSize: theme.fontSizeH2, color: 'black'}}/>
 							</Text>
 						</View>
 					</TouchableHighlight>
@@ -80,45 +85,26 @@ class CameraView extends Component {
 		);
 	}
 
-	getFormattedAddress = () => {
-		return (this.props.currentLocation && this.props.currentLocation.formattedAddress) || '-';
+	onPhotoReady(thumbnailData, photoUri) {
+		this.props.setAnnotatedPhotoData({createdAtMillis:this.props.localPhotoData.createdAtMillis, thumbnailData: thumbnailData, uri: photoUri});
 	}
 
 	renderPhotoRenderer() {
-		if (!this.props.shareableUri || !this.props.localPhotoUri) {
+		if (!this.props.localPhotoData) {
 			return;
 		}
-		const longitude = this.props.location && this.props.location.longitude || '';
-		const latitude = this.props.location && this.props.location.latitude || '';
-		console.log('rendering image. ' + this.props.localPhotoUri);			//windowWidth + 1
 		return (
-				<View style={{position: 'absolute',top: 0, left: 100 }}>
+				<View style={{position: 'absolute', top: windowHeight + 10, left: 0}}>
 					<RenderImage
 							ref="renderImage"
-							allDataComplete={true}
-							sourceImageUri={this.props.localPhotoUri}
-							shareableUri={this.props.shareableUri}
-							creationDateString={this.props.serverPhotoCreationDate}
+							photoData={this.props.localPhotoData}
+							photoDescription={this.props.photoDescription}
 							creatorName={this.props.creatorName}
 							siteName={this.props.siteName}
-							addressOneLine={this.getFormattedAddress()}
-							locationLongitude={longitude}
-							locationLatitude={latitude}
-							photoHeight={this.props.photoHeight}
-							photoWidth={this.props.photoWidth}
-							photoOrientation={this.props.photoOrientation}
-							callWhenReady={(renderImage) => {
-											renderImage.snapIt().then(result => {
-												ToastAndroid.show(I18n.t('camera.messagePhotoTaken'), ToastAndroid.SHORT);
-												console.log('rendered snapshot from original ' +
-													this.props.localPhotoUri + ' to result ' + result);
-												this.props.uploadPhotoAndUpdate(this.props.photoObjectId, result);
-											}).catch(err => {
-												console.log('ERROR could not render snapshot');
-												console.log(err)
-											});
-										}
-									}
+							systemlocation={this.props.systemLocation}
+							selectedLocation={this.props.selectedLocation}
+							onPhotoReady={this.onPhotoReady.bind(this)}
+							onError={this.props.errorOnPhoto}
 					/>
 				</View>);
 
@@ -126,17 +112,22 @@ class CameraView extends Component {
 
 
 	render() {
-
+		console.log('cameraView render');
 		return (
-				<View style={{flex:1}}>
-					{this.renderPhotoRenderer}
+				<View style={{flex: 1}}>
 					<ScrollView
-							style={{flex:1}}
+							style={{flex: 1}}
 							keyboardDismissMode="interactive"
 							keyboardShouldPersistTaps="handled"
 					>
 						<View
-								style={{flex:1, height: windowHeight, flexDirection: 'column', justifyContent: 'space-between', alignItems: 'stretch', }}>
+								style={{
+									flex: 1,
+									height: windowHeight,
+									flexDirection: 'column',
+									justifyContent: 'space-between',
+									alignItems: 'stretch',
+								}}>
 							<View style={{flex: 5}}>
 								<Camera
 										ref={(cam) => {
@@ -151,11 +142,13 @@ class CameraView extends Component {
 						</View>
 						<KeyboardAvoidingView mode="height"/>
 					</ScrollView>
+					{this.renderPhotoRenderer()}
 				</View>
 		);
 	}
 
 	componentDidMount() {
+		this.props.resetLastPhoto();
 		this.props.updateLocation();
 	}
 
@@ -188,22 +181,21 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
 	// currentLocation: state.ui.geoLocationReducer.get('position'),
-	siteName: 'site',//state.site.currentSiteName,
-	location: {longitude: 13.4261454, latitude: 52.5075419},//state.geolocation.location,
-	creatorName: 'creator full name',//state.profile.fullName,
-	localPhotoUri: state.ui.cameraReducer.localPhotoData.uri,
-	photoHeight: state.ui.cameraReducer.localPhotoData.photoHeight,
-	photoWidth: state.ui.cameraReducer.localPhotoData.photoWidth,
-	photoOrientation: state.ui.cameraReducer.localPhotoData.orientation,
-	photoObjectId: state.ui.cameraReducer.localPhotoData.photoObjectId,
-	shareableUri: state.ui.cameraReducer.serverPhotoData.shareableUri,
-	serverPhotoCreationDate: state.ui.cameraReducer.serverPhotoData.creationDate,
+	siteName: undefined,//state.ui.cameraReducer.siteName,
+	selectedLocation: state.ui.cameraReducer.location,
+	photoDescription: state.ui.cameraReducer.photoDescription,
+	systemLocation: state.geolocation,
+	creatorName: state.profile.currentUser.name,
+	localPhotoData: state.ui.cameraReducer.localPhotoData,
 });
 
 function bindAction(dispatch) {
 	return {
 		setPhotographing: (photoTakingPromise) => dispatch(photographing(photoTakingPromise)),
-		updateLocation: () => dispatch(updateLocation())
+		updateLocation: () => dispatch(updateLocation()),
+		resetLastPhoto: () => dispatch(resetLastPhoto()),
+		setAnnotatedPhotoData: (data:{thumbnailData:undefined, uri:undefined, createdAt:undefined}) => dispatch(setAnnotatedPhotoData(data)),
+		errorOnPhoto: (error) => dispatch(errorOnPhoto({source: 'cameraView', error})),
 	}
 }
 export default connect(mapStateToProps, bindAction)(CameraView);

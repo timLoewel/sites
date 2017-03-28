@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, PropTypes } from "react";
 import {
 	StyleSheet,
 	Text,
@@ -14,6 +14,8 @@ import {
 } from "react-native";
 import {LineStyleIcon as Icon} from '../assets/icons';
 import theme from '../assets/themes/sites-theme';
+import I18n from '../assets/translations';
+import moment from 'moment';
 
 import { takeSnapshot } from "react-native-view-shot";
 
@@ -50,50 +52,43 @@ const imageStyles = {
 		textAlign: "left",
 		flexWrap: "wrap",
 	}
-}
+};
+
+
 /**
  * put this component into a View that is outside the visible area e.g. position: absolute, top:0, left: window.width
  */
 export default class RenderImage extends Component {
-	propTypes: {
-		// as long as this is false nothing is rendered
-		allDataComplete: React.PropTypes.bool,
+	 static propTypes = {
 		// the image that should be rendered
-		sourceImageUri: React.PropTypes.string,
-		// where the image will get rendered to. this is stamped into the image
-		shareableUri: React.PropTypes.string,
-		creationDateString: React.PropTypes.string,
-		creatorName: React.propTypes.string,
-		creatorCompany: React.propTypes.string,
-		siteName: React.propTypes.string,
-		addressOneLine: React.propTypes.string,
-		locationLongitude: React.propTypes.number,
-		locationLatitude: React.propTypes.number,
-		description: React.propTypes.string,
-		photoWidth: React.propTypes.number,
-		photoHeight: React.propTypes.number,
-		photoOrientation: React.propTypes.number,
-		callWhenReady: React.propTypes.func,
-	}
+		photoData: PropTypes.shape({
+			uri: PropTypes.string,
+			height: PropTypes.number,
+			width: PropTypes.number,
+			orientation: PropTypes.number,
+			createdAt: PropTypes.object,
+			// where the image can be retrieved. this is stamped into the image
+			shareableUri: PropTypes.string,
+		}),
+		photoDescription: PropTypes.string,
+		creatorName: PropTypes.string,
+		siteName: PropTypes.string,
+		selectedLocation: PropTypes.object,
+		systemLocation: PropTypes.object,
+		onPhotoReady: PropTypes.func,
+		onError: PropTypes.func,
+	};
+
 
 	constructor(props) {
 		super(props);
 
-		const ratio = PixelRatio.get();
-		const imageLayoutWidth = props.photoWidth / ratio;
-		const imageLayoutHeight = props.photoHeight / ratio;
+		this.ratio = PixelRatio.get();
+		this.imageLayoutWidth = props.photoData.width / this.ratio;
+		this.imageLayoutHeight = props.photoData.height / this.ratio;
 
 		// 30 is a constant chosen for readability of the rendered photos
-		const fontSize = imageLayoutWidth/30;
-
-		this.state = {
-			ratio: ratio,
-			imageLayoutWidth: imageLayoutWidth,
-			imageLayoutHeight: imageLayoutHeight,
-			fontSize: fontSize,
-			renderedImageWidth: 0,
-			renderedImageHeight: 0,
-		}
+		this.fontSize = this.imageLayoutWidth/30;
 	}
 
 	/**
@@ -101,143 +96,139 @@ export default class RenderImage extends Component {
 	 * @param targetWidth
 	 * @param quality
 	 */
-	 snapIt(targetWidth, quality) {
+	snapPhoto(renderedImageHeight, renderedImageWidth, targetWidth, quality, resultType) {
 		 const q = quality || 0.8;
+			const r = resultType || 'file';
 		 const width = Math.min(
-				 (targetWidth?targetWidth/this.state.ratio:undefined) || this.state.renderedImageWidth,
-				 this.state.renderedImageWidth);
-		 const height = this.state.renderedImageHeight * (width/this.state.renderedImageWidth);
+				 (targetWidth?targetWidth/this.ratio:undefined) || renderedImageWidth,
+				 renderedImageWidth);
+		 const height = renderedImageHeight * (width/renderedImageWidth);
 		 return takeSnapshot(this.refs.root,
 				 {
 					 format: 'jpg',
-					 width:width,
 					 height:height,
+					 width:width,
 					 quality: q,
-					 result: 'file',
+					 result: r,
 				 });
 	}
 
-	isReadyForSnapshot() {
-		return (
-				this.state.imageLayoutWidth > 0
-		&& this.props.allDataComplete
-		&& this.state.renderedImageHeight > 0
-		&& this.state.renderedImageWidth > 0);
+	snapThumbnail(renderedImageHeight, renderedImageWidth) {
+		return this.snapPhoto(renderedImageHeight, renderedImageWidth, 200, 0.3, 'data-uri');
 	}
 
-
-
 	componentDidUpdate() {
-		if (this.isReadyForSnapshot() && this.props.callWhenReady) {
-			console.log('componentDidUpdate readyForSnapshot');
-			this.props.callWhenReady(this);
-		}
+		console.log('componentDidUpdate');
+	}
+
+	shouldComponentUpdate(nextProps, nextState) {
+		console.log('shouldComponentUpdate ' + this.props);
+		console.log(this.props);
+		console.log(nextProps);
+		console.log('............');
+
+		return this.props.photoData.createdAtMillis != nextProps.photoData.createdAtMillis;
+	}
+
+	doSnapshots(renderedImageHeight, renderedImageWidth) {
+		this.snapThumbnail(renderedImageHeight, renderedImageWidth).then(thumbnailData => {
+			return this.snapPhoto(renderedImageHeight, renderedImageWidth).then(uri => {
+				if (this.props.onPhotoReady) {
+					console.log('doSnapshot calling photo ready callback');
+					this.props.onPhotoReady(thumbnailData, uri);
+				}
+			});
+		}).catch(error => {
+			console.log('error on rendering snapshots.');
+			return this.props.onError && this.props.onError(error);
+		});
 	}
 
 	storeMeasurements(event) {
 		var {x, y, width, height} = event.nativeEvent.layout;
 		console.log('total layout measurements h x w: ' + height + ' x ' + width);
-		this.setState({renderedImageHeight: height , renderedImageWidth: width });
+		this.doSnapshots(height, width);
 	}
 
-	getLongitudeLatitude() {
-		if (this.props.locationLatitude && this.props.locationLongitude) {
-			return (<Text style={textStyleUnimportant}>
-				latitude: {this.props.locationLatitude}, longitude: {this.props.locationLongitude}
+	getLongitudeLatitude(textStyle) {
+		if (this.props.selectedLocation && this.props.selectedLocation.longitude) {
+			return (<Text style={textStyle}>
+				latitude: {this.props.positionLatitude}, longitude: {this.props.positionLongitude}, accuracy: {this.props.positionAccuracy}m
+			</Text>);
+		} else {
+			return (<Text style={textStyle}>
+				{I18n.t('photoRenderer.locationUnknown')}
 			</Text>);
 		}
 	}
-
+	getCreatedAtString() {
+		return moment(this.props.photoData.createdAtMillis).format('Y MMM d HH:mm');
+	}
 	render () {
+		console.log('RenderImage.render()');
 
-		const fontSizeImportant = this.state.fontSize;
-		const fontSizeUnimportant = this.state.fontSize * 0.8;
+		const fontSizeImportant = this.fontSize;
+		const fontSizeUnimportant = this.fontSize * 0.8;
 
 		const lineHeightImportant = Math.ceil(fontSizeImportant * 1.8);
 		const lineHeightUnimportant = Math.ceil(fontSizeUnimportant * 1.5);
-		const textPadding = Math.ceil(this.state.fontSize);
+		const textPadding = Math.ceil(this.fontSize);
 		const textStyleUnimportant = {fontSize: fontSizeUnimportant, lineHeight: lineHeightUnimportant, color: 'grey'};
 		const textStyleImportant = {fontSize: fontSizeImportant, lineHeight: lineHeightImportant, color: 'black'};
 		const annotationEntry = {flexDirection:'row', flex: 1, paddingBottom: Math.ceil(fontSizeImportant)};
-		const imageLayoutHeight = this.state.imageLayoutHeight;
-		const imageLayoutWidth = this.state.imageLayoutWidth;
 
-		// return	(
-		// 		<View ref="root"  style={[{width:this.state.imageLayoutWidth, flex:1, flexDirection:'column' }, imageStyles.root]}>
-		// 	<View style={[imageStyles.heading, {padding: textPadding, height: this.state.fontSize * 3}]}>
-		// 		<Text style={[textStyleUnimportant, {color: 'black'}]}>
-		// 			<Text  style={textStyleUnimportant}>
-		// 				<Icon name="camera" style={{fontSize: this.state.fontSize, color: 'black'}}/>
-		// 			</Text> <Text style={[imageStyles.imageUrl, textStyleUnimportant]}> {this.props.shareableUri}</Text>
-		// 		</Text>
-		// 	</View>
-		//
-		// 	<View ref="c1"
-		// 				style={{width:this.state.imageLayoutWidth, height: 100, backgroundColor: 'blue', borderWidth:10, borderColor: 'orange' }}>
-		// 	</View>
-		// 	<Image source={{uri: this.props.sourceImageUri}} style={{height:imageLayoutHeight, width:imageLayoutWidth}} resizeMode="contain"/>
-		//
-		// 	<View ref="c2"
-		// 				style={{width:this.state.imageLayoutWidth, height: 100, backgroundColor: 'red', borderWidth: 10, borderColor: 'pink' }}>
-		// 	</View>
-		// 	<Image source={{uri: this.props.sourceImageUri}} style={{width: this.state.imageLayoutWidth, height:this.state.imageLayoutHeight}} resizeMode="contain"/>
-		//
-		// </View>);
+
 		return (
-				<View ref="root"  style={[{width:this.state.imageLayoutWidth, flex:1, flexDirection:'column' }, imageStyles.root]}
-							onLayout={this.storeMeasurements.bind(this)}  >
-					<View style={[imageStyles.heading, {padding: textPadding, height: this.state.fontSize * 3}]}>
+				<View ref="root"  style={[{width:this.imageLayoutWidth, flex:1, flexDirection:'column' }, imageStyles.root]}
+							onLayout={this.storeMeasurements.bind(this)}  collapsable={false}>
+					<View style={[imageStyles.heading, {padding: textPadding, height: this.fontSize * 3}]} collapsable={false}>
 						<Text style={[textStyleUnimportant, {color: 'black'}]}>
 							<Text  style={textStyleUnimportant}>
-								<Icon name="camera" style={{fontSize: this.state.fontSize, color: 'black'}}/>
-							</Text> <Text style={[imageStyles.imageUrl, textStyleUnimportant]}>{this.props.shareableUri}</Text>
+								<Icon name="camera" style={{fontSize: this.fontSize, color: 'black'}}/>
+							</Text> <Text style={[imageStyles.imageUrl, textStyleUnimportant]}>{this.props.photoData.shareableUri}</Text>
 						</Text>
 					</View>
 
 					<Image
-							style={[imageStyles.image,{width: this.state.imageLayoutWidth, height:this.state.imageLayoutHeight}]}
-							source={{uri: this.props.sourceImageUri}}
+							style={[imageStyles.image,{width: this.imageLayoutWidth, height:this.imageLayoutHeight}]}
+							source={{uri: 'file://' + this.props.photoData.uri}}
 							resizeMode="contain"
 					/>
-					<View style={[imageStyles.annotations, {padding: textPadding}]}>
-						<View style={annotationEntry}>
+					<View style={[imageStyles.annotations, {padding: textPadding}]} collapsable={false}>
+						<View style={annotationEntry} collapsable={false}>
 							<Text style={textStyleImportant}>
-								{this.props.creationDateString}
+								{this.getCreatedAtString()}
 							</Text>
 						</View>
-						<View style={annotationEntry}>
+						<View style={[annotationEntry,{justifyContent: 'flex-start', alignItems: 'center'}]} collapsable={false}>
 							<Image
 									style={{
 											height: fontSizeImportant,
 											width: fontSizeImportant,
 											resizeMode: 'contain'
 										}}
-									source={require('../../assets/icons/map-site-marker.png')}/>
-							<Text style={textStyleImportant}>
+									source={require('../assets/icons/map-site-marker.png')}/>
+							<Text style={[textStyleImportant,{flex:1}]}>
 								{this.props.siteName}
 							</Text>
 						</View>
-						<View style={[annotationEntry,{flexDirection: 'column'}]}>
+						<View style={[annotationEntry,{flexDirection: 'column'}]} collapsable={false}>
 							<Text style={textStyleUnimportant}>
-								{this.props.addressOneLine}
+								{this.props.selectedLocation.formattedAddress}
 							</Text>
-							{this.getLongitudeLatitude()}
+							{this.getLongitudeLatitude(textStyleUnimportant)}
 						</View>
-						<View style={annotationEntry}>
+						<View style={annotationEntry} collapsable={false}>
 							<Text style={textStyleImportant}>
-								{this.props.description}
+								{this.props.photoDescription}
 							</Text>
 						</View>
-						<View style={annotationEntry}>
+						<View style={annotationEntry} collapsable={false}>
 							<Text style={textStyleUnimportant}>
 								{this.props.creatorName}
 							</Text>
 						</View>
-						<View style={annotationEntry}>
-							<Text style={textStyleUnimportant}>
-								{this.props.creatorCompany}
-							</Text>
-						</View>
+
 					</View>
 				</View>);
 	}

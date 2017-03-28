@@ -21,7 +21,7 @@ import {
 	createStore,
 	combineReducers,
 } from 'redux';
-import {AppNavigator} from './AppNavigator';
+import {AppNavigator} from '../../../components/appNavigator/AppNavigator';
 
 const initialAuthState = {isLoggedIn: false};
 

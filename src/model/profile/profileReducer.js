@@ -14,4 +14,34 @@ export const submitProfileOk = createAction('Submit Profile OK');
 
 export const submitProfileFailed = createAction('Submit Profile FAILED');
 
-export default (state = {}, action) => state;
+export const showLoginScreen = createAction('show the login screen');
+/**
+ * the payload is the user profile, as returned from the server
+ * @type {ActionCreator<P, M>}
+ */
+export const userLoginSuccess = createAction('user logged in successfully');
+
+export const userLoginFailed = createAction('user login failed');
+
+export const userLogout = createAction('user logged out');
+
+const initialUser = {locale: ReactNativeI18n.locale,};
+
+const reducer = createReducer(
+		{
+			[userLoginSuccess]: (state, payload) => Immutable.merge(state, {
+				isLoggedIn: true,
+				currentUser: payload.profile,
+				auth0Token: payload.token,
+				sessionToken: payload.profile.parse_session_token,
+			}),
+			[userLogout]: (state, payload) => Immutable.merge(state, {
+				isLoggedIn: false,
+				currentUser: initialUser,
+				auth0Token:null,
+				sessionToken:null,
+			}),
+		},
+		Immutable.from({isLoggedIn: false, currentUser:initialUser, auth0Token: null, sessionToken:null}));
+
+export default reducer;

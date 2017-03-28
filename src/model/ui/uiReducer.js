@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-// import cardNavigation from './navigation/cardNavigationReducer';
+// import cardNavigation from './mainNavigation/cardNavigationReducer';
 // import workbench from './workbench';
 // import tasksViewReducer from './tasksViewReducer';
 // import newPhotoViewReducer from './newPhotoViewReducer';

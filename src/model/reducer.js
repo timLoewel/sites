@@ -9,6 +9,7 @@ import {
 import uiReducer from './ui/uiReducer';
 import profileReducer from './profile/profileReducer';
 import geolocationReducer from './geolocation/geolocationReducer';
+import photoReducer from './photo/photoReducer';
 
 const initialAuthState = {isLoggedIn: false};
 
@@ -18,13 +19,5 @@ export default combineReducers({
 	form: formReducer,
 	geolocation: geolocationReducer,
 	profile: profileReducer,
-	auth: (state = initialAuthState, action) => {
-		if (action.type === 'Login') {
-			return {...state, isLoggedIn: true};
-		}
-		if (action.type === 'Logout') {
-			return {...state, isLoggedIn: false};
-		}
-		return state;
-	},
+	photo: photoReducer,
 });
