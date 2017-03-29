@@ -5,7 +5,9 @@ import React from 'react';
 
 import {
 	AppRegistry,
+	UIManager,
 } from 'react-native';
+import PhotoGrid from './components/tabPhotos/PhotoAlbum';
 import {
 	Provider,
 } from 'react-redux';
@@ -20,19 +22,20 @@ import SignedInCheck from './components/basics/SignedInCheck';
 import configureStore from './store';
 import {startGPS, stopGPS} from './model/geolocation/geolocationReducer';
 
+UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationEnabledExperimental(true);
 
 class App extends React.Component {
 	store = configureStore();
 
-
 	render() {
-			return (
-				<Provider store={this.store}>
-					<SignedInCheck>
-						<AppWithNavigationState />
-					</SignedInCheck>
-				</Provider>
-		);
+		return (
+				<PhotoGrid/>);
+		// 		<Provider store={this.store}>
+		// 			<SignedInCheck>
+		// 				<AppWithNavigationState />
+		// 			</SignedInCheck>
+		// 		</Provider>
+		// );
 	}
 
 	componentDidMount() {

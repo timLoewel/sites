@@ -74,10 +74,12 @@ export const photoReady = createAction('photo ready');
 
 const reducer = createReducer({
 	[resetLastPhoto]: (state, payload) => Immutable.merge(state, {localPhotoData: undefined}),
-	[setRawPhotoLocalData]: (state, payload) => Immutable.merge(state, {localPhotoData: payload}),
+	[setRawPhotoLocalData]: (state, payload) =>
+			Immutable.merge(state, {localPhotoData: payload}, {deepMerge: true}),
 	[setPhotoLocation]:(state, payload) => Immutable.merge(state, {selectedLocation: payload}),
 	[setPhotoDescription]:(state, payload) => Immutable.merge(state, {photoDescription: payload}),
-	[setAnnotatedPhotoData]:(state, payload) => Immutable.merge(state, {localPhotoData: payload}, {deepMerge: true}),
+	[setAnnotatedPhotoData]:(state, payload) =>
+			Immutable.merge(state, {localPhotoData: Immutable.merge(state.localPhotoData, payload)}, {deepMerge: true}),
 }, Immutable.from({localPhotoData:undefined, location: {address:{formattedAddress: ''}}, photoDescription: ''}));
 
 

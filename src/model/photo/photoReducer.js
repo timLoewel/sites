@@ -12,6 +12,8 @@ import Immutable from 'seamless-immutable';
  */
 export const addPhoto = createAction('add a photo to the local database');
 
+
+// use https://github.com/mikolalysenko/functional-red-black-tree  for the data? sorted and immutable..
 const reducer = createReducer({
   [addPhoto]: (state, payload) => {
     if (payload.localObjectId) {
