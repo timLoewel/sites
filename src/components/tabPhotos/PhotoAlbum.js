@@ -5,7 +5,7 @@ import {newObjectId} from '../../utils/objectId';
 import getDimensions from '../../utils/dimensions';
 import LightBox from './Lightbox.android';
 
-var {
+let {
 	Image,
 	ListView,
 	TouchableOpacity,
@@ -17,7 +17,7 @@ const THUMBNAIL_MARGIN = 5;
 const allVisiblePhotos = [];
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
-for (var i = 20; i < 200; ++i) {
+for (let i = 20; i < 200; ++i) {
 	allVisiblePhotos.push({
 		localObjectId: newObjectId(),
 		thumbnailData: 'https://unsplash.it/40/60?image=' + i,
@@ -38,7 +38,7 @@ class PhotoAlbum extends React.Component {
 		super(props);
 		const listViewDataSource = new ListView.DataSource({rowHasChanged: (p1, p2) => p1.objectId === p2.objectId});
 
-		var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+		let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 		this.state = {
 			listViewDataSource: listViewDataSource,
 			showSinglePhotoRowID: undefined,
@@ -65,23 +65,28 @@ class PhotoAlbum extends React.Component {
 	_getThumbnailSize() {
 		return (windowWidth / this.state.thumbnailsPerRow) - (3 * THUMBNAIL_MARGIN)
 	}
-	_closeLightboxCallback(selectedPhotoRowID) {
+
+	_changePhotoRowIDCallback(selectedPhotoRowID) {
 		if (this.state.showSinglePhotoRowID != selectedPhotoRowID) {
-			var imgNum = selectedPhotoRowID - this.state.thumbnailsPerRow;
+			let imgNum = selectedPhotoRowID - this.state.thumbnailsPerRow;
 			if (imgNum < 1) {
 				imgNum = 0;
 			}
 			const pixelPerRow = this._getThumbnailSize() + 2 * THUMBNAIL_MARGIN;
-			this.listView.scrollTo({x: 0, y: Math.floor(imgNum / this.state.thumbnailsPerRow) * pixelPerRow, animated: true})
+			this.listView.scrollTo({x: 0, y: Math.floor(imgNum / this.state.thumbnailsPerRow) * pixelPerRow, animated: false})
 		}
+	}
+
+	_closeLightboxCallback(selectedPhotoRowID) {
 		this.setState({showSinglePhotoRowID: undefined});
 	}
 
 	_renderLightbox() {
 		if (this.state.showSinglePhotoRowID) {
 			return <LightBox
-					mediaList={allVisiblePhotos}
+					mediaList={this.props.allVisiblePhotos}
 					currentlySelectedRowID = {this.state.showSinglePhotoRowID}
+					changePhotoRowIDCallback = {this._changePhotoRowIDCallback.bind(this)}
 					closeCallback={this._closeLightboxCallback.bind(this)}/>
 		} else {
 			return undefined;
@@ -89,13 +94,13 @@ class PhotoAlbum extends React.Component {
 	}
 
 	render() {
-		const listData = this.state.listViewDataSource.cloneWithRows(allVisiblePhotos);
+		const listData = this.state.listViewDataSource.cloneWithRows(this.props.allVisiblePhotos);
 
 		return (
 				<View>
 					<ListView
 							ref={component => this.listView = component}
-
+							enableEmptySections={true}
 							contentContainerStyle={{
 								justifyContent: 'center',
 								flexDirection: 'row',
@@ -124,7 +129,7 @@ class PhotoAlbum extends React.Component {
 		);
 	}
 
-	_onPressButton(rowID) {
+	_onPressImage(rowID) {
 		return () => {
 			this.setState({showSinglePhotoRowID: rowID})
 		}
@@ -135,8 +140,7 @@ class PhotoAlbum extends React.Component {
 		return (
 				<TouchableOpacity
 						key={rowID}
-
-						onPress={this._onPressButton(rowID).bind(this)}
+						onPress={this._onPressImage(rowID).bind(this)}
 						activeOpacity={0.7}
 
 				>
@@ -170,34 +174,12 @@ class PhotoAlbum extends React.Component {
 									left: 0,
 									position: 'absolute',
 								}}
-								source={{uri: rowData.uriPhotoLocal}}/>
+								source={{uri: 'file://' + rowData.uriPhotoLocal}}/>
 					</View>
 				</TouchableOpacity>
 		);
 	}
 
-	_genRows(pressData: { [key: number]: boolean }): Array<string> {
-		var dataBlob = [];
-		for (var ii = 0; ii < 100; ii++) {
-			var pressedText = pressData[ii] ? ' (X)' : '';
-			dataBlob.push('Cell ' + ii + pressedText);
-		}
-		return dataBlob;
-	}
-
-
-}
-;
-
-
-/* eslint no-bitwise: 0 */
-var hashCode = function (str) {
-	var hash = 15;
-	for (var ii = str.length - 1; ii >= 0; ii--) {
-		hash = ((hash << 5) - hash) + str.charCodeAt(ii);
-	}
-	return hash;
 };
-
 
 export default PhotoAlbum;

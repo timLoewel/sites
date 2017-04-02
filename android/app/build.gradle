@@ -138,6 +138,7 @@ repositories {
 }
 
 dependencies {
+    compile project(':react-native-share')
     compile project(':react-native-lock')
     compile project(':react-native-background-geolocation')
     compile project(':react-native-geocoder')

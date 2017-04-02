@@ -6,7 +6,7 @@ import React from 'react';
 import {AppRegistry, AsyncStorage, Button, StyleSheet, Text, View} from 'react-native';
 
 import {getVisiblePhotos} from './PhotosFilter';
-import PhotoGrid from './PhotoAlbum';
+import PhotoAlbum from './PhotoAlbum';
 
 class PhotosView extends React.Component {
 	static navigationOptions = {
@@ -19,12 +19,12 @@ class PhotosView extends React.Component {
 
 	render() {
 		return (
-				<PhotoGrid/>
+				<PhotoAlbum allVisiblePhotos={this.props.photos}/>
 		);
 	}
 }
 
-var styles = StyleSheet.create({
+let styles = StyleSheet.create({
 	scrollView: {backgroundColor: '#6A85B1', height: 300,},
 	horizontalScrollView: {height: 120,},
 	containerPage: {height: 50, width: 50, backgroundColor: '#527FE4', padding: 5,},

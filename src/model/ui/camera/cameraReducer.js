@@ -3,7 +3,8 @@
  */
 
 import { createAction, createReducer } from 'redux-act';
-import Immutable from 'seamless-immutable';
+import SeamlessImmutable from 'seamless-immutable';
+import {List } from 'immutable'
 
 /**
  * a photo goes through these states
@@ -40,8 +41,9 @@ export const resetLastPhoto = createAction('reset the data of the last photo sho
  */
 export const setRawPhotoLocalData = createAction('set the data of the photo just shot');
 
-export const setAnnotatedPhotoData = createAction('set the base64 thumbnail and the uri of the complete, rendered photo');
+export const renderingDone = createAction('rendering done.');
 
+export const enqueuePhotoForRendering = createAction('add the photo to the queue, so that it gets rendered');
 /**
   * payload: {address:{formattedAddress}, location: {latitude, longitude}}
  * @type {ActionCreator<P, M>}
@@ -62,6 +64,8 @@ export const setPhotoDescription = createAction('set the photo description');
  */
 export const photographing = createAction('taking a photo');
 
+export const rendering = createAction('rendering the photo');
+
 /**
  * payload is the type of error
  */
@@ -73,14 +77,39 @@ export const errorOnPhoto = createAction('error while taking a photo');
 export const photoReady = createAction('photo ready');
 
 const reducer = createReducer({
-	[resetLastPhoto]: (state, payload) => Immutable.merge(state, {localPhotoData: undefined}),
-	[setRawPhotoLocalData]: (state, payload) =>
-			Immutable.merge(state, {localPhotoData: payload}, {deepMerge: true}),
-	[setPhotoLocation]:(state, payload) => Immutable.merge(state, {selectedLocation: payload}),
-	[setPhotoDescription]:(state, payload) => Immutable.merge(state, {photoDescription: payload}),
-	[setAnnotatedPhotoData]:(state, payload) =>
-			Immutable.merge(state, {localPhotoData: Immutable.merge(state.localPhotoData, payload)}, {deepMerge: true}),
-}, Immutable.from({localPhotoData:undefined, location: {address:{formattedAddress: ''}}, photoDescription: ''}));
+	[renderingDone]: (state, payload) => 	({
+		isRendering: false,
+		photosWaitingForRendering: state.photosWaitingForRendering.shift(),//remove from front
+		selectedLocation: state.selectedLocation,
+		description: state.photoDescription}),
+	[enqueuePhotoForRendering]: (state, payload) =>	({
+		isRendering: state.isRendering,
+		photosWaitingForRendering: state.photosWaitingForRendering.push(payload),//add to end
+		selectedLocation: state.selectedLocation,
+		description: state.photoDescription}),
+	[setPhotoLocation]:(state, payload) => 	({
+		isRendering: state.isRendering,
+		photosWaitingForRendering: state.photosWaitingForRendering,
+		selectedLocation: payload,
+		description: state.photoDescription}),
+	[setPhotoDescription]:(state, payload) => ({
+		isRendering: state.isRendering,
+		photosWaitingForRendering: state.photosWaitingForRendering,
+		selectedLocation: state.selectedLocation,
+		description: payload}),
+	[rendering]: (state, payload) => ({
+		isRendering: true,
+		photosWaitingForRendering: state.photosWaitingForRendering,
+		selectedLocation: state.selectedLocation,
+		description:state.description,
+	}),},
+		{
+			isRendering: false,
+			photosWaitingForRendering: List(),//fifo
+			selectedLocation:  {address:{formattedAddress: ''}},
+			description: '',
+	}
+);
 
 
 export default reducer;

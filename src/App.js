@@ -7,7 +7,7 @@ import {
 	AppRegistry,
 	UIManager,
 } from 'react-native';
-import PhotoGrid from './components/tabPhotos/PhotoAlbum';
+
 import {
 	Provider,
 } from 'react-redux';
@@ -29,13 +29,12 @@ class App extends React.Component {
 
 	render() {
 		return (
-				<PhotoGrid/>);
-		// 		<Provider store={this.store}>
-		// 			<SignedInCheck>
-		// 				<AppWithNavigationState />
-		// 			</SignedInCheck>
-		// 		</Provider>
-		// );
+				<Provider store={this.store}>
+					<SignedInCheck>
+						<AppWithNavigationState />
+					</SignedInCheck>
+				</Provider>
+		);
 	}
 
 	componentDidMount() {

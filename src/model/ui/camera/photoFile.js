@@ -13,8 +13,6 @@ const PHOTOPATH = RNFetchBlob.fs.dirs.DocumentDir + '/';
 
 function checkFile(photoPath, fileName, i) {
 	const resultFileName = fileName + '_' + (i < 10 ? '0' : '') + (i < 100 ? '0' : '') + i;
-	console.log('testing filename ' + photoPath + resultFileName + IMAGE_FILE_SUFFIX);
-
 	return RNFetchBlob.fs.exists(photoPath + resultFileName + IMAGE_FILE_SUFFIX)
 			.then((exists) => {
 				if (exists) {
@@ -30,8 +28,8 @@ function checkFile(photoPath, fileName, i) {
 // returns a promise, that will resolve into a unique filename
 export function createUniqueLocalPhotoFilename(photoTakenAtMillis) {
 	const fileName = 'obob_work_' + moment(photoTakenAtMillis).format('Y_MMM_d_HH_mm_ss');
-	var i = 0;
-	var resultFileName = fileName + '00';
+	let i = 0;
+	let resultFileName = fileName + '00';
 	// console.log('1' + fs.MainBundlePath);
 	// console.log('2' + fs.DocumentDirectoryPath);
 	// console.log('3' + fs.LibraryDirectoryPath);

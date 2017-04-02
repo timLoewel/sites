@@ -3,7 +3,7 @@ import { Dimensions, Platform} from 'react-native';
 
 
 export default get = () => {
-	var {width, height} = Dimensions.get('window');
+	let  {width, height} = Dimensions.get('window');
 	if (Platform.OS === 'android') {
 		const windowHeight = ExtraDimensions.get('REAL_WINDOW_HEIGHT');
 		const statusBarHeight = ExtraDimensions.get('STATUS_BAR_HEIGHT');

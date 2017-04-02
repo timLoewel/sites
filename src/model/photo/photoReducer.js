@@ -2,7 +2,7 @@
  * Created by tim on 15/03/17.
  */
 import { createAction, createReducer } from 'redux-act';
-import Immutable from 'seamless-immutable';
+import {OrderedMap} from 'immutable';
 /**
  * photo:{thumbnailData, photoUri, description, creatorObjectId, creatorName, selectedLocation, systemLocation, siteObjectId	}
  *
@@ -17,22 +17,21 @@ export const addPhoto = createAction('add a photo to the local database');
 const reducer = createReducer({
   [addPhoto]: (state, payload) => {
     if (payload.localObjectId) {
-      if (payload.objectId) { // the photo was stored on the server, the localObjectId is obsolete
-				return Immutable.merge(state, {
-						localPhotosByLocalObjectId:  {[payload.localObjectId]: undefined},
-						photosByObjectId: {[payload.objectId]: payload},
-					}, {deep: true});
-			} else {
-				return Immutable.merge(state, {localPhotosByLocalObjectId: {[payload.localObjectId]: payload}},  {deep: true});
+      if (!payload.objectId) { // the photo was stored on the server, the localObjectId is obsolete
+				return {
+					localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.set(payload.localObjectId, payload),
+					photosByObjectId: state.photosByObjectId,
+				}
 			}
-    } else {
-			return Immutable.merge(state, {photosByObjectId: {[payload.objectId]: payload}}, {deep: true});
+    }
+    return {
+			localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.delete(payload.localObjectId),
+			photosByObjectId: state.photosByObjectId.set(payload.objectId, payload),
 		}
 	},
-
-}, Immutable.from({
-  localPhotosByLocalObjectId: {},
-  photosByObjectId:{},
-}));
+}, {
+  localPhotosByLocalObjectId: OrderedMap(),
+  photosByObjectId:OrderedMap(),
+});
 
 export default reducer;

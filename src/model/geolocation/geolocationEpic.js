@@ -80,7 +80,7 @@ const stopBackgroundGeolocationObservable = () => Observable.create(observer =>
 
 function watchPosition(geolocationOptions) {
 	return Rx.Observable.create(observer => {
-		var watchId = window.navigator.geolocation.watchPosition(
+		let watchId = window.navigator.geolocation.watchPosition(
 				(loc) => observer.next(loc),
 				(error) => observer.error(error),
 				geolocationOptions);
@@ -185,7 +185,7 @@ const updateLocationEpic = (action$) =>
 // update address based on location
 const addressEpic = (action$) =>
 		action$.ofType(setCurrentLocation.getType()).do((v) => {console.log('before Throttle');console.log(Date());console.log(v)})
-				.throttleTime(20000).do((v) => {console.log('after Throttle');console.log(Date());console.log(v)})
+				.throttleTime(20000)
 				.flatMap(action =>
 						Observable.fromPromise(
 									Geocoder.geocodePosition({lat: action.payload.coords.latitude, lng: action.payload.coords.longitude}))

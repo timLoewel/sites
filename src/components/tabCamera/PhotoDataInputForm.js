@@ -44,7 +44,7 @@ class PhotoDataInputForm extends React.Component {
 									onFocus={this.expand.bind(this)}
 									value={this.props.photoDescription}
 									placeholder={I18n.t('camera.thisIsAppendedToPhoto')}
-									multiline={this.state.collapsed}
+									multiline={!this.state.collapsed}
 									numberOfLines={10}
 									maxLength={280}
 									selectTextOnFocus={true}

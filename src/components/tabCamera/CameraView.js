@@ -1,4 +1,5 @@
 'use strict';
+import moment from 'moment';
 
 import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
@@ -6,12 +7,13 @@ import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
 import {
 	photographing,
-	setAnnotatedPhotoData,
+	renderingDone,
 	resetLastPhoto,
- 	errorOnPhoto
+ 	errorOnPhoto,
+	rendering
 } from '../../model/ui/camera/cameraReducer';
 import {updateLocation} from '../../model/geolocation/geolocationReducer';
-import RenderImage from '../../utils/sitesPhotoRenderer';
+import RenderImage from '../../utils/RenderImage';
 import {
 	AppRegistry,
 	Dimensions,
@@ -31,6 +33,9 @@ import I18n from '../../assets/translations';
 import {Field, propTypes} from 'redux-form-actions';
 import {LineStyleIcon as Icon} from '../../assets/icons';
 import Geocoder from 'react-native-geocoder';
+import {createShareableUri} from '../../server/ParseServer';
+import { createAction, createReducer } from 'redux-act';
+
 
 const ShutterButtonView = styled.View`
   height=50;
@@ -72,7 +77,7 @@ class CameraView extends Component {
 							}}
 							key="shutterButton"
 							onPress={this.takePicture.bind(this)}
-							activeOpacity={0.1}
+							activeOpacity={0.7}
 							underlayColor="red"
 					>
 						<View>
@@ -85,24 +90,22 @@ class CameraView extends Component {
 		);
 	}
 
-	onPhotoReady(thumbnailData, photoUri) {
-		this.props.setAnnotatedPhotoData({createdAtMillis:this.props.localPhotoData.createdAtMillis, thumbnailData: thumbnailData, uri: photoUri});
+	onPhotoReady(renderedData) {
+		this.props.renderingDone(renderedData);
 	}
 
 	renderPhotoRenderer() {
-		if (!this.props.localPhotoData) {
+		if (!this.props.photoForRendering) {
 			return;
 		}
+		const photoRef = "renderImage" + this.props.photoForRendering.createdAtMillis;
+		console.log(this.props.photoForRendering.createdAtMillis + ' showing PhotoRenderer ' + photoRef);
+
 		return (
-				<View style={{position: 'absolute', top: windowHeight + 10, left: 0}}>
+				<View style={{position: 'absolute', top: 10, left: 0}}>
 					<RenderImage
-							ref="renderImage"
-							photoData={this.props.localPhotoData}
-							photoDescription={this.props.photoDescription}
-							creatorName={this.props.creatorName}
-							siteName={this.props.siteName}
-							systemlocation={this.props.systemLocation}
-							selectedLocation={this.props.selectedLocation}
+							ref={photoRef}
+							photoForRendering={this.props.photoForRendering}
 							onPhotoReady={this.onPhotoReady.bind(this)}
 							onError={this.props.errorOnPhoto}
 					/>
@@ -148,12 +151,23 @@ class CameraView extends Component {
 	}
 
 	componentDidMount() {
-		this.props.resetLastPhoto();
 		this.props.updateLocation();
 	}
 
 	takePicture() {
-		this.props.setPhotographing(this.camera.capture());
+		this.props.setPhotographing({
+			capture: this.camera.capture(),
+			createdAtMillis: moment().valueOf(),
+			shareableUri: createShareableUri(),
+			description: this.props.description,
+			creatorObjectId: this.props.creatorObjectId,
+			creatorName: this.props.creatorName,
+			selectedLocation: this.props.selectedLocation,
+			systemLocation: this.props.systemLocation,
+			siteObjectId: undefined,
+			siteName: '',
+
+		});
 	}
 }
 
@@ -180,21 +194,23 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = state => ({
-	// currentLocation: state.ui.geoLocationReducer.get('position'),
+	isRendering: state.ui.cameraReducer.isRendering,
 	siteName: undefined,//state.ui.cameraReducer.siteName,
-	selectedLocation: state.ui.cameraReducer.location,
-	photoDescription: state.ui.cameraReducer.photoDescription,
-	systemLocation: state.geolocation,
+	selectedLocation: state.ui.cameraReducer.selectedLocation,
+	description: state.ui.cameraReducer.description,
+	systemLocation: state.geolocation.position,
+	creatorObjectId: state.profile.currentUser.parse_objectId,
 	creatorName: state.profile.currentUser.name,
-	localPhotoData: state.ui.cameraReducer.localPhotoData,
+	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
 });
 
 function bindAction(dispatch) {
 	return {
 		setPhotographing: (photoTakingPromise) => dispatch(photographing(photoTakingPromise)),
+		setRendering: () => dispatch(rendering()),
 		updateLocation: () => dispatch(updateLocation()),
 		resetLastPhoto: () => dispatch(resetLastPhoto()),
-		setAnnotatedPhotoData: (data:{thumbnailData:undefined, uri:undefined, createdAt:undefined}) => dispatch(setAnnotatedPhotoData(data)),
+		renderingDone: (photoData) => dispatch(renderingDone(photoData)),
 		errorOnPhoto: (error) => dispatch(errorOnPhoto({source: 'cameraView', error})),
 	}
 }

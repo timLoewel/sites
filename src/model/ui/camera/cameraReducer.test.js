@@ -1,13 +1,19 @@
 /**
  * Created by tim on 28/03/17.
  */
-import cameraReducer, {setAnnotatedPhotoData} from './cameraReducer';
-import Immutable from 'seamless-immutable';
+import cameraReducer, {enqueuePhotoForRendering} from './cameraReducer';
+import SeamlessImmutable from 'seamless-immutable';
+import {Stack  } from 'immutable'
+
+test('seamless stack', () => {
+	expect(Stack().push({val:3})).toEqual(
+			SeamlessImmutable.asMutable(SeamlessImmutable.from(Stack()), {deep: true}).push({val:3}));
+});
 
 test('initial state', () => {
 	expect(cameraReducer(undefined, {type:'not handled'})).toEqual(
-			Immutable.from( {
-						localPhotoData:undefined,
+			SeamlessImmutable.from( {
+				photosWaitingForRendering:Stack(),
 						location: {
 							address:{
 								formattedAddress: ''
@@ -18,20 +24,14 @@ test('initial state', () => {
 	);
 });
 
-test('setAnnotatedPhotoData', () => {
-	expect(cameraReducer(Immutable.from( {
-		localPhotoData:{
-			changedValue: 0,
-			nestedLevelValue: 0,
-		},
+test('photosWaitingForRendering', () => {
+	expect(cameraReducer(SeamlessImmutable.from( {
+		photosWaitingForRendering:Stack().push({value:1}),
 		topLevelValue: 0,
-		}), setAnnotatedPhotoData({changedValue:1, newNestedValue:2}))).toEqual(
-			Immutable.from( {
-				localPhotoData:{
-					changedValue:1,
-					nestedLevelValue: 0,
-					newNestedValue:2,
-				},
+		}), enqueuePhotoForRendering({newValue:2}))).toEqual(
+			SeamlessImmutable.from( {
+						photosWaitingForRendering:Stack().push({value:1})
+								.push({newValue:2}),
 				topLevelValue: 0,
 			})
 			);

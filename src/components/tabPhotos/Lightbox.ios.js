@@ -14,7 +14,7 @@ import React from 'react';
 import ReactNative from 'react-native';
 import getDimensions from '../../utils/dimensions';
 
-var {
+let {
 	Image,
 	ListView,
 	TouchableOpacity,
@@ -30,7 +30,7 @@ class Lightbox extends React.Component{
 
 		const listViewDataSource = new ListView.DataSource({rowHasChanged: (p1, p2) => p1.objectId === p2.objectId});
 
-		var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+		let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
 		this.state = {
 			listViewDataSource: listViewDataSource,
 		};

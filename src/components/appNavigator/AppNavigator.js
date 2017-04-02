@@ -50,15 +50,16 @@ export const MainTabsScreen = TabNavigator({
 	// 	screen: ProfileView,
 	// },
 }, {
+	lazyLoad: true,
+	swipeEnabled: true,
+	animationEnabled: true,
+	initialRouteName: 'Camera',
+	order: ['Camera', 'Photos'],// 'Sites', 'Profile']
+
 	tabBarOptions: {
 		visible:false,
 		activeTintColor: '#e91e63',
 		tabBarPosition: 'top',
-		swipeEnabled: true,
-		animationEnabled: true,
-		lazyLoad: false,
-		initialRouteName: 'Camera',
-		order: ['Camera', 'Photos'],// 'Sites', 'Profile']
 		style: {height:0}
 	},
 

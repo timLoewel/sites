@@ -27,6 +27,10 @@ I18n.translations = {
 			saveButtonTitle: 'Update Profile',
 			cancelButtonTitle: 'Discard Changes',
 		},
+		share: {
+			subject: '%{shareableUri}',
+			message: 'Find Photo at %{shareableUri}',
+		},
 		tasks: {
 			title: 'Chats',
 			filterSelectAll: 'All Sites',
@@ -94,6 +98,10 @@ I18n.translations = {
 			companyName: 'Name der Firma',
 			saveButtonTitle: 'Profil Speichern',
 			cancelButtonTitle: 'Änderungen verwerfen',
+		},
+		share: {
+			subject:  '%{shareableUri}',
+			message: 'Original Foto liegt unter: %{shareableUri}',
 		},
 		tasks: {
 			title: 'Chats',

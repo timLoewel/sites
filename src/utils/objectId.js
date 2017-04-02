@@ -21,7 +21,7 @@ export function randomString(size: number): string {
 	let objectId = '';
 	const randomWords = CryptoJS.lib.WordArray.random(size);
 	for (let i = 0; i < randomWords.words.length; ++i) {
-		var mask = 0x000000ff;
+		const mask = 0x000000ff;
 		// words are 32 bit, shift
 		for (let byteNo = 0; byteNo < 4; byteNo ++) {
 			objectId += chars[((randomWords.words[i] >>> (byteNo * 8)) & mask) % chars.length];

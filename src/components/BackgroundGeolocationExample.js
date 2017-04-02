@@ -103,8 +103,8 @@ export default React.createClass({
 		console.log('- [js]location: ', JSON.stringify(location));
 	},
 	onError(error) {
-		var type = error.type;
-		var code = error.code;
+		let type = error.type;
+		let code = error.code;
 		alert(type + " Error: " + code);
 	},
 	onActivityChange(activityName) {

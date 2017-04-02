@@ -13,7 +13,7 @@ import rootEpic from './model/epics';
 import { createAction, createReducer } from 'redux-act';
 
 
-var persistor;
+let persistor;
 
 export const storeInitialized = createAction('store has been initialized');
 
