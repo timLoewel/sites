@@ -23,10 +23,12 @@ export default {
 	// New Variable
 	badgePadding: (platform === 'ios') ? 3 : 0,
 
+	defaultMargin: 5,
 	// Button
 	btnFontFamily: (platform === 'ios') ? 'System' : 'Roboto_medium',
 	btnDisabledBg: '#b5b5b5',
 	btnDisabledClr: '#f1f1f1',
+	btnHeight: 55,
 	// CheckBox
 	CheckboxRadius: (platform === 'ios') ? 13 : 0,
 	CheckboxBorderWidth: (platform === 'ios') ? 1 : 2,

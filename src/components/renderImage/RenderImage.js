@@ -13,11 +13,11 @@ import {
 	PixelRatio,
 	InteractionManager,
 } from "react-native";
-import {LineStyleIcon as Icon} from '../assets/icons';
-import theme from '../assets/themes/sites-theme';
-import I18n from '../assets/translations';
+import {LineStyleIcon as Icon} from '../../assets/icons';
+import theme from '../../assets/themes/sites-theme';
+import I18n from '../../assets/translations';
 import moment from 'moment';
-import delayPromise from '../utils/delayPromise';
+import delayPromise from '../../utils/delayPromise';
 import {takeSnapshot} from "react-native-view-shot";
 import TimerMixin from 'react-timer-mixin';
 
@@ -29,23 +29,21 @@ const imageStyles = {
 		flexDirection: 'column',
 		alignItems: 'stretch',
 		justifyContent: 'flex-start',
-		position: 'absolute',
-		left: 0,
-		top: 0,
 		flex: 1,
+		flexWrap: 'wrap',
+
 	},
 	heading: {
 		backgroundColor: theme.brandPrimary,// theme.brandPrimary
 	},
-	imageUrl: {
-		textAlign: 'left',
-	},
+
 	image: {},
 	annotations: {
 		flex: 1,
 		backgroundColor: 'ghostwhite',
 		flexDirection: 'column',
-		alignItems: 'stretch',
+		alignItems: 'flex-start',
+		flexWrap: 'wrap',
 		//
 	},
 	textLine: {
@@ -74,22 +72,24 @@ export default RenderImage = React.createClass({
 			description: PropTypes.string,
 			creatorObjectId: PropTypes.string,
 			creatorName: PropTypes.string,
-			siteName: PropTypes.string,
+			site: PropTypes.object,
 			selectedLocation: PropTypes.object,
 			systemLocation: PropTypes.object,
 		}),
-		onPhotoReady: PropTypes.func,
+		onSnapReady: PropTypes.func,
 		onError: PropTypes.func,
 	},
 
 	getInitialState: function () {
 		const ratio = PixelRatio.get();
 		const imageLayoutWidth = this.props.photoForRendering.width / ratio;
+		const imageLayoutHeight = this.props.photoForRendering.height / ratio;
+
 		// 30 is a constant chosen for readability of the rendered photos
 		const fontSize = imageLayoutWidth / 30;
 		return {
 			imageLayoutWidth: imageLayoutWidth,
-			imageLayoutHeight: this.props.photoForRendering.height / ratio,
+			imageLayoutHeight: imageLayoutHeight,
 			ratio: ratio,
 			fontSize: fontSize,
 			isImageReadyForRender: false, // the image was loaded
@@ -107,12 +107,12 @@ export default RenderImage = React.createClass({
 	 * @returns {Promise.<string>}
 	 */
 	snapPhoto: function(renderedImageHeight, renderedImageWidth, targetWidth, quality, resultType) {
-		const q = quality || 0.8;
-		const r = resultType || 'file';
-		const width = Math.min(
-				(targetWidth ? targetWidth / this.state.ratio : undefined) || renderedImageWidth,
-				renderedImageWidth);
+		const q = quality || 0.8; //default 0.8
+		const r = resultType || 'file';//default file
+		const t = targetWidth || renderedImageWidth;//default target is 1:1 the imageWidth
+		const width = Math.min(t, renderedImageWidth);
 		const height = renderedImageHeight * (width / renderedImageWidth);
+
 		return takeSnapshot(this.refs.root,
 				{
 					format: 'jpg',
@@ -128,16 +128,11 @@ export default RenderImage = React.createClass({
 	},
 
 	shouldComponentUpdate: function(nextProps, nextState) {
-		console.log(this.props.photoForRendering.createdAtMillis + ' shouldComponentUpdate snapping:' +  nextState.snapping +
-				' different: ' +(this.props.photoForRendering.createdAtMillis !== nextProps.photoForRendering.createdAtMillis));
 
 		if (this.props.photoForRendering.createdAtMillis !== nextProps.photoForRendering.createdAtMillis && !nextState.snapping) {
-			console.log(nextProps.photoForRendering.createdAtMillis + ' RENDER component!');
 				return true;
 		} else {
-			console.log(nextProps.photoForRendering.createdAtMillis + ' NO render');
 			if (!nextState.snapping) {
-				console.log(nextProps.photoForRendering.createdAtMillis + ' trySnap');
 				this._trySnap(nextState);
 			}
 			return false;
@@ -145,25 +140,21 @@ export default RenderImage = React.createClass({
 	},
 
 	doSnapshots: function(renderedImageHeight, renderedImageWidth) {
-		console.log(this.props.photoForRendering.createdAtMillis + ' doSnapshots');
 		// the view is rendered and the photo ready callback is triggered while the image is still fading in.
 		// the timeout is there to make sure, the image has completely appeared. the time was determined by trial and error.
 		this.setTimeout(() => {
 			// we are snapping, do not go in here again.
 				this.setState({snapping: true});
-				console.log(this.props.photoForRendering.createdAtMillis + ' doSnapshots just before snapThumbnail');
 				this.snapThumbnail(renderedImageHeight, renderedImageWidth).then(thumbnailData => {
 				return this.snapPhoto(renderedImageHeight, renderedImageWidth).then(uriPhotoLocal => {
 					// both snapshots done
 					this.setState({snapping: false, isImageReadyForRender: false});
-					console.log(this.props.photoForRendering.createdAtMillis + ' both snaps done, set snapping: false');
-					if (this.props.onPhotoReady) {
+					if (this.props.onSnapReady) {
 						const photoData = {...this.props.photoForRendering, thumbnailData, uriPhotoLocal};
-						this.props.onPhotoReady(photoData);
+						this.props.onSnapReady(photoData);
 					}
 				});
 			}).catch(error => {
-				console.log(this.props.photoForRendering.createdAtMillis + 'error on snapping snapshots.');
 				this.setState({snapping: false, isImageReadyForRender: false});
 				return this.props.onError && this.props.onError(error);
 			});
@@ -172,21 +163,22 @@ export default RenderImage = React.createClass({
 
 
 	_trySnap: function(state){
-		if (state.renderedImageHeight && state.renderedImageWidth && state.isImageReadyForRender && !state.snapping) {
-			console.log(this.props.photoForRendering.createdAtMillis + ' START snapshot');
+		if (this.props.onSnapReady
+				&& state.renderedImageHeight
+				&& state.renderedImageWidth
+				&& state.isImageReadyForRender
+				&& !state.snapping) {
 			// HACK! the state will be handed back
 			// 	state.snapping = true;
-			this.doSnapshots(state.renderedImageWidth, state.renderedImageHeight);
+			this.doSnapshots(state.renderedImageHeight, state.renderedImageWidth);
 		}
 		else {
-			console.log(this.props.photoForRendering.createdAtMillis + ' NO snapshot');
 		}
 	},
 
 	_storeMeasurements: function(event) {
 		let {x, y, width, height} = event.nativeEvent.layout;
 		this.setState({renderedImageHeight: height, renderedImageWidth: width, isImageReadyForRender: true});
-		console.log(this.props.photoForRendering.createdAtMillis + ' stored Measurements');
 	},
 
 	//
@@ -202,7 +194,7 @@ export default RenderImage = React.createClass({
 			</Text>);
 		} else {
 			return (<Text style={textStyle}>
-				{I18n.t('photoRenderer.locationUnknown')}
+				{I18n.t('renderImage.gpsLocationUnknown')}
 			</Text>);
 		}
 	},
@@ -211,8 +203,12 @@ export default RenderImage = React.createClass({
 		return moment(this.props.photoForRendering.createdAtMillis).format('Y MMM d HH:mm');
 	},
 
-	render: function() {
+	_getAddressString() {
+		return ((this.props.photoForRendering.selectedLocation || {}).address || {}).formattedAddress ||
+				I18n.t('renderImage.addressUnknown');;
+	},
 
+	render: function() {
 		const fontSizeImportant = this.state.fontSize;
 		const fontSizeUnimportant = this.state.fontSize * 0.8;
 
@@ -223,17 +219,17 @@ export default RenderImage = React.createClass({
 		const textStyleImportant = {fontSize: fontSizeImportant, lineHeight: lineHeightImportant, color: 'black'};
 		const annotationEntry = {flexDirection: 'row', flex: 1, paddingBottom: Math.ceil(fontSizeImportant)};
 
-		console.log(this.props.photoForRendering.createdAtMillis + ' renderImage.render ' + this.props.photoForRendering.shareableUri);
-
+		const comment = `width: ${this.props.photoForRendering.width} height: ${this.props.photoForRendering.height} 
+		orient: ${this.props.photoForRendering.orientation}`;
 		return (
 				<View ref="root" style={[{width: this.state.imageLayoutWidth, flex: 1, flexDirection: 'column'}, imageStyles.root]}
 							onLayout={this._storeMeasurements} collapsable={false}>
-					<View style={[imageStyles.heading, {padding: textPadding, height: this.fontSize * 3}]} collapsable={false}>
+					<View style={{backgroundColor: theme.brandPrimary, padding: textPadding, height: this.fontSize * 3}} collapsable={false}>
 						<Text style={[textStyleUnimportant, {color: 'black'}]}>
 							<Text style={textStyleUnimportant}>
 								<Icon name="camera" style={{fontSize: this.fontSize, color: 'black'}}/>
 							</Text> <Text
-								style={[imageStyles.imageUrl, textStyleUnimportant]}>{this.props.photoForRendering.shareableUri}</Text>
+								style={{textAlign:'left', color: 'black', fontSize: fontSizeUnimportant}}>{this.props.photoForRendering.shareableUri}</Text>
 						</Text>
 					</View>
 
@@ -245,24 +241,24 @@ export default RenderImage = React.createClass({
 					<View style={[imageStyles.annotations, {padding: textPadding}]} collapsable={false}>
 						<View style={annotationEntry} collapsable={false}>
 							<Text style={textStyleImportant}>
-								{this._getCreatedAtString()}
+								{this._getCreatedAtString()} {this.props.photoForRendering.creatorName}
 							</Text>
 						</View>
-						<View style={[annotationEntry, {justifyContent: 'flex-start', alignItems: 'center'}]} collapsable={false}>
+						<View style={[annotationEntry, {justifyContent: 'flex-start', alignItems: 'center', }]} collapsable={false}>
 							<Image
 									style={{
 										height: fontSizeImportant,
 										width: fontSizeImportant,
 										resizeMode: 'contain'
 									}}
-									source={require('../assets/icons/map-site-marker.png')}/>
+									source={require('../../assets/icons/map-site-marker.png')}/>
 							<Text style={[textStyleImportant, {flex: 1}]}>
-								{this.props.photoForRendering.siteName}
+								{I18n.t('renderImage.site',{siteName: this.props.photoForRendering.site.name, sitePublicUrl: this.props.photoForRendering.site.url})}
 							</Text>
 						</View>
 						<View style={[annotationEntry, {flexDirection: 'column'}]} collapsable={false}>
 							<Text style={textStyleUnimportant}>
-								{this.props.photoForRendering.selectedLocation.address.formattedAddress}
+								{this._getAddressString()}
 							</Text>
 							{this._getLongitudeLatitude(textStyleUnimportant)}
 						</View>
@@ -271,12 +267,6 @@ export default RenderImage = React.createClass({
 								{this.props.photoForRendering.description}
 							</Text>
 						</View>
-						<View style={annotationEntry} collapsable={false}>
-							<Text style={textStyleUnimportant}>
-								{this.props.photoForRendering.creatorName}
-							</Text>
-						</View>
-
 					</View>
 				</View>);
 	}

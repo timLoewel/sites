@@ -32,8 +32,12 @@ export function save(className, object, sessionToken) {
 }
 
 
-export function createShareableUri() {
+export function createShareableImageUri() {
 	return env.IMAGE_BASE_ADDRESS + randomString(7);
+}
+
+export function createShareableSiteUri() {
+	return env.SITE_BASE_ADDRESS + randomString(7);
 }
 
 

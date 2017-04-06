@@ -5,15 +5,17 @@ import React, {Component, PropTypes} from 'react';
 import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
+import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
+
 import {
 	photographing,
 	renderingDone,
 	resetLastPhoto,
- 	errorOnPhoto,
+	errorOnPhoto,
 	rendering
 } from '../../model/ui/camera/cameraReducer';
 import {updateLocation} from '../../model/geolocation/geolocationReducer';
-import RenderImage from '../../utils/RenderImage';
+import RenderImage from '../renderImage/RenderImage';
 import {
 	AppRegistry,
 	Dimensions,
@@ -32,10 +34,10 @@ import getDimensions from '../../utils/dimensions';
 import I18n from '../../assets/translations';
 import {Field, propTypes} from 'redux-form-actions';
 import {LineStyleIcon as Icon} from '../../assets/icons';
-import Geocoder from 'react-native-geocoder';
-import {createShareableUri} from '../../server/ParseServer';
-import { createAction, createReducer } from 'redux-act';
-
+import {createShareableImageUri} from '../../server/ParseServer';
+import currentSite from '../../model/site/currentSite';
+import {addSite, createNewSite} from '../../model/site/siteReducer';
+import {NavigationActions} from 'react-navigation';
 
 const ShutterButtonView = styled.View`
   height=50;
@@ -62,39 +64,106 @@ const {width: windowWidth, height: windowHeight} = getDimensions();
 
 class CameraView extends Component {
 
-	renderShutter() {
-		return (
-				<View style={{flexDirection: 'row', justifyContent: 'center', height: theme.footerHeight, paddingTop: 5}}>
-					<TouchableHighlight
+	_renderShutterAndPhotosButton() {
+		const buttonSize = theme.btnHeight;
+
+		var goToAlbum;
+		if (this.props.lastPhotoThumbnail) {
+			goToAlbum = (
+					<Image
 							style={{
-								backgroundColor: theme.brandPrimary,
-								borderRadius: theme.footerHeight - 5,
-								width: theme.footerHeight - 5,
-								height: theme.footerHeight - 5,
-								flexDirection: 'column',
-								justifyContent: 'center',
-								alignItems: 'center',
+								width: buttonSize,
+								height: buttonSize,
+								borderRadius: buttonSize,
 							}}
-							key="shutterButton"
-							onPress={this.takePicture.bind(this)}
-							activeOpacity={0.7}
-							underlayColor="red"
-					>
-						<View>
-							<Text style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-								<Icon name="camera" style={{fontSize: theme.fontSizeH2, color: 'black'}}/>
-							</Text>
-						</View>
-					</TouchableHighlight>
+							source={{uri: this.props.lastPhotoThumbnail}}
+							resizeMode="cover"
+					/>
+			);
+		} else {
+			goToAlbum = (
+					<View>
+						<Text style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+							<Icon name="photo" style={{fontSize: theme.fontSizeH2, color: 'white'}}/>
+						</Text>
+					</View>
+			);
+		}
+		return (
+				<View style={{
+					flexDirection: 'row',
+					alignSelf: 'stretch',
+					justifyContent: 'space-between',
+					height: theme.btnHeight + theme.defaultMargin * 2
+				}}>
+					<View style={{flex: 1, backgroundColor: 'transparent'}}/>
+					<View style={{
+						flex: 1,
+						flexDirection: 'row',
+						backgroundColor: 'transparent',
+						justifyContent: 'center',
+						padding: theme.defaultMargin
+					}}>
+						<TouchableHighlight
+								style={{
+									backgroundColor: theme.brandPrimary,
+									borderRadius: buttonSize,
+									width: buttonSize,
+									height: buttonSize,
+									flexDirection: 'column',
+									justifyContent: 'center',
+									alignItems: 'center',
+								}}
+								key="shutterButton"
+								onPress={this._takePicture.bind(this)}
+								activeOpacity={0.7}
+								underlayColor="red"
+						>
+							<View>
+								<Text style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
+									<Icon name="camera" style={{fontSize: theme.fontSizeH2, color: 'black'}}/>
+								</Text>
+							</View>
+						</TouchableHighlight>
+					</View>
+					<View style={{
+						flex: 1,
+						flexDirection: 'row',
+						backgroundColor: 'transparent',
+						justifyContent: 'flex-end',
+						padding: theme.defaultMargin
+					}}>
+						<TouchableHighlight
+								style={{
+									backgroundColor: '#AAAAAA44',
+									borderRadius: buttonSize,
+									width: buttonSize,
+									height: buttonSize,
+									flexDirection: 'column',
+									justifyContent: 'center',
+									alignItems: 'center',
+								}}
+								key="goToPhotos"
+								onPress={this._goToPhotos.bind(this)}
+								activeOpacity={0.7}
+								underlayColor="grey"
+						>
+							{goToAlbum}
+						</TouchableHighlight>
+					</View>
 				</View>
 		);
 	}
 
-	onPhotoReady(renderedData) {
+	_onPhotoReady(renderedData) {
 		this.props.renderingDone(renderedData);
 	}
 
-	renderPhotoRenderer() {
+	_goToPhotos() {
+	this.props.gotoPhotos();
+	}
+
+	_renderPhotoRenderer() {
 		if (!this.props.photoForRendering) {
 			return;
 		}
@@ -102,11 +171,11 @@ class CameraView extends Component {
 		console.log(this.props.photoForRendering.createdAtMillis + ' showing PhotoRenderer ' + photoRef);
 
 		return (
-				<View style={{position: 'absolute', top: 10, left: 0}}>
+				<View style={{position: 'absolute', top: windowHeight + 100, left: 0}}>
 					<RenderImage
 							ref={photoRef}
 							photoForRendering={this.props.photoForRendering}
-							onPhotoReady={this.onPhotoReady.bind(this)}
+							onSnapReady={this._onPhotoReady.bind(this)}
 							onError={this.props.errorOnPhoto}
 					/>
 				</View>);
@@ -141,11 +210,12 @@ class CameraView extends Component {
 								</Camera>
 							</View>
 							<PhotoDataInputForm/>
-							{this.renderShutter()}
+							{this._renderShutterAndPhotosButton()}
+
 						</View>
 						<KeyboardAvoidingView mode="height"/>
 					</ScrollView>
-					{this.renderPhotoRenderer()}
+					{this._renderPhotoRenderer()}
 				</View>
 		);
 	}
@@ -154,19 +224,26 @@ class CameraView extends Component {
 		this.props.updateLocation();
 	}
 
-	takePicture() {
+	_getSite() {
+		var site = this.props.currentSite;
+		if (!site) {
+			site = createNewSite(this.props.selectedLocation, this.props.systemLocation);
+			this.props.addSite(site);
+		}
+		return site;
+	}
+
+	_takePicture() {
 		this.props.setPhotographing({
 			capture: this.camera.capture(),
 			createdAtMillis: moment().valueOf(),
-			shareableUri: createShareableUri(),
+			shareableUri: createShareableImageUri(),
 			description: this.props.description,
 			creatorObjectId: this.props.creatorObjectId,
 			creatorName: this.props.creatorName,
 			selectedLocation: this.props.selectedLocation,
 			systemLocation: this.props.systemLocation,
-			siteObjectId: undefined,
-			siteName: '',
-
+			site: this._getSite(),
 		});
 	}
 }
@@ -196,12 +273,14 @@ const styles = StyleSheet.create({
 const mapStateToProps = state => ({
 	isRendering: state.ui.cameraReducer.isRendering,
 	siteName: undefined,//state.ui.cameraReducer.siteName,
-	selectedLocation: state.ui.cameraReducer.selectedLocation,
+	selectedLocation: state.ui.cameraReducer.selectedLocation || state.geolocation.position,
 	description: state.ui.cameraReducer.description,
 	systemLocation: state.geolocation.position,
 	creatorObjectId: state.profile.currentUser.parse_objectId,
 	creatorName: state.profile.currentUser.name,
 	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
+	currentSite: currentSite(state),
+	lastPhotoThumbnail: getLastPhotoThumbnail(state),
 });
 
 function bindAction(dispatch) {
@@ -212,6 +291,8 @@ function bindAction(dispatch) {
 		resetLastPhoto: () => dispatch(resetLastPhoto()),
 		renderingDone: (photoData) => dispatch(renderingDone(photoData)),
 		errorOnPhoto: (error) => dispatch(errorOnPhoto({source: 'cameraView', error})),
+		addSite: (site) => dispatch(addSite(site)),
+		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName:'Photos'})),
 	}
 }
 export default connect(mapStateToProps, bindAction)(CameraView);

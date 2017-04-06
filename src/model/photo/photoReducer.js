@@ -12,6 +12,18 @@ import {OrderedMap} from 'immutable';
  */
 export const addPhoto = createAction('add a photo to the local database');
 
+/**
+ * retrieve the local uri / thumbnail of the last photo in the repo, or undefined if none
+ */
+export function getLastPhotoThumbnail(state) {
+	if (!state.photo.localPhotosByLocalObjectId.isEmpty()) {
+		return state.photo.localPhotosByLocalObjectId.last().thumbnailData;
+	}
+	if (!state.photo.photosByObjectId.isEmpty()) {
+		return state.photo.photosByObjectId.last().thumbnailData;
+	}
+	return undefined;
+}
 
 // use https://github.com/mikolalysenko/functional-red-black-tree  for the data? sorted and immutable..
 const reducer = createReducer({

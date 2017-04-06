@@ -1,9 +1,6 @@
 /**
  * Created by tim on 28/03/17.
  */
-/**
- * Created by tim on 02/12/16.
- */
 import {createSelector} from 'reselect'
 
 

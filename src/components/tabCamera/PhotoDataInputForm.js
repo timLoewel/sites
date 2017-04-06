@@ -19,18 +19,18 @@ class PhotoDataInputForm extends React.Component {
 	constructor(props) {
 		super(props);
 		this.state = {
-			collapsed : true,
+			focused : true,
 		}
 	}
 
-	collapse() {
-		this.setState({collapsed: true});
+	_onFocus() {
+		this.setState({focused: true});
 	}
-	expand() {
-		this.setState({collapsed: false});
+	_onBlur() {
+		this.setState({focused: false});
 	}
 	render() {
-		const fontSize = this.state.collapsed ? theme.fontSizeSmall : theme.inputFontSize;
+		const fontSize = this.state.focused ? theme.fontSizeSmall : theme.inputFontSize;
 		return (
 				<View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'stretch',}}>
 					<View style={{flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start'}}>
@@ -40,14 +40,15 @@ class PhotoDataInputForm extends React.Component {
 									placeholderTextColor={theme.subtitleColor}
 									style={{flex: 1, fontSize: fontSize, backgroundColor: theme.inputBGColor, textAlign: 'left', textAlignVertical: 'top'}}
 									onChangeText={this.props.setPhotoDescription}
-									onBlur={this.collapse.bind(this)}
-									onFocus={this.expand.bind(this)}
-									value={this.props.photoDescription}
+									onBlur={this._onFocus.bind(this)}
+									onFocus={this._onBlur.bind(this)}
+									value={this.props.description}
 									placeholder={I18n.t('camera.thisIsAppendedToPhoto')}
-									multiline={!this.state.collapsed}
-									numberOfLines={10}
+									multiline={true}
+									numberOfLines={5}
 									maxLength={280}
 									selectTextOnFocus={true}
+									underlineColorAndroid="transparent"
 							/>
 						</View>
 					</View>
@@ -59,7 +60,7 @@ class PhotoDataInputForm extends React.Component {
 const mapStateToProps = state => ({
 	// currentLocation: state.ui.geoLocationReducer.get('position'),
 	location: state.ui.cameraReducer.location,
-	photoDescription: state.ui.cameraReducer.photoDescription,
+	description: state.ui.cameraReducer.description,
 });
 
 function bindAction(dispatch) {

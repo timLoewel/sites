@@ -5,8 +5,8 @@ import I18n from 'react-native-i18n'
 
 import ReactNativeI18n from 'react-native-i18n'
 
-const deviceLocale = ReactNativeI18n.locale
-I18n.fallbacks = true
+const deviceLocale = ReactNativeI18n.locale;
+I18n.fallbacks = true;
 I18n.defaultLocale = "en";
 I18n.translations = {
 	en: {
@@ -63,8 +63,10 @@ I18n.translations = {
 			description: 'Description',
 			descriptionPlaceholder: 'What is this photo about?',
 		},
-		photoRenderer: {
-			locationUnknown: 'Location unknown.'
+		renderImage: {
+			gpsLocationUnknown: 'GPS Location unknown',
+			addressUnknown: 'Address unknown.',
+			site: 'Site: {{siteName}}',
 		},
 		MessagesView: {
 			title: 'Album',
@@ -137,10 +139,12 @@ I18n.translations = {
 			cancelButtonTitle: 'Abbrechen',
 
 		},
-		photoRenderer: {
-			locationUnknown: 'Ort nicht bekannt.'
+		renderImage: {
+			gpsLocationUnknown: 'GPS Koordinaten unbekannt',
+			addressUnknown: 'Adresse nicht bekannt',
+			site: 'Baustelle: {{siteName}}',
 		},
-		MessagesView: {
+		messagesView: {
 			title: 'Aufgabe',
 		}
 	},

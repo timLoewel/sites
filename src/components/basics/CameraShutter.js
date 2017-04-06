@@ -22,7 +22,7 @@ import theme from '../../assets/themes/sites-theme';
 export default () => <TouchableHighlight
 		style={{backgroundColor: 'transparent', borderRadius: 50,marginBottom:20}}
 		key="shutterButton"
-		onPress={this.takePicture.bind(this)}
+		onPress={this._takePicture.bind(this)}
 		activeOpacity={0.1}
 		underlayColor="#11111166"
 >

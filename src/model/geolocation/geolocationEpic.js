@@ -184,7 +184,8 @@ const updateLocationEpic = (action$) =>
 
 // update address based on location
 const addressEpic = (action$) =>
-		action$.ofType(setCurrentLocation.getType()).do((v) => {console.log('before Throttle');console.log(Date());console.log(v)})
+		action$.ofType(setCurrentLocation.getType())
+				.do((v) => {console.log('before Throttle');console.log(Date());console.log(v)})
 				.throttleTime(20000)
 				.flatMap(action =>
 						Observable.fromPromise(

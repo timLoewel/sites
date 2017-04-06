@@ -13,12 +13,11 @@ import {newObjectId} from '../../../utils/objectId';
 import RNFetchBlob from 'react-native-fetch-blob';
 import {resetLastPhoto, renderingDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
-
 const PHOTO = 'photo';
 
 
 // wait for photo, get exif, dispatch setRawPhotoLocalData
-const photographingEpic = (action$) =>
+const photographingEpic = (action$, store) =>
 		action$.ofType(photographing.getType()).do((v) => {
 			console.log('photographing Epic');
 		})
@@ -27,25 +26,24 @@ const photographingEpic = (action$) =>
 							console.log('photoPromise done');
 						}).flatMap(photo =>
 								Observable.fromPromise(Exif.getExif(photo.path)).do((v) => {
-									console.log('exif promise');
+									console.log('photo: '+ photo.path);
+									console.log('exif promise exif height: '+ v.ImageHeight + ' exif.orientation: '+ v.Orientation);
+
 								}).flatMap(exif =>
-										Observable.of(
-												enqueuePhotoForRendering({
-													uriOriginalPhoto: exif.originalUri,
-													height: exif.ImageHeight,
-													width: exif.ImageWidth,
-													orientation: exif.Orientation,
-													createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
-													shareableUri: photographingAction.payload.shareableUri,
-													description: photographingAction.payload.description,
-													siteObjectId: photographingAction.payload.siteObjectId,
-													siteName: photographingAction.payload.siteName,
-													creatorObjectId: photographingAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
-													creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
-													selectedLocation: photographingAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
-													systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().geolocation.position
-												})
-										)
+										Observable.of(enqueuePhotoForRendering({
+														uriOriginalPhoto: exif.originalUri,
+														height: exif.ImageHeight,
+														width: exif.ImageWidth,
+														orientation: exif.Orientation,
+														createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
+														shareableUri: photographingAction.payload.shareableUri,
+														description: photographingAction.payload.description,
+														site: photographingAction.payload.site,
+														creatorObjectId: photographingAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
+														creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
+														selectedLocation: photographingAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
+														systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().geolocation.position
+													}))
 								)
 						).catch(error => {
 							console.log(photographingAction.payload.createdAtMillis +' error in photographing epic');
@@ -72,8 +70,8 @@ const initPhotoLocal = (action$, store) =>
 													uriPhotoLocal: newFilePath,
 													shareableUri: renderingDoneAction.payload.shareableUri,
 													description: renderingDoneAction.payload.photoDescription,
-													siteObjectId: renderingDoneAction.payload.siteObjectId,
-													siteName: renderingDoneAction.payload.siteName,
+													siteObjectId: renderingDoneAction.payload.site.objectId || renderingDoneAction.payload.site.localObjectId,
+													siteName: renderingDoneAction.payload.site.name,
 													creatorObjectId: renderingDoneAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
 													creatorName: renderingDoneAction.payload.creatorName,//store.getState().profile.currentUser.name,
 													selectedLocation: renderingDoneAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
@@ -122,7 +120,7 @@ const initPhotoLocal = (action$, store) =>
 // 	console.log('addLocalPhoto 2 ');
 // 	const str = JSON.stringify(resultFromServer, null, 4);
 //
-// 	const shareableUri = createShareableUri(resultFromServer.data.objectId);
+// 	const shareableUri = createShareableImageUri(resultFromServer.data.objectId);
 // 	const updatedPhotoJson = {
 // 		objectId: resultFromServer.data.objectId,
 // 		createdAt: new Date(resultFromServer.data.createdAt),

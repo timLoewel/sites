@@ -10,6 +10,7 @@ import uiReducer from './ui/uiReducer';
 import profileReducer from './profile/profileReducer';
 import geolocationReducer from './geolocation/geolocationReducer';
 import photoReducer from './photo/photoReducer';
+import siteReducer from './site/siteReducer';
 
 const initialAuthState = {isLoggedIn: false};
 
@@ -20,4 +21,5 @@ export default combineReducers({
 	geolocation: geolocationReducer,
 	profile: profileReducer,
 	photo: photoReducer,
+	site: siteReducer,
 });

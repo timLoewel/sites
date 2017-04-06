@@ -12,7 +12,7 @@ import './SampleStories';
 import '../../src/components/tabProfile/ProfileStories';
 import '../../src/components/form/FormStories';
 import '../../src/components/basics/BasicComponentStories';
-
+import '../../src/components/renderImage/RenderImageStories';
 
 
 

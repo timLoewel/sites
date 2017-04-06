@@ -1,9 +1,10 @@
 /**
  * Created by tim on 16/03/17.
  */
-import { createAction, createReducer } from 'redux-act';
-import Immutable from 'seamless-immutable';
-
+import {createAction, createReducer} from 'redux-act';
+import {OrderedMap} from 'immutable';
+import {randomString} from '../../utils/objectId';
+import {createShareableSiteUri} from '../../server/ParseServer';
 
 /**
  * payload: objectId
@@ -18,10 +19,39 @@ export const setSite = createAction('set the site');
  */
 export const addSite = createAction('add a site');
 
+/**
+ * creates a new state, at the site of the current geolocation.
+ */
+export const createNewSite = (selectedLocation, systemLocation) => {
+	const localObjectId = randomString(4);
+	return {
+		localObjectId: localObjectId,
+		name: localObjectId,
+		selectedLocation,
+		systemLocation,
+		publicUrl: createShareableSiteUri()
+	};
+};
+
 
 const reducer = createReducer({
-	[setSite]: (state, payload) => Immutable.merge(state, {currentSiteObjectId: payload}),
-	[addSite]: (state, payload) => Immutable.setIn(state, ['sitesById', payload.objectId], payload),
-}, Immutable.from({currentSiteObjectId: null, sitesById: {}}));
+	[addSite]: (state, payload) => {
+		if (payload.localObjectId) {
+			if (!payload.objectId) { // the photo was stored on the server, the localObjectId is obsolete
+				return {
+					localSitesByLocalObjectId: state.localSitesByLocalObjectId.set(payload.localObjectId, payload),
+					sitesByObjectId: state.sitesByObjectId,
+				}
+			}
+		}
+		return {
+			localSitesByLocalObjectId: state.localSitesByLocalObjectId.delete(payload.localObjectId),
+			sitesByObjectId: state.sitesByObjectId.set(payload.objectId, payload),
+		}
+	},
+}, {
+	localSitesByLocalObjectId: OrderedMap(),
+	sitesByObjectId: OrderedMap(),
+});
 
 export default reducer;
