@@ -113,6 +113,7 @@ class Lightbox extends React.Component {
 				>
 
 						<PhotoView
+								fadeDuration={0}
 								minimumZoomScale={MIN_SCALE}
 								maximumZoomScale={MAX_SCALE}
 								androidScaleType={"fitCenter"}

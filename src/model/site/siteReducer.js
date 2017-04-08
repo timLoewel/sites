@@ -33,23 +33,27 @@ export const createNewSite = (selectedLocation, systemLocation) => {
 	};
 };
 
+export const NOSITE = {locatObjectId: 'NoSite', name: 'noSite', publicUrl: undefined};
 
 const reducer = createReducer({
 	[addSite]: (state, payload) => {
 		if (payload.localObjectId) {
 			if (!payload.objectId) { // the photo was stored on the server, the localObjectId is obsolete
 				return {
+					noSite: state.noSite,
 					localSitesByLocalObjectId: state.localSitesByLocalObjectId.set(payload.localObjectId, payload),
 					sitesByObjectId: state.sitesByObjectId,
 				}
 			}
 		}
 		return {
+			noSite: state.noSite,
 			localSitesByLocalObjectId: state.localSitesByLocalObjectId.delete(payload.localObjectId),
 			sitesByObjectId: state.sitesByObjectId.set(payload.objectId, payload),
 		}
 	},
 }, {
+	noSite: NOSITE,
 	localSitesByLocalObjectId: OrderedMap(),
 	sitesByObjectId: OrderedMap(),
 });

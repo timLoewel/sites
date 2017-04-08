@@ -3,6 +3,7 @@
  */
 import {createSelector} from 'reselect';
 import haversineDistance from 'geodetic-haversine-distance';
+import {NOSITE} from './siteReducer';
 
 const MIN_DIST_METERS_FOR_CURRENT_SITE = 100;
 
@@ -28,7 +29,7 @@ export default createSelector(
 							currentPosition.latitude, currentPosition.longitude) < MIN_DIST_METERS_FOR_CURRENT_SITE) {
 				return minDistSite;
 			} else {
-				return undefined;
+				return NOSITE;
 			}
 		}
 );

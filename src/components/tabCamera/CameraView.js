@@ -9,7 +9,7 @@ import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
 
 import {
 	photographing,
-	renderingDone,
+	renderedPhotoReady,
 	resetLastPhoto,
 	errorOnPhoto,
 	rendering
@@ -155,32 +155,12 @@ class CameraView extends Component {
 		);
 	}
 
-	_onPhotoReady(renderedData) {
-		this.props.renderingDone(renderedData);
-	}
 
 	_goToPhotos() {
 	this.props.gotoPhotos();
 	}
 
-	_renderPhotoRenderer() {
-		if (!this.props.photoForRendering) {
-			return;
-		}
-		const photoRef = "renderImage" + this.props.photoForRendering.createdAtMillis;
-		console.log(this.props.photoForRendering.createdAtMillis + ' showing PhotoRenderer ' + photoRef);
 
-		return (
-				<View style={{position: 'absolute', top: windowHeight + 100, left: 0}}>
-					<RenderImage
-							ref={photoRef}
-							photoForRendering={this.props.photoForRendering}
-							onSnapReady={this._onPhotoReady.bind(this)}
-							onError={this.props.errorOnPhoto}
-					/>
-				</View>);
-
-	}
 
 
 	render() {
@@ -215,7 +195,6 @@ class CameraView extends Component {
 						</View>
 						<KeyboardAvoidingView mode="height"/>
 					</ScrollView>
-					{this._renderPhotoRenderer()}
 				</View>
 		);
 	}
@@ -271,7 +250,6 @@ const styles = StyleSheet.create({
 
 
 const mapStateToProps = state => ({
-	isRendering: state.ui.cameraReducer.isRendering,
 	siteName: undefined,//state.ui.cameraReducer.siteName,
 	selectedLocation: state.ui.cameraReducer.selectedLocation || state.geolocation.position,
 	description: state.ui.cameraReducer.description,
@@ -286,11 +264,8 @@ const mapStateToProps = state => ({
 function bindAction(dispatch) {
 	return {
 		setPhotographing: (photoTakingPromise) => dispatch(photographing(photoTakingPromise)),
-		setRendering: () => dispatch(rendering()),
 		updateLocation: () => dispatch(updateLocation()),
-		resetLastPhoto: () => dispatch(resetLastPhoto()),
-		renderingDone: (photoData) => dispatch(renderingDone(photoData)),
-		errorOnPhoto: (error) => dispatch(errorOnPhoto({source: 'cameraView', error})),
+		renderingDone: (photoData) => dispatch(renderedPhotoReady(photoData)),
 		addSite: (site) => dispatch(addSite(site)),
 		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName:'Photos'})),
 	}

@@ -13,14 +13,19 @@ import {
 	PixelRatio,
 	InteractionManager,
 } from "react-native";
+import {connect} from 'react-redux';
 import {LineStyleIcon as Icon} from '../../assets/icons';
 import theme from '../../assets/themes/sites-theme';
 import I18n from '../../assets/translations';
 import moment from 'moment';
-import delayPromise from '../../utils/delayPromise';
 import {takeSnapshot} from "react-native-view-shot";
 import TimerMixin from 'react-timer-mixin';
-
+import {
+	screenshotDone,
+	errorOnPhoto,
+	readyForScreenshot,
+	doingScreenshot,
+} from '../../model/ui/camera/cameraReducer';
 //uri: "https://pbs.twimg.com/media/CpRgVFjWcAAvJbb.jpg:large",
 
 const imageStyles = {
@@ -52,11 +57,12 @@ const imageStyles = {
 	}
 };
 
-
+const RATIO = PixelRatio.get();
+const FONT_SIZE_FACTOR = 30;
 /**
  * put this component into a View that is outside the visible area e.g. position: absolute, top:0, left: window.width
  */
-export default RenderImage = React.createClass({
+const RenderImage = React.createClass({
 	mixins: [TimerMixin],
 
 	propTypes: {
@@ -76,25 +82,31 @@ export default RenderImage = React.createClass({
 			selectedLocation: PropTypes.object,
 			systemLocation: PropTypes.object,
 		}),
-		onSnapReady: PropTypes.func,
-		onError: PropTypes.func,
+
+	},
+	_getStateForPhoto(photo) {
+		if (photo) {
+			const imageLayoutWidth = photo.width / RATIO;
+			const imageLayoutHeight = photo.height / RATIO;
+
+			// 30 is a constant chosen for readability of the rendered photos
+			const fontSize = imageLayoutWidth / FONT_SIZE_FACTOR;
+			return {
+				imageLayoutWidth: imageLayoutWidth,
+				imageLayoutHeight: imageLayoutHeight,
+				fontSize: fontSize,
+			}
+		} else {
+			return {};
+		}
+
 	},
 
 	getInitialState: function () {
-		const ratio = PixelRatio.get();
-		const imageLayoutWidth = this.props.photoForRendering.width / ratio;
-		const imageLayoutHeight = this.props.photoForRendering.height / ratio;
-
-		// 30 is a constant chosen for readability of the rendered photos
-		const fontSize = imageLayoutWidth / 30;
-		return {
-			imageLayoutWidth: imageLayoutWidth,
-			imageLayoutHeight: imageLayoutHeight,
-			ratio: ratio,
-			fontSize: fontSize,
-			isImageReadyForRender: false, // the image was loaded
-			snapping: false, // semaphore, so that we do not snap the same image twice, if a render happens during snapping
+		if (!this.props.photoForRendering) {
+			return {};
 		}
+		return this._getStateForPhoto(this.props.photoForRendering);
 	},
 
 	/**
@@ -106,12 +118,12 @@ export default RenderImage = React.createClass({
 	 * @param resultType
 	 * @returns {Promise.<string>}
 	 */
-	snapPhoto: function(renderedImageHeight, renderedImageWidth, targetWidth, quality, resultType) {
+	snapPhoto: function(screenshotDimensions, targetWidth, quality, resultType) {
 		const q = quality || 0.8; //default 0.8
 		const r = resultType || 'file';//default file
-		const t = targetWidth || renderedImageWidth;//default target is 1:1 the imageWidth
-		const width = Math.min(t, renderedImageWidth);
-		const height = renderedImageHeight * (width / renderedImageWidth);
+		const t = targetWidth || undefined;//default target is 1:1 the imageWidth
+		const width = t?Math.min(t, screenshotDimensions.width): undefined;
+		const height = t?screenshotDimensions.height * (width / screenshotDimensions.width):undefined;
 
 		return takeSnapshot(this.refs.root,
 				{
@@ -123,62 +135,60 @@ export default RenderImage = React.createClass({
 				});
 	},
 
-	snapThumbnail: function(renderedImageHeight, renderedImageWidth) {
-		return this.snapPhoto(renderedImageHeight, renderedImageWidth, 200, 0.3, 'data-uri');
+	snapThumbnail: function(screenshotDimensions) {
+		return this.snapPhoto(screenshotDimensions, 200, 0.3, 'data-uri');
 	},
 
 	shouldComponentUpdate: function(nextProps, nextState) {
-
-		if (this.props.photoForRendering.createdAtMillis !== nextProps.photoForRendering.createdAtMillis && !nextState.snapping) {
-				return true;
-		} else {
-			if (!nextState.snapping) {
-				this._trySnap(nextState);
-			}
-			return false;
-		}
+		const hadPhoto = this.props.photoForRendering != undefined;
+		const willHavePhoto = nextProps.photoForRendering != undefined;
+		const existenceChanged = (hadPhoto || willHavePhoto) && !(hadPhoto && willHavePhoto);  // xor
+		const photosAreDifferent = existenceChanged || (hadPhoto && willHavePhoto && (this.props.photoForRendering.createdAtMillis !==
+				nextProps.photoForRendering.createdAtMillis));
+		// wait with the update, until the snapshot is done.
+		return photosAreDifferent && !nextProps.isDoingScreenshot;
 	},
 
-	doSnapshots: function(renderedImageHeight, renderedImageWidth) {
+	componentWillReceiveProps(nextProps) {
+		const hadPhoto = this.props.photoForRendering != undefined;
+		const willHavePhoto = nextProps.photoForRendering != undefined;
+		const existenceChanged = (hadPhoto || willHavePhoto) && !(hadPhoto && willHavePhoto);  // xor
+		const photosAreDifferent = existenceChanged || (hadPhoto && willHavePhoto &&
+				this.props.photoForRendering.uriOriginalPhoto !== nextProps.photoForRendering.uriOriginalPhoto);
+
+		if (photosAreDifferent && !nextProps.isDoingScreenshot) {
+			// start new render for new snapshot
+			this.setState(this._getStateForPhoto(nextProps.photoForRendering));
+		} else {
+			if (hadPhoto && nextProps.isReadyForScreenshot) {
+				this._doScreenshot(nextProps.screenshotDimensions);
+			}
+		}
+
+	},
+
+	_doScreenshot: function(screenshotDimensions) {
+		this.props.setDoingScreenshot();
 		// the view is rendered and the photo ready callback is triggered while the image is still fading in.
 		// the timeout is there to make sure, the image has completely appeared. the time was determined by trial and error.
 		this.setTimeout(() => {
-			// we are snapping, do not go in here again.
-				this.setState({snapping: true});
-				this.snapThumbnail(renderedImageHeight, renderedImageWidth).then(thumbnailData => {
-				return this.snapPhoto(renderedImageHeight, renderedImageWidth).then(uriPhotoLocal => {
+				this.snapThumbnail(screenshotDimensions).then(thumbnailData => {
+				return this.snapPhoto(screenshotDimensions).then(uriPhotoLocal => {
 					// both snapshots done
-					this.setState({snapping: false, isImageReadyForRender: false});
-					if (this.props.onSnapReady) {
-						const photoData = {...this.props.photoForRendering, thumbnailData, uriPhotoLocal};
-						this.props.onSnapReady(photoData);
-					}
+					const photoData = {...this.props.photoForRendering, thumbnailData, uriPhotoLocal};
+					this.props.setScreenshotDone(photoData);
 				});
 			}).catch(error => {
-				this.setState({snapping: false, isImageReadyForRender: false});
-				return this.props.onError && this.props.onError(error);
+				this.setState({snapping: false});
+				this.props.errorOnPhoto(error);
 			});
-		}, 700);
+		}, 100);
 	},
 
-
-	_trySnap: function(state){
-		if (this.props.onSnapReady
-				&& state.renderedImageHeight
-				&& state.renderedImageWidth
-				&& state.isImageReadyForRender
-				&& !state.snapping) {
-			// HACK! the state will be handed back
-			// 	state.snapping = true;
-			this.doSnapshots(state.renderedImageHeight, state.renderedImageWidth);
-		}
-		else {
-		}
-	},
 
 	_storeMeasurements: function(event) {
 		let {x, y, width, height} = event.nativeEvent.layout;
-		this.setState({renderedImageHeight: height, renderedImageWidth: width, isImageReadyForRender: true});
+		this.props.setReadyForScreenshot({height, width});
 	},
 
 	//
@@ -205,10 +215,17 @@ export default RenderImage = React.createClass({
 
 	_getAddressString() {
 		return ((this.props.photoForRendering.selectedLocation || {}).address || {}).formattedAddress ||
-				I18n.t('renderImage.addressUnknown');;
+				I18n.t('renderImage.addressUnknown');
+	},
+
+	_onLoad() {
+		console.log('image onLoad called');
 	},
 
 	render: function() {
+		if (!this.props.photoForRendering) {
+			return null;
+		}
 		const fontSizeImportant = this.state.fontSize;
 		const fontSizeUnimportant = this.state.fontSize * 0.8;
 
@@ -219,8 +236,8 @@ export default RenderImage = React.createClass({
 		const textStyleImportant = {fontSize: fontSizeImportant, lineHeight: lineHeightImportant, color: 'black'};
 		const annotationEntry = {flexDirection: 'row', flex: 1, paddingBottom: Math.ceil(fontSizeImportant)};
 
-		const comment = `width: ${this.props.photoForRendering.width} height: ${this.props.photoForRendering.height} 
-		orient: ${this.props.photoForRendering.orientation}`;
+		// const comment = `width: ${this.props.photoForRendering.width} height: ${this.props.photoForRendering.height}
+		// orient: ${this.props.photoForRendering.orientation}`;
 		return (
 				<View ref="root" style={[{width: this.state.imageLayoutWidth, flex: 1, flexDirection: 'column'}, imageStyles.root]}
 							onLayout={this._storeMeasurements} collapsable={false}>
@@ -234,9 +251,11 @@ export default RenderImage = React.createClass({
 					</View>
 
 					<Image
+							fadeDuration={0}
 							style={[imageStyles.image, {width: this.state.imageLayoutWidth, height: this.state.imageLayoutHeight}]}
 							source={{uri: 'file://' + this.props.photoForRendering.uriOriginalPhoto}}
 							resizeMode="contain"
+							onLoad={this._onLoad}
 					/>
 					<View style={[imageStyles.annotations, {padding: textPadding}]} collapsable={false}>
 						<View style={annotationEntry} collapsable={false}>
@@ -246,6 +265,7 @@ export default RenderImage = React.createClass({
 						</View>
 						<View style={[annotationEntry, {justifyContent: 'flex-start', alignItems: 'center', }]} collapsable={false}>
 							<Image
+									fadeDuration={0}
 									style={{
 										height: fontSizeImportant,
 										width: fontSizeImportant,
@@ -269,5 +289,24 @@ export default RenderImage = React.createClass({
 						</View>
 					</View>
 				</View>);
-	}
+	},
 });
+
+const mapStateToProps = state => ({
+	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
+	isDoingScreenshot: state.ui.cameraReducer.isDoingScreenshot,
+	isReadyForScreenshot: state.ui.cameraReducer.isReadyForScreenshot,
+	screenshotDimensions: state.ui.cameraReducer.screenshotDimensions,
+});
+
+function bindAction(dispatch) {
+	return {
+		setReadyForScreenshot: (screenshotDimensions) => dispatch(readyForScreenshot(screenshotDimensions)),
+		setDoingScreenshot: () => dispatch(doingScreenshot()),
+		setScreenshotDone: (photoData) => dispatch(screenshotDone(photoData)),
+		errorOnPhoto: (error) => dispatch(errorOnPhoto({source: 'RenderImage', error})),
+	}
+}
+
+export default connect(mapStateToProps, bindAction)(RenderImage);
+

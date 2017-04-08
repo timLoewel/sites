@@ -11,7 +11,7 @@ import I18n from '../../../assets/translations';
 import {addPhoto} from '../../photo/photoReducer';
 import {newObjectId} from '../../../utils/objectId';
 import RNFetchBlob from 'react-native-fetch-blob';
-import {resetLastPhoto, renderingDone} from './cameraReducer';
+import {resetLastPhoto, screenshotDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
 const PHOTO = 'photo';
 
@@ -58,24 +58,24 @@ const photographingEpic = (action$, store) =>
 
 // the annotated photo was rendered and is copied to the right place and afterwards the photo is added to the local db
 const initPhotoLocal = (action$, store) =>
-		action$.ofType(renderingDone.getType()).do((renderingDoneAction) => {
-			RNFetchBlob.fs.unlink(renderingDoneAction.payload.uriOriginalPhoto).catch((err) => console.log(err));
+		action$.ofType(screenshotDone.getType()).do((screenshotDoneAction) => {
+			RNFetchBlob.fs.unlink(screenshotDoneAction.payload.uriOriginalPhoto).catch((err) => console.log(err));
 		})
-				.flatMap(renderingDoneAction => createUniqueLocalPhotoFilename(renderingDoneAction.payload.createdAtMillis)
+				.flatMap(screenshotDoneAction => createUniqueLocalPhotoFilename(screenshotDoneAction.payload.createdAtMillis)
 						.flatMap((newFilePath) =>
-								Observable.fromPromise(RNFetchBlob.fs.mv(renderingDoneAction.payload.uriPhotoLocal.replace('file://', ''), newFilePath))
+								Observable.fromPromise(RNFetchBlob.fs.mv(screenshotDoneAction.payload.uriPhotoLocal.replace('file://', ''), newFilePath))
 										.flatMap(() => Observable.of(addPhoto({
 													localObjectId: newObjectId(),
-													thumbnailData: renderingDoneAction.payload.thumbnailData,
+													thumbnailData: screenshotDoneAction.payload.thumbnailData,
 													uriPhotoLocal: newFilePath,
-													shareableUri: renderingDoneAction.payload.shareableUri,
-													description: renderingDoneAction.payload.photoDescription,
-													siteObjectId: renderingDoneAction.payload.site.objectId || renderingDoneAction.payload.site.localObjectId,
-													siteName: renderingDoneAction.payload.site.name,
-													creatorObjectId: renderingDoneAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
-													creatorName: renderingDoneAction.payload.creatorName,//store.getState().profile.currentUser.name,
-													selectedLocation: renderingDoneAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
-													systemLocation: renderingDoneAction.payload.systemLocation,// action.payload.store.getState().geolocation.position,
+													shareableUri: screenshotDoneAction.payload.shareableUri,
+													description: screenshotDoneAction.payload.photoDescription,
+													siteObjectId: screenshotDoneAction.payload.site.objectId || screenshotDoneAction.payload.site.localObjectId,
+													siteName: screenshotDoneAction.payload.site.name,
+													creatorObjectId: screenshotDoneAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
+													creatorName: screenshotDoneAction.payload.creatorName,//store.getState().profile.currentUser.name,
+													selectedLocation: screenshotDoneAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
+													systemLocation: screenshotDoneAction.payload.systemLocation,// action.payload.store.getState().geolocation.position,
 													// siteObjectId
 												}))
 										)
@@ -83,7 +83,7 @@ const initPhotoLocal = (action$, store) =>
 							console.log('error moving the image file');
 							console.log(error);
 							return errorOnPhoto({epic: 'initLocalPhotoEpic', error});
-						}).do(() => {console.log(renderingDoneAction.payload.createdAtMillis + ' RenderingDone epic done')})
+						}).do(() => {console.log(screenshotDoneAction.payload.createdAtMillis + ' RenderingDone epic done')})
 				);
 
 //

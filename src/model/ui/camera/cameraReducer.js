@@ -40,7 +40,7 @@ export const resetLastPhoto = createAction('reset the data of the last photo sho
  */
 export const setRawPhotoLocalData = createAction('set the data of the photo just shot');
 
-export const renderingDone = createAction('rendering done.');
+export const screenshotDone = createAction('screenshot done.');
 
 export const enqueuePhotoForRendering = createAction('add the photo to the queue, so that it gets rendered');
 /**
@@ -63,7 +63,9 @@ export const setPhotoDescription = createAction('set the photo description');
  */
 export const photographing = createAction('taking a photo');
 
-export const rendering = createAction('rendering the photo');
+export const doingScreenshot = createAction('doing Screenshot');
+
+export const readyForScreenshot = createAction('the photo has been rendered, is ready for screenshot');
 
 /**
  * payload is the type of error
@@ -76,40 +78,59 @@ export const errorOnPhoto = createAction('error while taking a photo');
 export const photoReady = createAction('photo ready');
 
 const reducer = createReducer({
-			[renderingDone]: (state, payload) => ({
-				isRendering: false,
+			[screenshotDone]: (state, payload) => ({
+				isReadyForScreenshot: false,
+				screenshotDimensions: {height:0, width:0},
+				isDoingScreenshot: false,
 				photosWaitingForRendering: state.photosWaitingForRendering.shift(),//remove from front
 				selectedLocation: state.selectedLocation,
 				description: state.photoDescription,
 			}),
-
 			[enqueuePhotoForRendering]: (state, payload) => ({
-				isRendering: state.isRendering,
+				isReadyForScreenshot: state.isReadyForScreenshot,
+				screenshotDimensions: state.screenshotDimensions,
+				isDoingScreenshot: state.isDoingScreenshot,
 				photosWaitingForRendering: state.photosWaitingForRendering.push(payload),//add to end
 				selectedLocation: state.selectedLocation,
 				description: state.photoDescription,
 			}),
 			[setPhotoLocation]: (state, payload) => ({
-				isRendering: state.isRendering,
+				isReadyForScreenshot: state.isReadyForScreenshot,
+				screenshotDimensions: state.screenshotDimensions,
+				isDoingScreenshot: state.isDoingScreenshot,
 				photosWaitingForRendering: state.photosWaitingForRendering,
 				selectedLocation: payload,
 				description: state.photoDescription,
 			}),
 			[setPhotoDescription]: (state, payload) => ({
-				isRendering: state.isRendering,
+				isReadyForScreenshot: state.isReadyForScreenshot,
+				screenshotDimensions: state.screenshotDimensions,
+				isDoingScreenshot: state.isDoingScreenshot,
 				photosWaitingForRendering: state.photosWaitingForRendering,
 				selectedLocation: state.selectedLocation,
 				description: payload,
 			}),
-			[rendering]: (state, payload) => ({
-				isRendering: true,
+			[doingScreenshot]: (state, payload) => ({
+				isReadyForScreenshot: false,
+				screenshotDimensions: state.screenshotDimensions,
+				isDoingScreenshot: true,
 				photosWaitingForRendering: state.photosWaitingForRendering,
 				selectedLocation: state.selectedLocation,
 				description: state.description,
 			}),
+			[readyForScreenshot]: (state, payload) => ({
+				isReadyForScreenshot: true,
+				screenshotDimensions: payload,
+				isDoingScreenshot: false,
+				photosWaitingForRendering: state.photosWaitingForRendering,
+				selectedLocation: state.selectedLocation,
+				description: state.description,
+			}), 
 		},
 		{
-			isRendering: false,
+			isReadyForScreenshot: false,
+			screenshotDimensions: {height:0, width:0},
+			isDoingScreenshot: false,// semaphore, so that we do not snap the same image twice, if a render happens during doingScreenshot
 			photosWaitingForRendering: List(),//fifo
 			selectedLocation: undefined,
 			description: '',
