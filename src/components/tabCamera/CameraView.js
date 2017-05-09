@@ -14,8 +14,6 @@ import {
 	errorOnPhoto,
 	rendering
 } from '../../model/ui/camera/cameraReducer';
-import {updateLocation} from '../../model/geolocation/geolocationReducer';
-import RenderImage from '../renderImage/RenderImage';
 import {
 	AppRegistry,
 	Dimensions,
@@ -34,19 +32,12 @@ import getDimensions from '../../utils/dimensions';
 import I18n from '../../assets/translations';
 import {Field, propTypes} from 'redux-form-actions';
 import {LineStyleIcon as Icon} from '../../assets/icons';
-import {createShareableImageUri} from '../../server/ParseServer';
+import {createShareableImageUri} from '../../model/server/parseServer';
 import currentSite from '../../model/site/currentSite';
-import {addSite, createNewSite} from '../../model/site/siteReducer';
+import {addNewLocalSite, createNewSite} from '../../model/site/siteReducer';
 import {NavigationActions} from 'react-navigation';
+import {nullLocation} from '../../model/systemState/geolocationReducer';
 
-const ShutterButtonView = styled.View`
-  height=50;
-  width=50;
-  border-radius=50;
-  background-color=transparent;
-  border-width=15;
-  border-color=white;
-`;
 
 // <TouchableHighlight
 // 		style={{backgroundColor: 'transparent', }}
@@ -62,10 +53,24 @@ const ShutterButtonView = styled.View`
 
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
+/**
+ * shows a photo viewfinder and annotation input and triggers taking the photo and rendering it together
+ * with the annotations.
+ *
+ * Algorithm:
+ *
+ * takePhoto Promise
+ * => put new photo in render queue in cameraState.photosWaitingForRendering
+ * => render the RenderImage renderer, which is positioned in the main App View
+ * => when the image is rendered, the final size is stored in the cameraState.screenshotDimensions
+ * => then two screenshots are done. one in thumbnail size, the other so that the image stays in original size
+ *
+ */
 class CameraView extends Component {
 
 	_renderShutterAndPhotosButton() {
-		const buttonSize = theme.btnHeight;
+		const buttonSize = theme.btnHeight * 0.75;
+		const shutterButtonSize = theme.btnHeight;
 
 		var goToAlbum;
 		if (this.props.lastPhotoThumbnail) {
@@ -107,9 +112,9 @@ class CameraView extends Component {
 						<TouchableHighlight
 								style={{
 									backgroundColor: theme.brandPrimary,
-									borderRadius: buttonSize,
-									width: buttonSize,
-									height: buttonSize,
+									borderRadius: shutterButtonSize,
+									width: shutterButtonSize,
+									height: shutterButtonSize,
 									flexDirection: 'column',
 									justifyContent: 'center',
 									alignItems: 'center',
@@ -131,6 +136,7 @@ class CameraView extends Component {
 						flexDirection: 'row',
 						backgroundColor: 'transparent',
 						justifyContent: 'flex-end',
+						alignItems: 'flex-end',
 						padding: theme.defaultMargin
 					}}>
 						<TouchableHighlight
@@ -157,14 +163,11 @@ class CameraView extends Component {
 
 
 	_goToPhotos() {
-	this.props.gotoPhotos();
+		this.props.gotoPhotos();
 	}
 
 
-
-
 	render() {
-		console.log('cameraView render');
 		return (
 				<View style={{flex: 1}}>
 					<ScrollView
@@ -199,15 +202,12 @@ class CameraView extends Component {
 		);
 	}
 
-	componentDidMount() {
-		this.props.updateLocation();
-	}
-
 	_getSite() {
 		var site = this.props.currentSite;
-		if (!site) {
-			site = createNewSite(this.props.selectedLocation, this.props.systemLocation);
-			this.props.addSite(site);
+		if (site.name === 'noSite' && this.props.selectedLocation !== nullLocation) {
+			site = createNewSite(this.props.selectedLocation,
+					this.props.systemLocation, this.props.creatorObjectId);
+			this.props.addNewLocalSite(site);
 		}
 		return site;
 	}
@@ -251,10 +251,10 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = state => ({
 	siteName: undefined,//state.ui.cameraReducer.siteName,
-	selectedLocation: state.ui.cameraReducer.selectedLocation || state.geolocation.position,
+	selectedLocation: state.ui.cameraReducer.selectedLocation || state.geolocation.location,
 	description: state.ui.cameraReducer.description,
-	systemLocation: state.geolocation.position,
-	creatorObjectId: state.profile.currentUser.parse_objectId,
+	systemLocation: state.geolocation.location,
+	creatorObjectId: state.profile.objectId,
 	creatorName: state.profile.currentUser.name,
 	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
 	currentSite: currentSite(state),
@@ -263,11 +263,10 @@ const mapStateToProps = state => ({
 
 function bindAction(dispatch) {
 	return {
-		setPhotographing: (photoTakingPromise) => dispatch(photographing(photoTakingPromise)),
-		updateLocation: () => dispatch(updateLocation()),
+		setPhotographing: (photoData) => dispatch(photographing(photoData)),
 		renderingDone: (photoData) => dispatch(renderedPhotoReady(photoData)),
-		addSite: (site) => dispatch(addSite(site)),
-		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName:'Photos'})),
+		addNewLocalSite: (site) => dispatch(addNewLocalSite(site)),
+		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName: 'Photos'})),
 	}
 }
 export default connect(mapStateToProps, bindAction)(CameraView);

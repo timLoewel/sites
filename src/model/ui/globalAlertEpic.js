@@ -13,7 +13,7 @@ import 'rxjs/add/observable/empty';
 /**
 displays a toast
  */
-export const showAlert = createAction('show Alert');
+export const showAlert = createAction('showAlert');
 
 export default (action$) =>
 		action$.ofType(showAlert.getType()).map(showAlert => {

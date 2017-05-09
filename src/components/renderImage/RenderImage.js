@@ -61,6 +61,9 @@ const RATIO = PixelRatio.get();
 const FONT_SIZE_FACTOR = 30;
 /**
  * put this component into a View that is outside the visible area e.g. position: absolute, top:0, left: window.width
+ *
+ *
+ *
  */
 const RenderImage = React.createClass({
 	mixins: [TimerMixin],

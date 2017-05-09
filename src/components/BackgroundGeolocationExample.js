@@ -36,7 +36,7 @@ export default React.createClass({
 			stopTimeout: 1,
 			fastestLocationUpdateInterval: 5000,
 			// Application config
-			debug: true, // <-- enable this hear sounds for background-geolocation life-cycle.
+			debug: true, // <-- enable this hear sounds for background-systemState life-cycle.
 			logLevel: BackgroundGeolocation.LOG_LEVEL_VERBOSE,
 			disableStopDetection: true,// REMOVE THIS, ONLY FOR DEBUG
 			stopOnTerminate: true,   // <-- Allow the background-service to continue tracking when user closes the app.
@@ -87,7 +87,7 @@ export default React.createClass({
 
 	// You must remove listeners when your component unmounts
 	componentWillUnmount() {
-		console.log('remove geolocation callbacks');
+		console.log('remove systemState callbacks');
 
 		// Remove BackgroundGeolocation listeners
 		BackgroundGeolocation.un('location', this.onLocation);

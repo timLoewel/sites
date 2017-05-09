@@ -8,11 +8,12 @@ import Exif from 'react-native-exif';
 import {enqueuePhotoForRendering, photographing, errorOnPhoto} from './cameraReducer';
 import {showAlert} from '../globalAlertEpic';
 import I18n from '../../../assets/translations';
-import {addPhoto} from '../../photo/photoReducer';
+import {addLocalPhoto} from '../../photo/photoReducer';
 import {newObjectId} from '../../../utils/objectId';
 import RNFetchBlob from 'react-native-fetch-blob';
 import {resetLastPhoto, screenshotDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
+
 const PHOTO = 'photo';
 
 
@@ -25,34 +26,45 @@ const photographingEpic = (action$, store) =>
 						Observable.fromPromise(photographingAction.payload.capture).do((v) => {
 							console.log('photoPromise done');
 						}).flatMap(photo =>
-								Observable.fromPromise(Exif.getExif(photo.path)).do((v) => {
-									console.log('photo: '+ photo.path);
-									console.log('exif promise exif height: '+ v.ImageHeight + ' exif.orientation: '+ v.Orientation);
-
-								}).flatMap(exif =>
-										Observable.of(enqueuePhotoForRendering({
-														uriOriginalPhoto: exif.originalUri,
-														height: exif.ImageHeight,
-														width: exif.ImageWidth,
-														orientation: exif.Orientation,
-														createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
-														shareableUri: photographingAction.payload.shareableUri,
-														description: photographingAction.payload.description,
-														site: photographingAction.payload.site,
-														creatorObjectId: photographingAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
-														creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
-														selectedLocation: photographingAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
-														systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().geolocation.position
-													}))
-								)
+								Observable.fromPromise(Exif.getExif(photo.path))
+										.flatMap(exif =>
+											Observable.of(enqueuePhotoForRendering(
+												{
+													//THIS IS WHERE A PHOTO GETS CREATED
+													uriOriginalPhoto: exif.originalUri,
+													height: exif.ImageHeight,
+													width: exif.ImageWidth,
+													orientation: exif.Orientation,
+													createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
+													shareableUri: photographingAction.payload.shareableUri,
+													description: photographingAction.payload.description,
+													site: photographingAction.payload.site,
+													creator: {
+														"__type": "Pointer",
+														"className": "_User",
+														objectId: photographingAction.payload.creatorObjectId,
+													},
+													creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
+													searchablePosition:{
+														__type: 'GeoPoint',
+														longitude: photographingAction.payload.selectedLocation.longitude,
+														latitude: photographingAction.payload.selectedLocation.latitude
+													},
+													selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
+													systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
+												})
+											)
+									)
 						).catch(error => {
-							console.log(photographingAction.payload.createdAtMillis +' error in photographing epic');
+							console.log(photographingAction.payload.createdAtMillis + ' error in photographing epic');
 							console.log(error);
 							return Observable.from([errorOnPhoto({
 								epic: 'photographingEpic',
 								error
 							}), showAlert(I18n.t('camera.photoCouldNotBeTaken'))])
-						}).do(() => {console.log('photographing epic done')})
+						}).do(() => {
+							console.log('photographing epic done')
+						})
 				);
 
 
@@ -64,7 +76,7 @@ const initPhotoLocal = (action$, store) =>
 				.flatMap(screenshotDoneAction => createUniqueLocalPhotoFilename(screenshotDoneAction.payload.createdAtMillis)
 						.flatMap((newFilePath) =>
 								Observable.fromPromise(RNFetchBlob.fs.mv(screenshotDoneAction.payload.uriPhotoLocal.replace('file://', ''), newFilePath))
-										.flatMap(() => Observable.of(addPhoto({
+										.flatMap(() => Observable.of(addLocalPhoto({
 													localObjectId: newObjectId(),
 													thumbnailData: screenshotDoneAction.payload.thumbnailData,
 													uriPhotoLocal: newFilePath,
@@ -72,10 +84,11 @@ const initPhotoLocal = (action$, store) =>
 													description: screenshotDoneAction.payload.photoDescription,
 													siteObjectId: screenshotDoneAction.payload.site.objectId || screenshotDoneAction.payload.site.localObjectId,
 													siteName: screenshotDoneAction.payload.site.name,
-													creatorObjectId: screenshotDoneAction.payload.creatorObjectId,//store.getState().profile.currentUser.parse_objectId,
-													creatorName: screenshotDoneAction.payload.creatorName,//store.getState().profile.currentUser.name,
-													selectedLocation: screenshotDoneAction.payload.selectedLocation,//store.getState().ui.cameraReducer.selectedLocation,
-													systemLocation: screenshotDoneAction.payload.systemLocation,// action.payload.store.getState().geolocation.position,
+													creator: screenshotDoneAction.payload.creator,
+													creatorName: screenshotDoneAction.payload.creatorName,
+													searchablePosition: screenshotDoneAction.payload.searchablePosition,
+													selectedLocation: screenshotDoneAction.payload.selectedLocation,
+													systemLocation: screenshotDoneAction.payload.systemLocation,// action.payload.store.getState().systemState.position,
 													// siteObjectId
 												}))
 										)
@@ -83,7 +96,9 @@ const initPhotoLocal = (action$, store) =>
 							console.log('error moving the image file');
 							console.log(error);
 							return errorOnPhoto({epic: 'initLocalPhotoEpic', error});
-						}).do(() => {console.log(screenshotDoneAction.payload.createdAtMillis + ' RenderingDone epic done')})
+						}).do(() => {
+							console.log(screenshotDoneAction.payload.createdAtMillis + ' RenderingDone epic done')
+						})
 				);
 
 //

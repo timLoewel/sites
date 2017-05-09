@@ -1,8 +1,34 @@
 /**
  * Created by tim on 15/03/17.
  */
-import { createAction, createReducer } from 'redux-act';
+// @flow
+import {createAction, createReducer} from 'redux-act';
 import {OrderedMap} from 'immutable';
+import {addObject, removeObject} from '../server/serverReducer';
+import type {Location, Address, SearchablePosition} from '../systemState/geolocationReducer';
+
+const PHOTO = 'Photo';
+
+export type Photo = {
+	uriOriginalPhoto: string,
+	height: number,
+	width: number,
+	orientation: number,
+	createdAtMillis: number,
+	shareableUri: string,
+	description: string,
+	site: string,
+	creator: {
+		"__type": "Pointer",
+		"className": "_User",
+		"objectId": string
+	},
+	creatorName: string,//store.getState().profile.currentUser.name,
+	searchablePosition: SearchablePosition, // geopoint of the selectedLocation
+	selectedLocation: Location,//store.getState().ui.cameraReducer.selectedLocation,
+	systemLocation: Location
+}
+
 /**
  * photo:{thumbnailData, photoUri, description, creatorObjectId, creatorName, selectedLocation, systemLocation, siteObjectId	}
  *
@@ -10,7 +36,15 @@ import {OrderedMap} from 'immutable';
  siteObjectId: string, formattedAddress: string, creatorObjectId: string, creatorName:string, description: string, shortDescription: string
  * @type {ActionCreator<P, M>}
  */
-export const addPhoto = createAction('add a photo to the local database');
+export const addLocalPhoto = createAction('addLocalPhoto: (PHOTO) add photo to the local database');
+
+export const savePhotoFileToServer = createAction('savePhotoFileToServer: (PHOTO) store local file in cloud.');
+
+export const savePhotoJsonToServer = createAction('savePhotoJsonToServer: (PHOTO) store local photo in cloud.');
+
+export const savePhotoFileToServerDone = createAction('savePhotoFileToServerDone: (PHOTO) photo file was stored in cloud. Update the photo in the local database.')
+
+export const savePhotoJsonToServerDone = createAction('savePhotoJsonToServerDone: (PHOTO) photo json was stored in cloud. Update the photo in the local database.')
 
 /**
  * retrieve the local uri / thumbnail of the last photo in the repo, or undefined if none
@@ -27,23 +61,44 @@ export function getLastPhotoThumbnail(state) {
 
 // use https://github.com/mikolalysenko/functional-red-black-tree  for the data? sorted and immutable..
 const reducer = createReducer({
-  [addPhoto]: (state, payload) => {
-    if (payload.localObjectId) {
-      if (!payload.objectId) { // the photo was stored on the server, the localObjectId is obsolete
-				return {
-					localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.set(payload.localObjectId, payload),
-					photosByObjectId: state.photosByObjectId,
-				}
-			}
-    }
-    return {
-			localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.delete(payload.localObjectId),
-			photosByObjectId: state.photosByObjectId.set(payload.objectId, payload),
+	[addLocalPhoto]: (state, payload) => ({
+		localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.set(payload.localObjectId, payload),
+		photosByObjectId: state.photosByObjectId,
+	}),
+	[savePhotoFileToServerDone]: (state, payload) => ({
+		localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.update(payload.localObjectId, (oldValue) => (
+				{...oldValue, ...payload})),
+		photosByObjectId: state.photosByObjectId,
+	}),
+	[savePhotoJsonToServerDone]: (state, payload) => ({
+		localPhotosByLocalObjectId: state.localPhotosByLocalObjectId.delete(payload.localObjectId),
+		photosByObjectId: state.photosByObjectId.set(
+				payload.objectId, {...state.localPhotosByLocalObjectId.get(payload.localObjectId), ...payload}),
+	}),
+	[addObject]: (state, payload) => {
+		if (payload.className === PHOTO) {
+			return {
+				localPhotosByLocalObjectId: state.localPhotosByLocalObjectId,
+				photosByObjectId: state.photosByObjectId.set(payload.objectId, payload)
+			};
+		} else {
+			return state;
+		}
+	},
+	[removeObject]: (state, payload) => {
+		if (payload.className === PHOTO) {
+			return {
+				localPhotosByLocalObjectId: state.localPhotosByLocalObjectId,
+				photosByObjectId: state.photosByObjectId.remove(payload.objectId)
+			};
+		} else {
+			return state;
 		}
 	},
 }, {
-  localPhotosByLocalObjectId: OrderedMap(),
-  photosByObjectId:OrderedMap(),
+	localPhotosByLocalObjectId: OrderedMap(),
+	photosByObjectId: OrderedMap(),
+
 });
 
 export default reducer;

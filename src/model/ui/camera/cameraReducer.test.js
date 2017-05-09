@@ -2,37 +2,38 @@
  * Created by tim on 28/03/17.
  */
 import cameraReducer, {enqueuePhotoForRendering} from './cameraReducer';
-import SeamlessImmutable from 'seamless-immutable';
-import {Stack  } from 'immutable'
-
-test('seamless stack', () => {
-	expect(Stack().push({val:3})).toEqual(
-			SeamlessImmutable.asMutable(SeamlessImmutable.from(Stack()), {deep: true}).push({val:3}));
-});
+import {Stack , List } from 'immutable'
 
 test('initial state', () => {
 	expect(cameraReducer(undefined, {type:'not handled'})).toEqual(
-			SeamlessImmutable.from( {
-				photosWaitingForRendering:Stack(),
-						location: {
-							address:{
-								formattedAddress: ''
-							}
-						},
-					photoDescription: ''
-			})
+			{
+				isReadyForScreenshot: false, 
+				screenshotDimensions: {height:0, width:0}, 
+				isDoingScreenshot: false,
+				photosWaitingForRendering: List(),
+				selectedLocation: undefined,
+				description: '',
+			}
 	);
 });
 
 test('photosWaitingForRendering', () => {
-	expect(cameraReducer(SeamlessImmutable.from( {
-		photosWaitingForRendering:Stack().push({value:1}),
-		topLevelValue: 0,
-		}), enqueuePhotoForRendering({newValue:2}))).toEqual(
-			SeamlessImmutable.from( {
-						photosWaitingForRendering:Stack().push({value:1})
-								.push({newValue:2}),
-				topLevelValue: 0,
-			})
+	expect(cameraReducer(
+			{
+				isReadyForScreenshot: false, 
+				screenshotDimensions: {height:0, width:0}, 
+				isDoingScreenshot: false,
+				photosWaitingForRendering: List().push({value:1}),
+				selectedLocation: undefined,
+				description: '',
+			}, enqueuePhotoForRendering({newValue:2}))).toEqual(
+			{
+				isReadyForScreenshot: false, 
+				screenshotDimensions: {height:0, width:0}, 
+				isDoingScreenshot: false,
+				photosWaitingForRendering: List().push({value:1}).push({newValue:2}),
+				selectedLocation: undefined,
+				description: '',
+			}
 			);
 });

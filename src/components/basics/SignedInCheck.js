@@ -8,7 +8,6 @@ import React, {Component} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import CenterView from './CenterView';
 import {connect} from 'react-redux';
-import {showLoginScreen} from '../../model/profile/profileReducer';
 
 class SignedInCheck extends Component {
 
@@ -18,19 +17,13 @@ class SignedInCheck extends Component {
 				{this.props.children}
 			</View>)
 		} else {
-		return (<CenterView>
+			return (<CenterView>
 					<ActivityIndicator
 							animating={true}
 							size="large"
 					/>
 				</CenterView>
 		);}
-	}
-
-	onComponentDidMount () {
-		if (!this.props.isLoggedIn) {
-			this.props.showLoginScreen();
-		}
 	}
 }
 
@@ -40,7 +33,6 @@ const mapStateToProps = state => ({
 
 function bindAction(dispatch) {
 	return {
-		showLoginScreen: dispatch(showLoginScreen())
 	};
 }
 

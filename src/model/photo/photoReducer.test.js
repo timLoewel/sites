@@ -1,32 +1,31 @@
-import Immutable from 'seamless-immutable';
-import photoReducer, {addPhoto} from './photoReducer';
-import { createAction, createReducer} from 'redux-act';
+import photoReducer, {addLocalPhoto, savePhotoJsonToServerDone} from './photoReducer';
+import {OrderedMap} from 'immutable';
 
 
 test('initial state', () => {
-	expect(photoReducer(undefined, {type:'not handled'})).toEqual(Immutable.from({
-		localPhotosByLocalObjectId: {},
-		photosByObjectId:{},
-	}));
+	expect(photoReducer(undefined, {type:'not handled'})).toEqual({
+		localPhotosByLocalObjectId: OrderedMap(),
+		photosByObjectId:OrderedMap(),
+	});
 });
 
 test('add local photo', () => {
-	expect(photoReducer(undefined, addPhoto({localObjectId: 'lod1', data:'data'}))).
-	toEqual(Immutable.from({
-		localPhotosByLocalObjectId: {lod1: {localObjectId: 'lod1', data:'data'}},
-		photosByObjectId:{},
-	}));
+	expect(photoReducer(undefined, addLocalPhoto({localObjectId: 'lod1', data:'data'}))).
+	toEqual({
+		localPhotosByLocalObjectId: OrderedMap().set('lod1', {localObjectId: 'lod1', data:'data'}),
+		photosByObjectId:OrderedMap(),
+	});
 });
 
 test('update local photo to server photo', () => {
 	expect(photoReducer(
-			Immutable.from({
-				localPhotosByLocalObjectId: {lod1: {localObjectId: 'lod1', data:'data'}},
-				photosByObjectId:{},
-			})
-			, addPhoto({objectId: 'id1', localObjectId: 'lod1', data:'data1'}))).
-	toEqual(Immutable.from({
-		localPhotosByLocalObjectId: {},
-		photosByObjectId:{id1: {objectId: 'id1', localObjectId: 'lod1', data:'data1'}},
-	}));
+			{
+				localPhotosByLocalObjectId: OrderedMap().set('lod1', {localObjectId: 'lod1', data:'data'}),
+				photosByObjectId:OrderedMap(),
+			}
+			, savePhotoJsonToServerDone({objectId: 'id1', localObjectId: 'lod1', data:'data1'}))).
+	toEqual({
+		localPhotosByLocalObjectId: OrderedMap(),
+		photosByObjectId:OrderedMap().set('id1', {objectId: 'id1', localObjectId: 'lod1', data:'data1'}),
+	});
 });

@@ -20,8 +20,8 @@ import {AppWithNavigationState} from './components/appNavigator/AppNavigator';
 
 import SignedInCheck from './components/basics/SignedInCheck';
 
-import configureStore from './store';
-import {startGPS, stopGPS} from './model/geolocation/geolocationReducer';
+import configureStore from './model/store';
+import {stopGPS} from './model/systemState/systemStateReducer';
 import getDimensions from './utils/dimensions';
 import RenderImage from './components/renderImage/RenderImage';
 
@@ -29,7 +29,7 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
 class App extends React.Component {
-	store = configureStore();
+	store = configureStore(() => console.log('configureStore.onComplete()'));
 
 	render() {
 		return (
@@ -46,9 +46,6 @@ class App extends React.Component {
 
 	componentDidMount() {
 //		SplashScreen.hide();
-
-		this.store.dispatch(startGPS());
-
 	}
 
 	componentWillUnmount() {

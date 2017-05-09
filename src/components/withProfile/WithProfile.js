@@ -2,7 +2,7 @@
  * Created by tim on 22/03/17.
  */
 import {connect} from 'react-redux';
-import showLogin from '../../utils/auth0';
+import {showLogin} from '../../model/profile/profileEpic';
 
 import React from 'react';
 import {
