@@ -62,7 +62,7 @@ const nullAddress = {
 			latitude:0,
 		},
 		countryCode:'DE'//TODO get this from the locale of the user
-}
+};
 
 export const nullLocation ={
 	longitude:0,
@@ -70,7 +70,7 @@ export const nullLocation ={
 	accuracy:0,
 	altitude:0,
 	address: nullAddress,
-}
+};
 
 /**
  * when a new position is registered by gps, this check, whether the old address is still usable,

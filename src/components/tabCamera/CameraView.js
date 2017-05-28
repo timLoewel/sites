@@ -72,7 +72,7 @@ class CameraView extends Component {
 		const buttonSize = theme.btnHeight * 0.75;
 		const shutterButtonSize = theme.btnHeight;
 
-		var goToAlbum;
+		let goToAlbum;
 		if (this.props.lastPhotoThumbnail) {
 			goToAlbum = (
 					<Image
@@ -203,7 +203,7 @@ class CameraView extends Component {
 	}
 
 	_getSite() {
-		var site = this.props.currentSite;
+		let site = this.props.currentSite;
 		if (site.name === 'noSite' && this.props.selectedLocation !== nullLocation) {
 			site = createNewSite(this.props.selectedLocation,
 					this.props.systemLocation, this.props.creatorObjectId);

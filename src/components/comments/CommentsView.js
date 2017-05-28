@@ -20,7 +20,7 @@ class CommentsView extends React.Component {
 			label: 'Comments',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

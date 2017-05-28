@@ -5,7 +5,6 @@ import {WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/observable/dom/WebS
 import {Observable} from 'rxjs/Observable';
 
 import WebSocket from 'react-native/Libraries/WebSocket/WebSocket';
-debugger;
 
 test('open websocket pure', done => {
 	console.log('running test of ws');
@@ -19,7 +18,7 @@ test('open websocket pure', done => {
 	};
 	ws.onerror = (e) => {  // an error occurred
 		console.log(e.message);
-		fail()
+		fail();
 		done();
 	};
 

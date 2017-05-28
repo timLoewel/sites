@@ -42,14 +42,16 @@ export const savePhotoFileToServer = createAction('savePhotoFileToServer: (PHOTO
 
 export const savePhotoJsonToServer = createAction('savePhotoJsonToServer: (PHOTO) store local photo in cloud.');
 
-export const savePhotoFileToServerDone = createAction('savePhotoFileToServerDone: (PHOTO) photo file was stored in cloud. Update the photo in the local database.')
+export const savePhotoFileToServerDone = createAction('savePhotoFileToServerDone: (PHOTO) photo file was stored in cloud. Update the photo in the local database.');
 
-export const savePhotoJsonToServerDone = createAction('savePhotoJsonToServerDone: (PHOTO) photo json was stored in cloud. Update the photo in the local database.')
+export const savePhotoJsonToServerDone = createAction('savePhotoJsonToServerDone: (PHOTO) photo json was stored in cloud. Update the photo in the local database.');
 
 /**
  * retrieve the local uri / thumbnail of the last photo in the repo, or undefined if none
  */
 export function getLastPhotoThumbnail(state) {
+	const a: number;
+
 	if (!state.photo.localPhotosByLocalObjectId.isEmpty()) {
 		return state.photo.localPhotosByLocalObjectId.last().thumbnailData;
 	}

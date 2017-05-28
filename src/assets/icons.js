@@ -75,7 +75,7 @@ const glyphMapSiteTTF =
 			'unlock': 61764,
 			'user': 61765,
 			'add-chat': 61766,
-		}
+		};
 // {
 // 	'camera': 61703,
 // 	'commenting': 'b',
@@ -265,7 +265,7 @@ const glyphMapFlaticonTTF =
 'font_Flaticon_warning_triangular_sketched_sign': 0xf19d,
 'font_Flaticon_winking_face_in_message_speech_bubble_sketch': 0xf19e,
 'font_Flaticon_zig_zag_line_stats_graphic': 0xf19f
-		}
+		};
 glyphMapLinestyleTTF = {
 'arroba': 0xf100,
 'arrows': 0xf101,

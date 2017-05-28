@@ -8,13 +8,13 @@ const getAllPhotos = (state) => {
 	const allLocalPhotos = state.photo.localPhotosByLocalObjectId;
 	const allServerPhotos = state.photo.photosByObjectId;
 	return allLocalPhotos.concat(allServerPhotos);
-}
+};
 
 const getVisibilityFilter = (state) => {
 	return {
 		filterType: 0,
 	}
-}
+};
 
 export const getVisiblePhotos = createSelector(
 		[getVisibilityFilter, getAllPhotos],
@@ -23,4 +23,4 @@ export const getVisiblePhotos = createSelector(
 
 						return photos.toArray();
 		}
-)
+);

@@ -69,7 +69,7 @@ function openConnection(sessionToken) {
 		}
 	}
 		return undefinedMessageFromServer(serverMsg);
-}
+};
 
 
 // Observable.create(observer =>
@@ -117,7 +117,7 @@ const subscribeToClassEpic = (action$, store) =>
 									"requestId": ${requestId},
 									"query": ${queryString},
 									"sessionToken": "${store.getState().profile.sessionToken}"
-								}`
+								}`;
 					wsSContainer.wwS.next(message);
 					return Observable.empty();
 				});

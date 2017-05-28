@@ -67,7 +67,7 @@ class PhotoAlbum extends React.Component {
 	}
 
 	_changePhotoRowIDCallback(selectedPhotoRowID) {
-		if (this.state.showSinglePhotoRowID != selectedPhotoRowID) {
+		if (this.state.showSinglePhotoRowID !== selectedPhotoRowID) {
 			let imgNum = selectedPhotoRowID - this.state.thumbnailsPerRow;
 			if (imgNum < 1) {
 				imgNum = 0;
@@ -136,7 +136,7 @@ class PhotoAlbum extends React.Component {
 	}
 
 	_renderRow(rowData: object, sectionID: number, rowID: number) {
-		const imageSize = this._getThumbnailSize()
+		const imageSize = this._getThumbnailSize();
 		return (
 				<TouchableOpacity
 						key={rowID}

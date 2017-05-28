@@ -36,6 +36,5 @@ export function createUniqueLocalPhotoFilename(photoTakenAtMillis) {
 	// console.log('4' + fs.PicturesDirectoryPath);
 	// console.log('5' + fs.ExternalDirectoryPath);
 	// console.log('6' + fs);
-	const photoPath = PHOTOPATH;
-	return Observable.fromPromise(checkFile(photoPath, fileName, 0));
+	return Observable.fromPromise(checkFile(PHOTOPATH, fileName, 0));
 }

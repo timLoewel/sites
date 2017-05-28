@@ -20,7 +20,7 @@ class SingleAlbumView extends React.Component {
 			label: 'SingleAlbum',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

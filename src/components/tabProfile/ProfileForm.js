@@ -14,7 +14,7 @@ const formStates = ['asyncValidating', 'dirty', 'pristine', 'valid', 'invalid', 
 class ProfileForm extends React.Component {
 	static propTypes = {
 		...propTypes,
-	}
+	};
 
 	render() {
 		return (

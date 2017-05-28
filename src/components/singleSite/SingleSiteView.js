@@ -17,7 +17,7 @@ import {
 class SingleSiteView extends React.Component {
 	static navigationOptions = {
 
-	}
+	};
 
 	render() {
 		return (

@@ -59,6 +59,7 @@ const imageStyles = {
 
 const RATIO = PixelRatio.get();
 const FONT_SIZE_FACTOR = 30;
+const DEFAULT_QUALITY = 0.8;
 /**
  * put this component into a View that is outside the visible area e.g. position: absolute, top:0, left: window.width
  *
@@ -114,15 +115,15 @@ const RenderImage = React.createClass({
 
 	/**
 	 *
-	 * @param renderedImageHeight
-	 * @param renderedImageWidth
-	 * @param targetWidth
+	 * @param screenshotDimensions height, width
+	 * @param targetWidth how wide should the photo be
 	 * @param quality
-	 * @param resultType
+	 * @param resultType     ,
+
 	 * @returns {Promise.<string>}
 	 */
-	snapPhoto: function(screenshotDimensions, targetWidth, quality, resultType) {
-		const q = quality || 0.8; //default 0.8
+	snapPhoto: function(screenshotDimensions, targetWidth:number, quality: number, resultType?: "file" | "base64" | "data-uri") {
+		const q = quality || DEFAULT_QUALITY; //default 0.8
 		const r = resultType || 'file';//default file
 		const t = targetWidth || undefined;//default target is 1:1 the imageWidth
 		const width = t?Math.min(t, screenshotDimensions.width): undefined;
@@ -143,8 +144,8 @@ const RenderImage = React.createClass({
 	},
 
 	shouldComponentUpdate: function(nextProps, nextState) {
-		const hadPhoto = this.props.photoForRendering != undefined;
-		const willHavePhoto = nextProps.photoForRendering != undefined;
+		const hadPhoto = this.props.photoForRendering !== undefined;
+		const willHavePhoto = nextProps.photoForRendering !== undefined;
 		const existenceChanged = (hadPhoto || willHavePhoto) && !(hadPhoto && willHavePhoto);  // xor
 		const photosAreDifferent = existenceChanged || (hadPhoto && willHavePhoto && (this.props.photoForRendering.createdAtMillis !==
 				nextProps.photoForRendering.createdAtMillis));
@@ -153,8 +154,8 @@ const RenderImage = React.createClass({
 	},
 
 	componentWillReceiveProps(nextProps) {
-		const hadPhoto = this.props.photoForRendering != undefined;
-		const willHavePhoto = nextProps.photoForRendering != undefined;
+		const hadPhoto = this.props.photoForRendering !== undefined;
+		const willHavePhoto = nextProps.photoForRendering !== undefined;
 		const existenceChanged = (hadPhoto || willHavePhoto) && !(hadPhoto && willHavePhoto);  // xor
 		const photosAreDifferent = existenceChanged || (hadPhoto && willHavePhoto &&
 				this.props.photoForRendering.uriOriginalPhoto !== nextProps.photoForRendering.uriOriginalPhoto);

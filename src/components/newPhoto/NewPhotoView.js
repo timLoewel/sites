@@ -20,7 +20,7 @@ class NewPhotoView extends React.Component {
 			label: 'NewPhoto',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

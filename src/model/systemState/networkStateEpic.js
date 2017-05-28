@@ -14,7 +14,7 @@ import {setConnected, setDisconnected, startNetworkMonitor} from './systemStateR
 
 const onStoreInitializedEpic = (action$, store) =>
 		action$.ofType(storeInitialized.getType()).map(action =>
-				startNetworkMonitor())
+				startNetworkMonitor());
 
 
 /**

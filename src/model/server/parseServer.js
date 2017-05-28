@@ -25,11 +25,9 @@ export function save(className, object, sessionToken) {
 	const data = {...object, createdAt: undefined, updatedAt: undefined};
 	const url = env.PARSE_SERVER_HOST + 'classes/' + className;
 	if (data.objectId) {
-		const o = ajaxPut(url + '/' + data.objectId, data, getHeaders(sessionToken));
-		return o;
+		return ajaxPut(url + '/' + data.objectId, data, getHeaders(sessionToken));
 	} else {
-		const o = ajaxPost(url, data, getHeaders(sessionToken));
-		return o;
+		return ajaxPost(url, data, getHeaders(sessionToken));
 	}
 }
 

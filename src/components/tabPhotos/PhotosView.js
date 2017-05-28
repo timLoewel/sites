@@ -14,7 +14,7 @@ class PhotosView extends React.Component {
 			label: 'Photos',
 			// visible: false,
 		},
-	}
+	};
 
 
 	render() {
