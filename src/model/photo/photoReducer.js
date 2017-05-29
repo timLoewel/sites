@@ -50,7 +50,6 @@ export const savePhotoJsonToServerDone = createAction('savePhotoJsonToServerDone
  * retrieve the local uri / thumbnail of the last photo in the repo, or undefined if none
  */
 export function getLastPhotoThumbnail(state) {
-	const a: number;
 
 	if (!state.photo.localPhotosByLocalObjectId.isEmpty()) {
 		return state.photo.localPhotosByLocalObjectId.last().thumbnailData;
