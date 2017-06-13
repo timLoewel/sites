@@ -20,7 +20,7 @@ class NewAlbumView extends React.Component {
 			label: 'NewAlbum',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

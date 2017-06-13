@@ -154,7 +154,7 @@ const updateLocationEpic = (action$) =>
 						getCurrentPositionObservable()
 								.map(location => setCurrentLocation(location))
 								.catch(error => Observable.of(gpsError({error: error, epic: 'updateLocationEpic'})))
-				)
+				);
 
 
 // update address based on location

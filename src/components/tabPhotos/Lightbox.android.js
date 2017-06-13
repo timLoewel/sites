@@ -31,11 +31,12 @@ let {
 	View, Text
 } = ReactNative;
 
-var evt;
+let evt;
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
 const MAX_SCALE = 3;
 const MIN_SCALE = 0.5;
+const EPSILON = 0.05;
 
 class Lightbox extends React.Component {
 	constructor(props) {
@@ -55,14 +56,14 @@ class Lightbox extends React.Component {
 		const scale = e.nativeEvent.scale;
 		const opacity = clamp(0,1, Math.sqrt((scale - MIN_SCALE) / (1 - MIN_SCALE)));
 		this.setState({backgroundOpacity: opacity});
-		if (scale < MIN_SCALE + 0.05) {
-			this.props.closeCallback(index)
+		if (scale < MIN_SCALE + EPSILON) {
+			this.props.closeCallback(index);
 		}
-	}
+	};
 
 	_onTap = (e) => {
 		const scale = e.nativeEvent.scale;
-	}
+	};
 
 	_share(uri, imageShareableUri) {
 		Share.open({

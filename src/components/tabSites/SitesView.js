@@ -20,7 +20,7 @@ class SitesView extends React.Component {
 			label: 'Sites',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

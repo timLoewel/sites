@@ -1,8 +1,0 @@
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.abm [bit 5]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.sse4a [bit 6]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.abm [bit 5]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.sse4a [bit 6]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.abm [bit 5]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.sse4a [bit 6]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.abm [bit 5]
-warning: host doesn't support requested feature: CPUID.80000001H:ECX.sse4a [bit 6]

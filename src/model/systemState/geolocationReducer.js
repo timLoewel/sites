@@ -54,7 +54,7 @@ export const setCurrentAddress= createAction('setCurrentAddress: Set the address
 export const gpsError = createAction('gpsError: error with GPS');
 export const addressError = createAction('addressError: error while getting address for location');
 
-const nullAddress = {
+export const NULL_ADDRESS = {
 	formattedAddress:'',
 			country: 'Deutschland',
 		position: {
@@ -62,15 +62,15 @@ const nullAddress = {
 			latitude:0,
 		},
 		countryCode:'DE'//TODO get this from the locale of the user
-}
+};
 
-export const nullLocation ={
+export const NULL_LOCATION ={
 	longitude:0,
 	latitude:0,
 	accuracy:0,
 	altitude:0,
-	address: nullAddress,
-}
+	address: NULL_ADDRESS,
+};
 
 /**
  * when a new position is registered by gps, this check, whether the old address is still usable,
@@ -86,7 +86,7 @@ function computePreliminaryAddress(oldAddress, newPosition) {
 	if (dist > MAX_DIST_SAME_ADDRESS) {
 		return oldAddress;
 	} else {
-		return nullAddress;
+		return NULL_ADDRESS;
 	}
 }
 
@@ -124,7 +124,7 @@ const reducer = createReducer({
 	[gpsError]: (state, payload) => ({...state, lastGpsError: payload}),
 	[addressError]: (state, payload) => ({...state, lastAddressError: payload}),
 }, {
-			location: nullLocation,
+			location: NULL_LOCATION,
 			lastGpsError:null,
 			lastAddressError: null,
 		}

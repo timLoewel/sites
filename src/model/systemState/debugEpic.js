@@ -29,16 +29,16 @@ const startInterval1 = Observable.interval(15000);
 
 //emit value after 3s, closing corresponding buffer
 const closingInterval1 = val => {
-	console.log(`Value ${val} emitted, starting buffer! Closing in 3s!`)
+	console.log(`Value ${val} emitted, starting buffer! Closing in 3s!`);
 	return Observable.interval(3000);
-}
+};
 
 const testEpic = (action$, store) =>
 		action$.do((b)=>{
 			console.log(b);
 		}).bufferToggle( startInterval1, closingInterval1).do((v) => {
 			console.log(v);
-		}).map(() => {return {type: 'test'}})
+		}).map(() => {return {type: 'test'}});
 
 
 // //emit value every second

@@ -20,7 +20,7 @@ class ContactsView extends React.Component {
 			label: 'Contacts',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

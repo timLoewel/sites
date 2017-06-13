@@ -20,7 +20,7 @@ class SelectForExportView extends React.Component {
 			label: 'SelectForExport',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

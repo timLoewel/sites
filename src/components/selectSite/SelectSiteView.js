@@ -20,7 +20,7 @@ class SelectSiteView extends React.Component {
 			label: 'SelectSite',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

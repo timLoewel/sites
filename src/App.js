@@ -7,6 +7,7 @@ import {
 	AppRegistry,
 	UIManager,
 	View,
+	ActivityIndicator
 } from 'react-native';
 
 import {
@@ -17,6 +18,7 @@ import {
 } from 'redux-persist';
 
 import {AppWithNavigationState} from './components/appNavigator/AppNavigator';
+import CenterView from './components/basics/CenterView';
 
 import SignedInCheck from './components/basics/SignedInCheck';
 
@@ -29,11 +31,36 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
 class App extends React.Component {
-	store = configureStore(() => console.log('configureStore.onComplete()'));
+
+	constructor(props) {
+		super(props);
+		this.state = {
+			store : undefined,
+		}
+		configureStore(() => console.log('configureStore.onComplete()'))
+				.then(store => {
+						this.setState({store: store});
+						console.log('set store in app state');
+					})
+				.catch(error => {
+					console.log('error on configuring the store', error);
+				});
+	}
+
 
 	render() {
+		if (!this.state.store) {
+			return (
+					<CenterView>
+						<ActivityIndicator
+								animating={true}
+								size="large"
+						/>
+				</CenterView>
+			)
+		}
 		return (
-				<Provider store={this.store}>
+				<Provider store={this.state.store}>
 					<SignedInCheck>
 						<AppWithNavigationState />
 						<View style={{position: 'absolute', top: windowHeight + 10, left: 0}}>

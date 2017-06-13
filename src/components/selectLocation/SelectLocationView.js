@@ -20,7 +20,7 @@ class SelectLocationView extends React.Component {
 			label: 'SelectLocation',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (

@@ -20,7 +20,7 @@ class SinglePhotoView extends React.Component {
 			label: 'SinglePhoto',
 			// visible: false,
 		},
-	}
+	};
 
 	render() {
 		return (
