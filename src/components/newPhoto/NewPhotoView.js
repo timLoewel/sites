@@ -16,10 +16,7 @@ import {
 
 class NewPhotoView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'NewPhoto',
-			// visible: false,
-		},
+		tabBarLabel: 'NewPhoto',
 	};
 
 	render() {

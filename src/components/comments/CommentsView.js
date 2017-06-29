@@ -16,10 +16,7 @@ import {
 
 class CommentsView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'Comments',
-			// visible: false,
-		},
+		tabBarLabel: 'Comments',
 	};
 
 	render() {

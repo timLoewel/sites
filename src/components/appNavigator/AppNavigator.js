@@ -50,17 +50,16 @@ export const MainTabsScreen = TabNavigator({
 	// 	screen: ProfileView,
 	// },
 }, {
-	lazyLoad: true,
+	lazy: true,
 	swipeEnabled: true,
 	animationEnabled: true,
 	initialRouteName: 'Camera',
 	order: ['Camera', 'Photos'],// 'Sites', 'Profile']
 
 	tabBarOptions: {
-		visible:false,
 		activeTintColor: '#e91e63',
 		tabBarPosition: 'top',
-		style: {height:0}
+		style: {height:40}
 	},
 
 });
@@ -72,9 +71,7 @@ export const AppNavigator = StackNavigator({
 			MainTabs: {
 						screen: MainTabsScreen,
 						navigationOptions: {
-							header: {
-								visible: false,
-							}
+							header: null
 						},
 					},
 			// SingleSite: {
@@ -109,7 +106,7 @@ export const AppNavigator = StackNavigator({
 			// SelectForExport: {screen: SelectForExportView},
 			// Comments: {screen: CommentsView},
 			// SelectContact: {screen: SelectContactView},
-			// SelectSite: {screen: SelectSiteView},
+			SelectSite: {screen: SelectSiteView},
 			// SelectLocation: {screen: SelectLocationView},
 			// Contacts: {screen: ContactsView,navigationOptions: {
 			// 	cardStack: {

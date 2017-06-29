@@ -44,11 +44,11 @@ I18n.translations = {
 			thisIsAppendedToPhoto: 'Information you enter here is appended to your photo.',
 			descriptionTitle: 'Description',
 			descriptionPlaceholder: 'Description',
-			locationTitle: 'Location',
-			locationPlaceholder: 'Please select a location',
+			sitePlaceholder: 'Please select a site',
 			messagePhotoTaken: 'Photo saved',
 			photoCouldNotBeTaken: 'Error taking Photo.',
-			locationUnknown: 'Location unknown'
+			locationUnknown: 'Location unknown',
+			onSiteLocation: 'on-site location'
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Please add photo context information',
@@ -113,6 +113,16 @@ I18n.translations = {
 		allSites: {
 			siteNameValidationErrorMissing: 'Bitte wähle einen eindeutigen Namen für die Baustelle.',
 			noSiteFound: 'Keine Baustelle gefunden.',
+		},
+		camera: {
+			thisIsAppendedToPhoto: 'Klicke hier um Anmerkungen an das Foto zu hängen.',
+			descriptionTitle: 'Beschreibung',
+			descriptionPlaceholder: 'Beschreibung',
+			sitePlaceholder: 'Baustelle wählen',
+			messagePhotoTaken: 'Foto gespeichert',
+			photoCouldNotBeTaken: 'Foto konnte nicht gespeichert werden.',
+			locationUnknown: 'Ort unbekannt',
+			onSiteLocation: 'Position auf der Baustelle'
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Bitte füge Bildinformationen zu',

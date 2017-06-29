@@ -16,7 +16,7 @@ import {
 
 class SingleSiteView extends React.Component {
 	static navigationOptions = {
-
+		tabBarLabel: 'Single Site'
 	};
 
 	render() {

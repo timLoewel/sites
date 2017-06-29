@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text} from 'react-native';
-import {storiesOf, action, linkTo} from '@kadira/react-native-storybook';
+import {storiesOf, action, linkTo} from '@storybook/react-native';
 
 import CenterView from '../basics/CenterView';
 import {reducer as formReducer} from 'redux-form-actions';
