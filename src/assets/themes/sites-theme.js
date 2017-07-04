@@ -88,7 +88,9 @@ export default {
 		return this.fontSizeBase * 3.8;
 	},
 
-	buttonPadding: 6,
+	btnPadding: 6,
+	btnTextColor: '#fff',
+
 
 	get iconSizeLarge() {
 		return this.iconFontSize * 1.5;

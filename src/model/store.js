@@ -6,7 +6,6 @@ import {persistStore, autoRehydrate} from 'redux-persist';
 import * as env from '../../env';
 
 import { createEpicMiddleware } from 'redux-observable';
-import { reduxFormMiddleware } from 'redux-form-actions';
 
 import reducer from './reducer';
 import rootEpic from './epics';
@@ -25,7 +24,6 @@ export default async function configureStore(onCompletion: ()=>void): Store {
 	console.log('schema version stored: ', schemaVersionStored);
 	const enhancer = composeWithDevTools(
 			applyMiddleware(
-					reduxFormMiddleware,
 					createEpicMiddleware(rootEpic),
 			)
 			,autoRehydrate()// do not set config {log: true} as that clashes with redux-observable

@@ -2,6 +2,7 @@
  * Created by tim on 10/03/17.
  */
 import {connect} from 'react-redux';
+import theme from '../../assets/themes/sites-theme';
 
 import React from 'react';
 import {
@@ -9,58 +10,64 @@ import {
 	AsyncStorage,
 	StyleSheet,
 	Text,
+	TextInput,
 	View,
 	FlatList,
 } from 'react-native';
 import Button from 'react-native-button';
-import closeSites from '../../model/site/closeSites';
+import {selectCloseSites} from '../../model/site/siteSelectors';
 import I18n from '../../assets/translations';
 import {NavigationActions} from 'react-navigation';
-import {setSite, noSite} from '../../model/site/siteReducer';
+import {selectSite} from '../../model/site/siteReducer';
 
 
 class SelectSiteView extends React.Component {
 	static navigationOptions = {
-		tabBarLabel: 'SelectSite',
+		title: I18n.t("selectSite.title"),
 	};
 
 	_noSiteSelected() {
 		this.props.selectNoSite();
-		this.props.back();
+		this.props.goBack();
 	}
 
 	_createNewSite() {
-		this.props.gotoCreateNewSite()
+		this.props.gotoCreateNewSite(this.props.noSite)
 	}
 
 	render() {
 		return (
 				<View style={{flex: 1, flexDirection: 'column'}}>
 					<TextInput style={{flex: 1, flexDirection: 'column'}}/>
-					<View style={{flex: 1, flexDirection: 'row'}}>
+					<View				 style={{flex: 1, flexDirection: 'row'}}>
 						<Button
 								containerStyle={{
-									padding: 10,
-									height: 45,
+									flex:1,
+									// padding: 10,
+									margin: theme.defaultMargin,
+									height: theme.btnHeight,
 									overflow: 'hidden',
-									borderRadius: 4,
-									backgroundColor: 'white'
+									alignItems: 'center',
+									borderRadius: theme.borderRadiusLarge,
+									backgroundColor: theme.brandDanger
 								}}
-								style={{fontSize: 20, color: 'red'}}
-								title={I18n.t("selectSite.noSite")}
-								onPress={this._noSiteSelected.bind(this)}/>
+								style={{fontSize: theme.btnTextSizeLarge, color: theme.btnTextColor, textAlign: 'center',}}
+								onPress={this._noSiteSelected.bind(this)}>
+							{I18n.t("selectSite.noSite")}
+						</Button>
 						<Button
 								containerStyle={{
-									padding: 10,
-									height: 45,
+									flex:1,
+									margin: theme.defaultMargin,
+									height: theme.btnHeight,
 									overflow: 'hidden',
-									borderRadius: 4,
-									backgroundColor: 'white'
+									borderRadius: theme.borderRadiusLarge,
+									backgroundColor: theme.brandSecondary
 								}}
-								style={{fontSize: 20, color: 'green'}}
-								title={I18n.t("selectSite.createNew")}
-								onPress={this._createNewSite.bind(this)}
-						/>
+								style={{flex:1, fontSize: 20, color: theme.btnTextColor, fontSize: theme.btnTextSizeLarge, textAlign: 'center', padding:10}}
+								onPress={this._createNewSite.bind(this)}>
+							{I18n.t("selectSite.createNew")}
+						</Button>
 					</View>
 					<View
 							style={{flex: 10, alignSelf: 'stretch'}}
@@ -72,16 +79,17 @@ class SelectSiteView extends React.Component {
 }
 
 const mapStateToProps = state => ({
-		noSite: state.site.noSite,
-		closeSites: closeSites(state),
+		noSiteObjectId: state.site.noSiteObjectId,
+		closeSites: selectCloseSites(state)
 });
 
 function bindAction(dispatch, ownProps) {
-	console.log('bind action selectSiteView');
-	console.log(ownProps);
 	return {
-		gotoCreateNewSite: () => dispatch(NavigationActions.navigate({routeName: 'CreateNewSite'})),
-		selectNoSite: () => dispatch(setSite(ownProps.noSite)),
+		gotoCreateNewSite: () => {
+			dispatch(editSite(ownProps.noSiteObjectId));
+			dispatch(NavigationActions.navigate({routeName: 'EditSite'}))
+		},
+		selectNoSite: () => dispatch(selectSite(ownProps.noSiteObjectId)),
 		goBack: () => dispatch(NavigationActions.back())
 	};
 }

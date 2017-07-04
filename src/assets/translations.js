@@ -48,7 +48,8 @@ I18n.translations = {
 			messagePhotoTaken: 'Photo saved',
 			photoCouldNotBeTaken: 'Error taking Photo.',
 			locationUnknown: 'Location unknown',
-			onSiteLocation: 'on-site location'
+			onSiteLocation: 'on-site location',
+			noSite: 'No Site selected'
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Please add photo context information',
@@ -62,6 +63,11 @@ I18n.translations = {
 			tags: 'Tags',
 			description: 'Description',
 			descriptionPlaceholder: 'What is this photo about?',
+		},
+		selectSite: {
+			title: 'Select Site',
+			noSite: 'No Site',
+			createNew:'Create new Site'
 		},
 		renderImage: {
 			gpsLocationUnknown: 'GPS Location unknown',
@@ -122,7 +128,8 @@ I18n.translations = {
 			messagePhotoTaken: 'Foto gespeichert',
 			photoCouldNotBeTaken: 'Foto konnte nicht gespeichert werden.',
 			locationUnknown: 'Ort unbekannt',
-			onSiteLocation: 'Position auf der Baustelle'
+			onSiteLocation: 'Position auf der Baustelle',
+			noSite: 'Keine Baustelle'
 		},
 		newPhoto: {
 			pleaseAddInformation: 'Bitte füge Bildinformationen zu',
@@ -135,6 +142,12 @@ I18n.translations = {
 			tags: 'Tags',
 			description: 'Beschreibung',
 			descriptionPlaceholder: 'Was zeigt dieses Foto?',
+
+		},
+		selectSite: {
+			title: 'Baustelle wählen',
+			noSite:'Ohne Baustelle',
+			createNew:'Neue Baustelle'
 		},
 		SiteEditorView: {
 			description: 'Beschreibung',

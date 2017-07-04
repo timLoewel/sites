@@ -34,7 +34,8 @@ import SelectLocationView from '../selectLocation/SelectLocationView';
 import SelectSiteView from '../selectSite/SelectSiteView';
 import SingleAlbumView from '../singleAlbum/SingleAlbumView';
 import SinglePhotoView from '../singlePhoto/SinglePhotoView';
-import SingleSiteView from '../singleSite/SingleSiteView';
+// import SingleSiteView from '../singleSite/SingleSiteView';
+// import EditSingleSiteView from '../singleSite/EditSingleSiteView';
 
 /**
  * Created by tim on 10/03/17.
@@ -107,6 +108,8 @@ export const AppNavigator = StackNavigator({
 			// Comments: {screen: CommentsView},
 			// SelectContact: {screen: SelectContactView},
 			SelectSite: {screen: SelectSiteView},
+			// EditSite: {screen: EditSingleSiteView},
+			// ViewSite: {screen: SingleSiteView},
 			// SelectLocation: {screen: SelectLocationView},
 			// Contacts: {screen: ContactsView,navigationOptions: {
 			// 	cardStack: {

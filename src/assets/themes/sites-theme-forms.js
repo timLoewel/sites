@@ -10,7 +10,7 @@ export default {
 		fontSize: theme.fontSizeBase,
 		// fontWeight: 700,
 		// height: theme.
-		padding: theme.buttonPadding,
+		padding: theme.btnPadding,
 	},
 	ErrorMessage: {
 		color: 'red'

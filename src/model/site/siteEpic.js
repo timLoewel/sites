@@ -5,15 +5,13 @@ import {Observable} from 'rxjs/Observable';
 
 import 'rxjs/add/observable/empty';
 
-
 import 'rxjs/add/observable/fromEventPattern';
 import {combineEpics} from 'redux-observable';
 import {fetch} from '../server/parseServer';
-import {registerNoSite, addNewLocalSite, saveSiteJsonToServerDone} from './siteReducer';
+import {SITE, NO_SITE_LOCAL_OBJECT_ID, registerNoSite, addNewLocalSite, saveSiteJsonToServerDone} from './siteReducer';
 import {userLoginSuccess} from '../profile/profileReducer';
 import {setServerReadyForRequests, subscribeToQuery} from '../server/serverSocketReducer';
 
-const SITE = 'Site';
 
 const serverReadyForRequestsEpic = (action$, store) =>
 		action$.ofType(setServerReadyForRequests.getType())
@@ -36,8 +34,9 @@ const serverReadyForRequestsEpic = (action$, store) =>
 const getInitialSitesEpic = (action$, store) =>
 		action$.ofType(userLoginSuccess.getType())
 				.flatMap(userLoginSuccessAction =>
-						fetch('Site', {
-							'name': 'noSite', 'creator': {
+						fetch(SITE, {
+							'localObjectId': NO_SITE_LOCAL_OBJECT_ID,
+							'creator': {
 								'__type': 'Pointer',
 								'className': '_User',
 								'objectId': store.getState().profile.objectId,

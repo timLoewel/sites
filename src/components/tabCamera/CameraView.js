@@ -3,7 +3,7 @@ import moment from 'moment';
 import {connect} from 'react-redux';
 import CameraViewRaw from './CameraViewRaw';
 import {setPhotoLocation, setPhotoDescription, setOnSiteLocation} from '../../model/ui/camera/cameraReducer';
-import currentSite from '../../model/site/currentSite';
+import {selectCurrentSite} from '../../model/site/siteSelectors';
 import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
 import {NavigationActions} from 'react-navigation';
 
@@ -15,7 +15,7 @@ const mapStateToProps = state => ({
 	creatorObjectId: state.profile.objectId,
 	creatorName: state.profile.currentUser.name,
 	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
-	currentSite: currentSite(state),
+	currentSite: selectCurrentSite(state),
 	lastPhotoThumbnail: getLastPhotoThumbnail(state),
 });
 

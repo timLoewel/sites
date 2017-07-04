@@ -138,6 +138,14 @@ class CameraView extends Component {
 		// console.log(this.refs);
 	}
 
+	_getSiteName() {
+		if (this.props.currentSite.name === 'noSite') {
+			return i18n.t('camera.noSite');
+		} else {
+			return this.props.currentSite.name;
+		}
+	}
+
 	_renderShutterButtonRow(){
 		const buttonSize = theme.btnHeight * 0.75;
 		const shutterButtonSize = theme.btnHeight;
@@ -258,7 +266,8 @@ class CameraView extends Component {
 									justifyContent: 'flex-start',
 								}}>
 									<Icon name="site-marker" style={{width:theme.fontSizeH2, fontSize: theme.fontSizeH1, color: 'white'}}/>
-									<Text style={{fontSize:theme.fontSizeSmall, alignSelf: 'stretch', textAlign: 'left',textAlignVertical: 'center', marginLeft: theme.defaultMargin}}>sSite Name</Text>
+									<Text style={{fontSize:theme.fontSizeSmall, alignSelf: 'stretch', textAlign: 'left',textAlignVertical: 'center', marginLeft: theme.defaultMargin}}>
+										{this._getSiteName()}</Text>
 								</View>
 							</TouchableHighlight>
 

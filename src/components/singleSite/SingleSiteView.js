@@ -2,16 +2,12 @@
  * Created by tim on 10/03/17.
  */
 import {connect} from 'react-redux';
+import {ScrollView, Text, View} from 'react-native';
+import I18n from '../../assets/translations';
+import {Field, reduxForm} from 'redux-form';
+import FormTextInput from '../form/FormTextInput';
 
 import React from 'react';
-import {
-	AppRegistry,
-	AsyncStorage,
-	Button,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
 
 
 class SingleSiteView extends React.Component {
@@ -21,10 +17,7 @@ class SingleSiteView extends React.Component {
 
 	render() {
 		return (
-				<Button
-						onPress={() => this.props.navigation.navigate('NewPhoto')}
-						title="take Photo"
-				/>
+				<Text>aa</Text>
 		);
 	}
 }

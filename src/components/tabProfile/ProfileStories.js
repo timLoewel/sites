@@ -3,19 +3,17 @@ import {Text} from 'react-native';
 import {storiesOf, action, linkTo} from '@storybook/react-native';
 
 import CenterView from '../basics/CenterView';
-import {reducer as formReducer} from 'redux-form-actions';
+import {reducer as formReducer} from 'redux-form';
 
 import ProfileForm from './ProfileForm';
 import {composeWithDevTools} from 'redux-devtools-extension';
 
 import {createStore, applyMiddleware, compose} from 'redux';
 
-import {reduxFormMiddleware} from 'redux-form-actions';
 import {Provider} from 'react-redux';
-import StyledComponent from './StyledComponent';
 
 const enhancer = composeWithDevTools(
-		applyMiddleware(reduxFormMiddleware)
+		applyMiddleware()
 );
 
 const store = createStore(formReducer, enhancer);
