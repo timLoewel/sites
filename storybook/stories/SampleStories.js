@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {Text} from 'react-native';
-import {storiesOf, action, linkTo} from '@storybook/react-native';
+import {storiesOf, action, linkTo} from '@kadira/react-native-storybook';
 
 import Button from './Button';
 import CenterView from './CenterView';
