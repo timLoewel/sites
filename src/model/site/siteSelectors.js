@@ -72,7 +72,7 @@ export const selectCurrentSite = createSelector(
 			}
 
 			// get the closest site
-			const minDistSite = sites.sites.minBy(site => {
+			const minDistSite = sites.allSites.minBy(site => {
 				return haversineDistance(site.selectedLocation, filter.location);
 			});
 
