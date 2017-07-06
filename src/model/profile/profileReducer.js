@@ -1,7 +1,6 @@
 /**
  * Created by tim on 22/11/16.
  */
-import Immutable from 'seamless-immutable';
 import ReactNativeI18n from 'react-native-i18n'
 import type {Action} from '../types';
 
@@ -30,14 +29,16 @@ const initialUser = {locale: ReactNativeI18n.locale,};
 
 const reducer = createReducer(
 		{
-			[userLoginSuccess]: (state, payload) => Immutable.merge(state, {
+			[userLoginSuccess]: (state, payload) => ({
+				...state,
 				isLoggedIn: true,
 				currentUser: payload.profile,
 				auth0Token: payload.token,
 				sessionToken: ((payload.profile || {}).userMetadata || {}).sessionToken,
 				objectId: ((payload.profile || {}).userMetadata || {}).objectId,
 			}),
-			[userLogout]: (state, payload) => Immutable.merge(state, {
+			[userLogout]: (state, payload) => ({
+				...state,
 				isLoggedIn: false,
 				currentUser: initialUser,
 				auth0Token:null,
@@ -45,6 +46,6 @@ const reducer = createReducer(
 				objectId: null,
 			}),
 		},
-		Immutable.from({isLoggedIn: false, currentUser:initialUser, auth0Token: null, sessionToken:null, objectId: null}));
+		{isLoggedIn: false, currentUser:initialUser, auth0Token: null, sessionToken:null, objectId: null});
 
 export default reducer;
