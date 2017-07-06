@@ -139,8 +139,8 @@ class CameraView extends Component {
 	}
 
 	_getSiteName() {
-		if (this.props.currentSite.name === 'noSite') {
-			return i18n.t('camera.noSite');
+		if (this.props.currentSite.name === ' noSite') {
+			return I18n.t('camera.noSite');
 		} else {
 			return this.props.currentSite.name;
 		}
