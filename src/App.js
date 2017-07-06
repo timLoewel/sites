@@ -31,6 +31,9 @@ UIManager.setLayoutAnimationEnabledExperimental && UIManager.setLayoutAnimationE
 const {width: windowWidth, height: windowHeight} = getDimensions();
 
 class App extends React.Component {
+	state: {
+		store: any
+	}
 
 	constructor(props) {
 		super(props);
@@ -76,7 +79,7 @@ class App extends React.Component {
 	}
 
 	componentWillUnmount() {
-		this.store.dispatch(stopGPS());
+		this.state.store.dispatch(stopGPS());
 	}
 }
 
