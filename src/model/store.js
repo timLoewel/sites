@@ -12,7 +12,7 @@ import rootEpic from './epics';
 import { createAction, createReducer } from 'redux-act';
 import immutableTransform from 'redux-persist-transform-immutable';
 
-const SCHEMA_VERSION = '0.1';
+const SCHEMA_VERSION = '0.1.0.0';
 const SCHEMA_VERSION_KEY = env.APP_NAME + ':SchemaVersion'
 let persistor;
 
