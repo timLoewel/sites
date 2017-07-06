@@ -42,8 +42,11 @@ const getInitialSitesEpic = (action$, store) =>
 								'objectId': store.getState().profile.objectId,
 							}
 						}, store.getState().profile.sessionToken)
-								.map(result =>
-										registerNoSite(result.results[0])
+								.map(result => {
+									console.log('no site: ', result);
+									return registerNoSite(result.results[0] || {})
+								}
+
 								)
 								.catch(error => Observable.empty())
 				);
