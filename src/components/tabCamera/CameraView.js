@@ -1,4 +1,5 @@
 'use strict';
+// @flow
 import moment from 'moment';
 
 import React, {Component, PropTypes} from 'react';
@@ -6,6 +7,7 @@ import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
 import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
+import type {IPhotoCapture} from '../../model/ModelTypes';
 
 import {
 	photographing,
@@ -36,7 +38,7 @@ import {createShareableImageUri} from '../../model/server/parseServer';
 import currentSite from '../../model/site/currentSite';
 import {addNewLocalSite, createNewSite} from '../../model/site/siteReducer';
 import {NavigationActions} from 'react-navigation';
-import {nullLocation} from '../../model/systemState/geolocationReducer';
+import {NULL_LOCATION} from '../../model/systemState/geolocationReducer';
 
 
 // <TouchableHighlight
@@ -67,6 +69,7 @@ const {width: windowWidth, height: windowHeight} = getDimensions();
  *
  */
 class CameraView extends Component {
+		camera: Camera;
 
 	_renderShutterAndPhotosButton() {
 		const buttonSize = theme.btnHeight * 0.75;
@@ -204,7 +207,7 @@ class CameraView extends Component {
 
 	_getSite() {
 		let site = this.props.currentSite;
-		if (site.name === 'noSite' && this.props.selectedLocation !== nullLocation) {
+		if (site.name === 'noSite' && this.props.selectedLocation !== NULL_LOCATION) {
 			site = createNewSite(this.props.selectedLocation,
 					this.props.systemLocation, this.props.creatorObjectId);
 			this.props.addNewLocalSite(site);
@@ -263,7 +266,7 @@ const mapStateToProps = state => ({
 
 function bindAction(dispatch) {
 	return {
-		setPhotographing: (photoData) => dispatch(photographing(photoData)),
+		setPhotographing: (photoData: IPhotoCapture) => dispatch(photographing(photoData)),
 		renderingDone: (photoData) => dispatch(renderedPhotoReady(photoData)),
 		addNewLocalSite: (site) => dispatch(addNewLocalSite(site)),
 		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName: 'Photos'})),

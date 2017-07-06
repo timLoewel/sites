@@ -8,42 +8,6 @@ import haversineDistance from 'geodetic-haversine-distance';
 
 
 
-export type Address = {
-	position: {// this is the position, the address is assigned to. not the location of the user
-		longitude:number,
-		latitude:number,
-	},
-	formattedAddress: string, // the full address
-	streetNumber: ?string,
-	streetName: ?string,
-	postalCode: ?string,
-	locality: ?string, // city name
-	country: string,
-	countryCode: string,
-	adminArea: ?string,
-	subAdminArea: ?string,
-	subLocality: ?string
-}
-
-/**
- * location that can be searched in parseJs queries
- */
-export type SearchablePosition = {
-	longitude: number,
-	latitude: number,
-	__type: 'GeoPoint',
-}
-
-/**
- * a location
- */
-export type Location = {
-	longitude: number,
-	latitude: number,
-	accuracy: number,
-	altitude: number,
-	address: ?Address
-}
 
 export const setCurrentLocation = createAction('setCurrentLocation: Set the current GPS Longitude, Latitude');
 export const setCurrentAddress= createAction('setCurrentAddress: Set the address of the current location');

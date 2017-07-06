@@ -3,7 +3,6 @@
  */
 
 import {createAction, createReducer} from 'redux-act';
-import {List} from 'immutable';
 
 /**
  * a photo goes through these states
@@ -50,7 +49,7 @@ export const enqueuePhotoForRendering = createAction('enqueuePhotoForRendering: 
 export const setPhotoLocation = createAction('setPhotoLocation: set the address the photo was shot at');
 
 export const setPhotoDescription = createAction('setPhotoDescription: set the photo description');
-
+export const setOnSiteLocation = createAction('setOnSiteLocation: set the on site location (indoor)');
 /**
  * sets the information rendered into the photo
  */
@@ -84,55 +83,50 @@ const reducer = createReducer({
 				isDoingScreenshot: false,
 				photosWaitingForRendering: state.photosWaitingForRendering.shift(),//remove from front
 				selectedLocation: state.selectedLocation,
+				onSiteLocation: state.onSiteLocation,
 				description: state.description,
 			}),
 			[enqueuePhotoForRendering]: (state, payload) => ({
+				...state,
 				isReadyForScreenshot: state.isReadyForScreenshot,
 				screenshotDimensions: state.screenshotDimensions,
 				isDoingScreenshot: state.isDoingScreenshot,
 				photosWaitingForRendering: state.photosWaitingForRendering.push(payload),//add to end
 				selectedLocation: state.selectedLocation,
+				onSiteLocation: state.onSiteLocation,
 				description: state.description,
 			}),
 			[setPhotoLocation]: (state, payload) => ({
-				isReadyForScreenshot: state.isReadyForScreenshot,
-				screenshotDimensions: state.screenshotDimensions,
-				isDoingScreenshot: state.isDoingScreenshot,
-				photosWaitingForRendering: state.photosWaitingForRendering,
+				...state,
 				selectedLocation: payload,
-				description: state.description,
 			}),
 			[setPhotoDescription]: (state, payload) => ({
-				isReadyForScreenshot: state.isReadyForScreenshot,
-				screenshotDimensions: state.screenshotDimensions,
-				isDoingScreenshot: state.isDoingScreenshot,
-				photosWaitingForRendering: state.photosWaitingForRendering,
-				selectedLocation: state.selectedLocation,
+				...state,
 				description: payload,
 			}),
 			[doingScreenshot]: (state, payload) => ({
+				...state,
 				isReadyForScreenshot: false,
-				screenshotDimensions: state.screenshotDimensions,
 				isDoingScreenshot: true,
-				photosWaitingForRendering: state.photosWaitingForRendering,
-				selectedLocation: state.selectedLocation,
-				description: state.description,
 			}),
 			[readyForScreenshot]: (state, payload) => ({
+				...state,
 				isReadyForScreenshot: true,
 				screenshotDimensions: payload,
 				isDoingScreenshot: false,
-				photosWaitingForRendering: state.photosWaitingForRendering,
-				selectedLocation: state.selectedLocation,
-				description: state.description,
-			}), 
+			}),
+			[setOnSiteLocation]: (state, payload) => ({
+				...state,
+				onSiteLocation: payload,
+			}),
 		},
 		{
 			isReadyForScreenshot: false, // is RenderImage View ready to trigger the screenshot?
 			screenshotDimensions: {height:0, width:0}, // the final dimensions of the view that should be screenshot
 			isDoingScreenshot: false,// semaphore, so that we do not snap the same image twice, if a render happens during doingScreenshot
-			photosWaitingForRendering: List(),//fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
+			photosWaitingForRendering: [],//fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
 			selectedLocation: undefined,
+			onSiteLocation: '',
 			description: '',
 		}
 );
