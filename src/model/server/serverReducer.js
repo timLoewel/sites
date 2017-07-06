@@ -3,7 +3,6 @@
  */
 import {createAction, createReducer} from 'redux-act';
 
-import {Map} from 'immutable';
 import {subscribeToQuery} from './serverSocketReducer';
 
 /**
@@ -19,11 +18,15 @@ export const removeObject = createAction('removeObject: object removed by server
 const reducer = createReducer({
 		  [subscribeToQuery]: (state, payload) => ({
 				nextRequestId: state.nextRequestId + 1,
-				requestIds: state.requestIds.set(payload, state.nextRequestId)
-			}),
-		}, {
+				requestIds: {
+					...(state.requestIds),
+					[payload]: state.nextRequestId
+				}
+			})
+		},
+		 {
 			nextRequestId: 0,
-			requestIds: Map()
+			requestIds: {}
 		}
 );
 

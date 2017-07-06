@@ -14,6 +14,8 @@ export const NO_SITE_LOCAL_OBJECT_ID = 'noSiteLocalObjectId';
 
 export const NEW_SITE_OBJECT_ID = 'newSiteObjectId';
 
+const NULL_LOCATION = {	longitude: 0,	latitude: 0}
+
 /**
  * payload: form values
  * @type {ActionCreator<P, M>}
@@ -78,16 +80,11 @@ export const createNewSite = (selectedLocation, systemLocation, creatorId) => {
 
 const reducer = createReducer({
 			[addNewLocalSite]: (state, payload) => ({
-				noSiteObjectId: state.noSiteObjectId,
-				editedSiteObjectId: state.editedSiteObjectId,
-				selectedSiteObjectId: state.selectedSiteObjectId,
+				...state,
 				localSitesByLocalObjectId: state.localSitesByLocalObjectId.set(payload.localObjectId, payload),
-				sitesByObjectId: state.sitesByObjectId,
 			}),
 			[saveSiteJsonToServerDone]: (state, payload) => ({
-				noSiteObjectId: state.noSiteObjectId,
-				editedSiteObjectId: state.editedSiteObjectId,
-				selectedSiteObjectId: state.selectedSiteObjectId,
+				...state,
 				localSitesByLocalObjectId: state.localSitesByLocalObjectId.delete(payload.localObjectId),
 				sitesByObjectId: state.sitesByObjectId.set(
 						payload.objectId, {...state.localSitesByLocalObjectId.get(payload.localObjectId), ...payload}),
@@ -106,19 +103,15 @@ const reducer = createReducer({
 					selectedSiteObjectId = state.selectedSiteObjectId;
 				}
 				return ({
+					...state,
 					noSiteObjectId: payload.objectId,
-					editedSiteObjectId: editedSiteObjectId,
-					selectedSiteObjectId: selectedSiteObjectId,
 					localSitesByLocalObjectId: state.localSitesByLocalObjectId.remove(NO_SITE_LOCAL_OBJECT_ID),
 					sitesByObjectId: state.sitesByObjectId.set(payload.objectId, payload)
 				})},
 			[addObject]: (state, payload) => {
 				if (payload.className === SITE) {
 					return {
-						noSiteObjectId: state.noSiteObjectId,
-						editedSiteObjectId: state.editedSiteObjectId,
-						selectedSiteObjectId: state.selectedSiteObjectId,
-						localSitesByLocalObjectId: state.localSitesByLocalObjectId,
+						...state,
 						sitesByObjectId: state.sitesByObjectId.set(payload.objectId, payload)
 					};
 				} else {
@@ -140,10 +133,9 @@ const reducer = createReducer({
 						selectedSiteObjectId = state.selectedSiteObjectId;
 					}
 					return {
-						noSiteObjectId: state.noSiteObjectId,
+						...state,
 						editedSiteObjectId: editedSiteObjectId,
 						selectedSiteObjectId: selectedSiteObjectId,
-						localSitesByLocalObjectId: state.localSitesByLocalObjectId,
 						sitesByObjectId: state.sitesByObjectId.remove(payload.objectId)
 					};
 				} else {
@@ -152,20 +144,14 @@ const reducer = createReducer({
 			},
 			[selectSite]: (state, payload) => {
 				return {
-					noSiteObjectId: state.noSiteObjectId,
-					editedSiteObjectId: state.editedSiteObjectId,
+					...state,
 					selectedSiteObjectId: payload,
-					localSitesByLocalObjectId: state.localSitesByLocalObjectId,
-					sitesByObjectId: state.sitesByObjectId
-				};	
+				};
 			},
 			[editSite]: (state, payload) => {
 				return {
-					noSiteObjectId: state.noSiteObjectId,
+					...state,
 					editedSiteObjectId: payload,
-					selectedSiteObjectId: state.selectedSiteObjectId,
-					localSitesByLocalObjectId: state.localSitesByLocalObjectId,
-					sitesByObjectId: state.sitesByObjectId
 				};
 			}
 		},
@@ -173,7 +159,8 @@ const reducer = createReducer({
 			noSiteObjectId: NO_SITE_LOCAL_OBJECT_ID,
 			editedSiteObjectId: NO_SITE_LOCAL_OBJECT_ID,
 			selectedSiteObjectId: NO_SITE_LOCAL_OBJECT_ID,
-			localSitesByLocalObjectId: OrderedMap().set(NO_SITE_LOCAL_OBJECT_ID, {name:'noSite', localObjectId: NO_SITE_LOCAL_OBJECT_ID}),
+			localSitesByLocalObjectId: OrderedMap().set(NO_SITE_LOCAL_OBJECT_ID,
+					{name:'noSite',	selectedLocation: NULL_LOCATION, systemLocation:NULL_LOCATION, localObjectId: NO_SITE_LOCAL_OBJECT_ID}),
 			sitesByObjectId: OrderedMap(),
 		});
 

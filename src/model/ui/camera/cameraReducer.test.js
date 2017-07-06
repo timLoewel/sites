@@ -2,16 +2,17 @@
  * Created by tim on 28/03/17.
  */
 import cameraReducer, {enqueuePhotoForRendering} from './cameraReducer';
-import {Stack , List } from 'immutable'
+import {List} from 'immutable';
 
 test('initial state', () => {
-	expect(cameraReducer(undefined, {type:'not handled'})).toEqual(
+	expect(cameraReducer(undefined, {type: 'not handled'})).toEqual(
 			{
-				isReadyForScreenshot: false, 
-				screenshotDimensions: {height:0, width:0}, 
+				isReadyForScreenshot: false,
+				screenshotDimensions: {height: 0, width: 0},
 				isDoingScreenshot: false,
-				photosWaitingForRendering: List(),
+				photosWaitingForRendering: [],
 				selectedLocation: undefined,
+				onSiteLocation: '',
 				description: '',
 			}
 	);
@@ -20,20 +21,20 @@ test('initial state', () => {
 test('photosWaitingForRendering', () => {
 	expect(cameraReducer(
 			{
-				isReadyForScreenshot: false, 
-				screenshotDimensions: {height:0, width:0}, 
+				isReadyForScreenshot: false,
+				screenshotDimensions: {height: 0, width: 0},
 				isDoingScreenshot: false,
-				photosWaitingForRendering: List().push({value:1}),
+				photosWaitingForRendering: [{value: 1}],
 				selectedLocation: undefined,
 				description: '',
-			}, enqueuePhotoForRendering({newValue:2}))).toEqual(
+			}, enqueuePhotoForRendering({newValue: 2}))).toEqual(
 			{
-				isReadyForScreenshot: false, 
-				screenshotDimensions: {height:0, width:0}, 
+				isReadyForScreenshot: false,
+				screenshotDimensions: {height: 0, width: 0},
 				isDoingScreenshot: false,
-				photosWaitingForRendering: List().push({value:1}).push({newValue:2}),
+				photosWaitingForRendering: [{value: 1}, {newValue: 2}],
 				selectedLocation: undefined,
 				description: '',
 			}
-			);
+	);
 });

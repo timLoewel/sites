@@ -2,7 +2,6 @@
  * Created by tim on 16/03/17.
  */
 // @flow
-import Immutable from 'seamless-immutable';
 import { createAction, createReducer } from 'redux-act';
 
 
