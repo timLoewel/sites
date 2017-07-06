@@ -1,6 +1,8 @@
 /**
  * Created by tim on 16/03/17.
  */
+//@flow
+
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/empty';
 import {combineEpics} from 'redux-observable';
@@ -13,6 +15,7 @@ import {newObjectId} from '../../../utils/objectId';
 import RNFetchBlob from 'react-native-fetch-blob';
 import {resetLastPhoto, screenshotDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
+import type {IPhoto} from '../../ModelTypes';
 
 const PHOTO = 'photo';
 
@@ -27,34 +30,33 @@ const photographingEpic = (action$, store) =>
 							console.log('photoPromise done');
 						}).flatMap(photo =>
 								Observable.fromPromise(Exif.getExif(photo.path))
-										.flatMap(exif =>
-											Observable.of(enqueuePhotoForRendering(
-												{
-													//THIS IS WHERE A PHOTO GETS CREATED
-													uriOriginalPhoto: exif.originalUri,
-													height: exif.ImageHeight,
-													width: exif.ImageWidth,
-													orientation: exif.Orientation,
-													createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
-													shareableUri: photographingAction.payload.shareableUri,
-													description: photographingAction.payload.description,
-													site: photographingAction.payload.site,
-													creator: {
-														"__type": "Pointer",
-														"className": "_User",
-														objectId: photographingAction.payload.creatorObjectId,
-													},
-													creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
-													searchablePosition:{
-														__type: 'GeoPoint',
-														longitude: photographingAction.payload.selectedLocation.longitude,
-														latitude: photographingAction.payload.selectedLocation.latitude
-													},
-													selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
-													systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
-												})
-											)
-									)
+										.flatMap(exif => {
+											const newPhoto: IPhoto = {
+												//THIS IS WHERE A PHOTO GETS CREATED
+												uriOriginalPhoto: exif.originalUri,
+												height: exif.ImageHeight,
+												width: exif.ImageWidth,
+												orientation: exif.Orientation,
+												createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
+												shareableUri: photographingAction.payload.shareableUri,
+												description: photographingAction.payload.description,
+												site: photographingAction.payload.site,
+												creator: {
+													"__type": "Pointer",
+													"className": "_User",
+													objectId: photographingAction.payload.creatorObjectId,
+												},
+												creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
+												searchablePosition: {
+													__type: 'GeoPoint',
+													longitude: photographingAction.payload.selectedLocation.longitude,
+													latitude: photographingAction.payload.selectedLocation.latitude
+												},
+												selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
+												systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
+											};
+											return Observable.of(enqueuePhotoForRendering(newPhoto));
+										})
 						).catch(error => {
 							console.log(photographingAction.payload.createdAtMillis + ' error in photographing epic');
 							console.log(error);

@@ -39,6 +39,23 @@ export type ILocation = {
 	address: ?Address
 }
 
+export type IObjectId = string;
+
+export type ICameraViewComponentProps = {
+	setPhotographing: (IPhotoCapture) => void,
+	gotoPhotos: () => void,
+	addNewLocalSite: (ISite) => void,
+
+	siteName: ?string,
+	selectedLocation: ILocation,
+	description: string,
+	systemLocation: ILocation,
+	creatorObjectId: IObjectId,
+	creatorName: string,
+	photoForRendering: IPhotoCapture,
+	currentSite: ?ISite,
+	lastPhotoThumbnail: string // base64 image
+}
 
 export type IPhoto = {
 	uriOriginalPhoto: string,

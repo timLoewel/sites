@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
 import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
-import type {IPhotoCapture} from '../../model/ModelTypes';
+import type {ICameraViewComponentProps, IPhotoCapture} from '../../model/ModelTypes';
 
 import {
 	photographing,
@@ -70,6 +70,8 @@ const {width: windowWidth, height: windowHeight} = getDimensions();
  */
 class CameraView extends Component {
 		camera: Camera;
+		props: ICameraViewComponentProps;
+
 
 	_renderShutterAndPhotosButton() {
 		const buttonSize = theme.btnHeight * 0.75;
@@ -267,8 +269,6 @@ const mapStateToProps = state => ({
 function bindAction(dispatch) {
 	return {
 		setPhotographing: (photoData: IPhotoCapture) => dispatch(photographing(photoData)),
-		renderingDone: (photoData) => dispatch(renderedPhotoReady(photoData)),
-		addNewLocalSite: (site) => dispatch(addNewLocalSite(site)),
 		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName: 'Photos'})),
 	}
 }

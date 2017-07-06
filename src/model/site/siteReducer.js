@@ -69,7 +69,7 @@ const reducer = createReducer({
 				sitesByObjectId: state.sitesByObjectId.set(
 						payload.objectId, {...state.localSitesByLocalObjectId.get(payload.localObjectId), ...payload}),
 			}),
-			[registerNoSite]: (state, payload) => ({...state,
+			[registerNoSite]: (state, payload) => ({...state, // TODO TL remove noSite
 				noSite: payload
 			}),
 			[addObject]: (state, payload) => {
