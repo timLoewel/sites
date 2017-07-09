@@ -7,7 +7,7 @@ import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
 import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
-import type {ICameraViewComponentProps, IPhotoCapture} from '../../model/ModelTypes';
+import type {ICameraViewComponentProps, IPhotoCapture, ISite} from '../../model/ModelTypes';
 
 import {
 	photographing,
@@ -207,9 +207,9 @@ class CameraView extends Component {
 		);
 	}
 
-	_getSite() {
+	_getSite():?ISite {
 		let site = this.props.currentSite;
-		if (site.name === 'noSite' && this.props.selectedLocation !== NULL_LOCATION) {
+		if (!site && this.props.selectedLocation !== NULL_LOCATION) {
 			site = createNewSite(this.props.selectedLocation,
 					this.props.systemLocation, this.props.creatorObjectId);
 			this.props.addNewLocalSite(site);
@@ -218,7 +218,7 @@ class CameraView extends Component {
 	}
 
 	_takePicture() {
-		this.props.setPhotographing({
+		this.props.setPhotographing( ({
 			capture: this.camera.capture(),
 			createdAtMillis: moment().valueOf(),
 			shareableUri: createShareableImageUri(),
@@ -228,7 +228,7 @@ class CameraView extends Component {
 			selectedLocation: this.props.selectedLocation,
 			systemLocation: this.props.systemLocation,
 			site: this._getSite(),
-		});
+		}: IPhotoCapture));
 	}
 }
 

@@ -2,27 +2,38 @@
  * Created by tim on 06/07/17.
  */
 // @flow
-export type Address = {
+
+// classes that can be stored on the server
+export const ServerClassNames = {
+	Photo: 'Photo',
+	Site: 'Site',
+	User: 'User'
+}
+
+export type IServerClassName = $Keys<typeof ServerClassNames>
+
+
+export type IAddress = {
 	position: {// this is the position, the address is assigned to. not the location of the user
 		longitude:number,
 		latitude:number,
 	},
 	formattedAddress: string, // the full address
-	streetNumber: ?string,
-	streetName: ?string,
-	postalCode: ?string,
-	locality: ?string, // city name
-	country: string,
-	countryCode: string,
-	adminArea: ?string,
-	subAdminArea: ?string,
-	subLocality: ?string
+	streetNumber?: string,
+	streetName?: string,
+	postalCode?: string,
+	locality?: string, // city name
+	country?: string,
+	countryCode?: string,
+	adminArea?: string,
+	subAdminArea?: string,
+	subLocality?: ?string
 }
 
 /**
  * location that can be searched in parseJs queries
  */
-export type SearchablePosition = {
+export type ISearchablePosition = {
 	longitude: number,
 	latitude: number,
 	__type: 'GeoPoint',
@@ -36,10 +47,11 @@ export type ILocation = {
 	latitude: number,
 	accuracy: number,
 	altitude: number,
-	address: ?Address
+	address: ?IAddress
 }
 
 export type IObjectId = string;
+export type ISessionToken = string;
 
 export type ICameraViewComponentProps = {
 	setPhotographing: (IPhotoCapture) => void,
@@ -69,15 +81,16 @@ export type IPhoto = {
 	creator: {
 		"__type": "Pointer",
 		"className": "_User",
-		"objectId": string
+		"objectId": IObjectId
 	},
 	creatorName: string,//store.getState().profile.currentUser.name,
-	searchablePosition: SearchablePosition, // geopoint of the selectedLocation
+	searchablePosition: ISearchablePosition, // geopoint of the selectedLocation
 	selectedLocation: Location,//store.getState().ui.cameraReducer.selectedLocation,
 	systemLocation: Location
 };
 
 export type IPhotoCapture = {
+	capture: any,
 	createdAtMillis: number,
 	shareableUri: string,
 	description: string,
@@ -85,7 +98,19 @@ export type IPhotoCapture = {
 	creatorName: string,
 	selectedLocation: ILocation,
 	systemLocation: ILocation,
-	site: ISite
+	site: ?ISite
 };
 
-export type ISite = any;
+export type ISite = {
+	localObjectId: IObjectId,
+	name: string,
+	searchablePosition: ISearchablePosition,
+	selectedLocation: ILocation,
+	systemLocation: ILocation,
+	creator: {
+		"__type": "Pointer",
+		"className": "_User",
+		"objectId": IObjectId
+	},
+	publicUrl: string
+};

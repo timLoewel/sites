@@ -14,7 +14,6 @@ import {save, uploadJpg} from '../server/parseServer';
 import {uploadLocalData} from '../server/serverReducer';
 import {setServerReadyForRequests, subscribeToQuery} from '../server/serverSocketReducer';
 
-const PHOTO = 'Photo';
 
 const serverReadyForRequestsEpic = (action$, store) =>
 		action$.ofType(setServerReadyForRequests.getType())

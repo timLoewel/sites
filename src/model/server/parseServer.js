@@ -2,6 +2,8 @@
  * Created by tim on 27/01/17.
  */
 // import {App, User} from 'parse-lite';
+//@flow
+
 import * as env from '../../../env';
 // import HttpController from 'ibeam/http-node';
 import RNFetchBlob from 'react-native-fetch-blob';
@@ -9,9 +11,9 @@ import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/dom/ajax';
 import {ajaxPut, ajaxPost, ajaxGetJSON} from 'rxjs/observable/dom/AjaxObservable';
 import {randomString} from '../../utils/objectId';
+import type {ISessionToken, IServerClassName} from '../ModelTypes';
 
-
-function getHeaders(sessionToken) {
+function getHeaders(sessionToken: ISessionToken) {
 	return {
 		'X-Parse-Application-Id': env.PARSE_APP_ID,
 		'X-Parse-REST-API-Key': env.PARSE_REST_API_KEY,
@@ -20,7 +22,7 @@ function getHeaders(sessionToken) {
 	}
 }
 
-export function save(className, object, sessionToken) {
+export function save(className: IServerClassName, object: Object, sessionToken: ISessionToken) {
 	console.log('saving object ', object);
 	const data = {...object, createdAt: undefined, updatedAt: undefined};
 	const url = env.PARSE_SERVER_HOST + 'classes/' + className;
@@ -31,7 +33,7 @@ export function save(className, object, sessionToken) {
 	}
 }
 
-export function fetch(className, query, sessionToken) {
+export function fetch(className: IServerClassName, query: string, sessionToken: ISessionToken) {
 	const url = env.PARSE_SERVER_HOST + 'classes/' + className + '?where=' +
 			encodeURIComponent(JSON.stringify(query));
 	console.log(url);
@@ -49,18 +51,18 @@ export function createShareableSiteUri() {
 
 
 
-export function uploadJpg(localFile, sessionToken) {
-	const targetFileName = localFile.substring(localFile.lastIndexOf('/') + 1, localFile.length);
+export function uploadJpg(localFileName: string, sessionToken: ISessionToken) {
+	const targetFileName = localFileName.substring(localFileName.lastIndexOf('/') + 1, localFileName.length);
 	const completeUrl = env.PARSE_SERVER_HOST + 'files/' + targetFileName;
 	console.log('uploading file to ' + completeUrl);
-	console.log('file ' + localFile);
+	console.log('file ' + localFileName);
 	console.log('appID: ' + env.PARSE_APP_ID);
 	console.log('X-Parse-REST-API-Key: ' + env.PARSE_REST_API_KEY);
 	console.log('Session Token: ' + sessionToken);
 	return Observable.fromPromise(
 			RNFetchBlob.fetch('POST', completeUrl,
 					getHeaders(sessionToken),
-					RNFetchBlob.wrap(localFile)
+					RNFetchBlob.wrap(localFileName)
 			));
 };
 
