@@ -11,11 +11,7 @@ import type {ICameraViewComponentProps, IPhotoCapture, ISite} from '../../model/
 
 import {
 	photographing,
-	renderedPhotoReady,
-	resetLastPhoto,
-	errorOnPhoto,
-	rendering
-} from '../../model/ui/camera/cameraReducer';
+	} from '../../model/ui/camera/cameraReducer';
 import {
 	AppRegistry,
 	Dimensions,

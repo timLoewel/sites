@@ -56,7 +56,7 @@ const photographingEpic = (action$: any, store: any):any =>
 												selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
 												systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
 											};
-											return (Observable.of(enqueuePhotoForRendering(newPhoto)):IObservable);
+											return (Observable.of(enqueuePhotoForRendering(newPhoto)));
 										})
 						).catch(error => {
 							console.log(photographingAction.payload.createdAtMillis + ' error in photographing epic');
