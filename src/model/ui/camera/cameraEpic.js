@@ -17,7 +17,6 @@ import {resetLastPhoto, screenshotDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
 
 import type {IPhoto} from '../../ModelTypes';
-import type {Observable as IObservable} from 'rxjs/Observable';
 
 const PHOTO = 'photo';
 
