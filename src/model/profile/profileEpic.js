@@ -1,7 +1,7 @@
 /**
  * Created by tim on 14/03/17.
  */
-import {userLoginSuccess, userLoginFailed,showLoginScreen} from './profileReducer';
+import {userLoginSuccess, userLoginFailed} from './profileReducer';
 import {storeInitialized} from '../store';
 
 import {Observable} from 'rxjs';
@@ -12,28 +12,17 @@ import {combineEpics} from 'redux-observable';
 const clientId = env.AUTH0_CLIENT_ID;
 const domain = env.AUTH0_DOMAIN;
 
-const authenticationEnabled = clientId && domain ;
+if (!(clientId && domain)) {
+	throw 'Authentication not enabled: Auth0 configuration not provided clientId'+ clientId + ' domain '+ domain;
+};
 
-let lock = null;
-if (authenticationEnabled) {
-	lock = new Auth0Lock({
-		clientId,
-		domain,
-		useBrowser: true,
-	});
-} else {
-	console.warn('Authentication not enabled: Auth0 configuration not provided');
-	console.warn('auth0 clientId: ' + clientId);
-	console.warn('auth0 domain: ' + clientId);
-}
-
-
-
+const lock = new Auth0Lock({
+	clientId,
+	domain,
+	useBrowser: true,
+});
 
 function showLogin(locale) {
-	if (!authenticationEnabled) {
-		return;
-	}
 	const options = {
 		closable: true,
 		language: locale,
@@ -63,4 +52,4 @@ const showLoginEpic = (action$, store) =>
 						.map(result => userLoginSuccess(result))
 						.catch(error => userLoginFailed({error: error})));
 
-export default combineEpics(showLoginEpic);
+export default combineEpics();

@@ -257,7 +257,7 @@ const mapStateToProps = state => ({
 	systemLocation: state.geolocation.location,
 	creatorObjectId: state.profile.objectId,
 	creatorName: state.profile.currentUser.name,
-	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
+	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering[0],
 	currentSite: currentSite(state),
 	lastPhotoThumbnail: getLastPhotoThumbnail(state),
 });

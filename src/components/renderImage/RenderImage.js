@@ -297,7 +297,7 @@ const RenderImage = React.createClass({
 });
 
 const mapStateToProps = state => ({
-	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering.get(0),
+	photoForRendering: state.ui.cameraReducer.photosWaitingForRendering[0],
 	isDoingScreenshot: state.ui.cameraReducer.isDoingScreenshot,
 	isReadyForScreenshot: state.ui.cameraReducer.isReadyForScreenshot,
 	screenshotDimensions: state.ui.cameraReducer.screenshotDimensions,

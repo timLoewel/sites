@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
+    "android": "node node_modules/react-native/local-cli/cli.js run-android",
     "test": "jest",
     "storybook": "storybook start -p 7007",
     "slack": "node node_modules/slack-cli/bin/cmd.js",
@@ -43,6 +44,7 @@
     "redux-observable": "^0.14.1",
     "redux-persist": "^4.6.0",
     "redux-persist-transform-immutable": "^4.2.0",
+    "redux-saga": "^0.15.4",
     "reselect": "^3.0.0",
     "rxjs": "^5.2.1-smooth",
     "seamless-immutable": "^7.1.2",

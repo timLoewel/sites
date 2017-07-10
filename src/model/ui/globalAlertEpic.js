@@ -6,7 +6,6 @@
 
 
 import { createAction, createReducer } from 'redux-act';
-import SnackBar from 'react-native-snackbar-dialog'
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/empty';
 
@@ -17,6 +16,8 @@ export const showAlert = createAction('showAlert');
 
 export default (action$) =>
 		action$.ofType(showAlert.getType()).map(showAlert => {
-			SnackBar.show(showAlert.payload, { duration: 2000});
+			// SnackBar.show(showAlert.payload, { duration: 2000});
+			// TODO TL add a warning to the user
+			console.warn(showAlert.payload);
 			return Observable.empty()
 		})
