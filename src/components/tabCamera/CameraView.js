@@ -1,4 +1,5 @@
 'use strict';
+// @flow
 import moment from 'moment';
 
 import React, {Component, PropTypes} from 'react';
@@ -6,14 +7,11 @@ import {connect} from 'react-redux';
 import styled from 'styled-components/native';
 import PhotoDataInputForm from './PhotoDataInputForm';
 import {getLastPhotoThumbnail} from '../../model/photo/photoReducer';
+import type {ICameraViewComponentProps, IPhotoCapture, ISite} from '../../model/ModelTypes';
 
 import {
 	photographing,
-	renderedPhotoReady,
-	resetLastPhoto,
-	errorOnPhoto,
-	rendering
-} from '../../model/ui/camera/cameraReducer';
+	} from '../../model/ui/camera/cameraReducer';
 import {
 	AppRegistry,
 	Dimensions,
@@ -36,7 +34,7 @@ import {createShareableImageUri} from '../../model/server/parseServer';
 import currentSite from '../../model/site/currentSite';
 import {addNewLocalSite, createNewSite} from '../../model/site/siteReducer';
 import {NavigationActions} from 'react-navigation';
-import {nullLocation} from '../../model/systemState/geolocationReducer';
+import {NULL_LOCATION} from '../../model/systemState/geolocationReducer';
 
 
 // <TouchableHighlight
@@ -67,6 +65,9 @@ const {width: windowWidth, height: windowHeight} = getDimensions();
  *
  */
 class CameraView extends Component {
+		camera: Camera;
+		props: ICameraViewComponentProps;
+
 
 	_renderShutterAndPhotosButton() {
 		const buttonSize = theme.btnHeight * 0.75;
@@ -202,9 +203,9 @@ class CameraView extends Component {
 		);
 	}
 
-	_getSite() {
+	_getSite():?ISite {
 		let site = this.props.currentSite;
-		if (site.name === 'noSite' && this.props.selectedLocation !== nullLocation) {
+		if (!site && this.props.selectedLocation !== NULL_LOCATION) {
 			site = createNewSite(this.props.selectedLocation,
 					this.props.systemLocation, this.props.creatorObjectId);
 			this.props.addNewLocalSite(site);
@@ -213,7 +214,7 @@ class CameraView extends Component {
 	}
 
 	_takePicture() {
-		this.props.setPhotographing({
+		this.props.setPhotographing( ({
 			capture: this.camera.capture(),
 			createdAtMillis: moment().valueOf(),
 			shareableUri: createShareableImageUri(),
@@ -223,7 +224,7 @@ class CameraView extends Component {
 			selectedLocation: this.props.selectedLocation,
 			systemLocation: this.props.systemLocation,
 			site: this._getSite(),
-		});
+		}: IPhotoCapture));
 	}
 }
 
@@ -263,9 +264,7 @@ const mapStateToProps = state => ({
 
 function bindAction(dispatch) {
 	return {
-		setPhotographing: (photoData) => dispatch(photographing(photoData)),
-		renderingDone: (photoData) => dispatch(renderedPhotoReady(photoData)),
-		addNewLocalSite: (site) => dispatch(addNewLocalSite(site)),
+		setPhotographing: (photoData: IPhotoCapture) => dispatch(photographing(photoData)),
 		gotoPhotos: () => dispatch(NavigationActions.navigate({routeName: 'Photos'})),
 	}
 }

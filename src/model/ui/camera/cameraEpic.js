@@ -1,6 +1,8 @@
 /**
  * Created by tim on 16/03/17.
  */
+//@flow
+
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/observable/empty';
 import {combineEpics} from 'redux-observable';
@@ -14,11 +16,12 @@ import RNFetchBlob from 'react-native-fetch-blob';
 import {resetLastPhoto, screenshotDone} from './cameraReducer';
 import {createUniqueLocalPhotoFilename} from './photoFile';
 
+import type {IPhoto} from '../../ModelTypes';
+
 const PHOTO = 'photo';
 
-
 // wait for photo, get exif, dispatch setRawPhotoLocalData
-const photographingEpic = (action$, store) =>
+const photographingEpic = (action$: any, store: any):any =>
 		action$.ofType(photographing.getType()).do((v) => {
 			console.log('photographing Epic');
 		})
@@ -27,34 +30,34 @@ const photographingEpic = (action$, store) =>
 							console.log('photoPromise done');
 						}).flatMap(photo =>
 								Observable.fromPromise(Exif.getExif(photo.path))
-										.flatMap(exif =>
-											Observable.of(enqueuePhotoForRendering(
-												{
-													//THIS IS WHERE A PHOTO GETS CREATED
-													uriOriginalPhoto: exif.originalUri,
-													height: exif.ImageHeight,
-													width: exif.ImageWidth,
-													orientation: exif.Orientation,
-													createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
-													shareableUri: photographingAction.payload.shareableUri,
-													description: photographingAction.payload.description,
-													site: photographingAction.payload.site,
-													creator: {
-														"__type": "Pointer",
-														"className": "_User",
-														objectId: photographingAction.payload.creatorObjectId,
-													},
-													creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
-													searchablePosition:{
-														__type: 'GeoPoint',
-														longitude: photographingAction.payload.selectedLocation.longitude,
-														latitude: photographingAction.payload.selectedLocation.latitude
-													},
-													selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
-													systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
-												})
-											)
-									)
+										.flatMap(exif => {
+											const newPhoto: IPhoto = {
+												//THIS IS WHERE A PHOTO GETS CREATED
+												a: 33,
+												uriOriginalPhoto: exif.originalUri,
+												height: exif.ImageHeight,
+												width: exif.ImageWidth,
+												orientation: exif.Orientation,
+												createdAtMillis: photographingAction.payload.createdAtMillis,//moment().valueOf(),
+												shareableUri: photographingAction.payload.shareableUri,
+												description: photographingAction.payload.description,
+												site: photographingAction.payload.site,
+												creator: {
+													"__type": "Pointer",
+													"className": "_User",
+													objectId: photographingAction.payload.creatorObjectId,
+												},
+												creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
+												searchablePosition: {
+													__type: 'GeoPoint',
+													longitude: photographingAction.payload.selectedLocation.longitude,
+													latitude: photographingAction.payload.selectedLocation.latitude
+												},
+												selectedLocation: {...photographingAction.payload.selectedLocation},//store.getState().ui.cameraReducer.selectedLocation,
+												systemLocation: photographingAction.payload.systemLocation,// action.payload.store.getState().systemState.position
+											};
+											return (Observable.of(enqueuePhotoForRendering(newPhoto)));
+										})
 						).catch(error => {
 							console.log(photographingAction.payload.createdAtMillis + ' error in photographing epic');
 							console.log(error);
@@ -100,63 +103,6 @@ const initPhotoLocal = (action$, store) =>
 							console.log(screenshotDoneAction.payload.createdAtMillis + ' RenderingDone epic done')
 						})
 				);
-
-//
-// const sendLocalPhotoToServer = (action$, state) =>
-// 		action$.ofType(addPhoto.getType()).filter(v => state.profile.sessionToken && v.payload.objectId === undefined)
-// 				.map(
-// 		Observable.fromPromise(action.payload).flatMap(photo =>
-// 				Observable.fromPromise(Exif.getExif(photo.path)).flatMap(exif =>
-// 						Observable.of(
-// 								setRawPhotoLocalData({
-// 									uri: exif.originalUri,
-// 									photoHeight: exif.ImageHeight,
-// 									photoWidth: exif.ImageWidth,
-// 									orientation: exif.Orientation
-// 								})
-// 						)
-// 				)
-// 		).catch(error => Observable.from([errorOnPhoto(error),showAlert(I18n.t('camera.photoCouldNotBeTaken'))]))
-// );
-
-// const IMAGE_FILE_SUFFIX = '.jpg';
-// const PHOTO_CLASS = 'Photo';
-//
-// function addNewLocalPhoto(action, state) {
-// 	return;
-// 	return addPhoto(initialPhotoEntry)
-// 	const sessionToken = state.profile.sessionToken;
-//
-// 	console.log('addLocalPhoto 1');
-// 	return save(PHOTO_CLASS, initialPhotoEntry, sessionToken);
-// }
-//
-// function updateLocalPhoto(resultFromServer) {
-// 	console.log('addLocalPhoto 2 ');
-// 	const str = JSON.stringify(resultFromServer, null, 4);
-//
-// 	const shareableUri = createShareableImageUri(resultFromServer.data.objectId);
-// 	const updatedPhotoJson = {
-// 		objectId: resultFromServer.data.objectId,
-// 		createdAt: new Date(resultFromServer.data.createdAt),
-// 		shareableUri: shareableUri,
-// 		state: PHOTO_STATE.JSON_UPLOADED
-// 	};
-// 	console.log('addLocalPhoto 3');
-// 	return setServerPhotoData(updatedPhotoJson.objectId, shareableUri, updatedPhotoJson.createdAt);
-// 	console.log('addLocalPhoto 4');
-// 	dispatch(addPhoto(updatedPhotoJson));
-// 	console.log('addLocalPhoto 5');
-//
-// }
-// ).
-// catch((err) => {
-// 	const str = JSON.stringify(err, null, 4);
-// 	console.log('error during photo json upload: \n' + str);
-// 	console.log('error during photo json upload: \n' + err);
-// });
-// }
-// }
 
 
 export default combineEpics(photographingEpic, initPhotoLocal);

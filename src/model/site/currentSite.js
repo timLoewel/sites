@@ -10,7 +10,7 @@ const MIN_DIST_METERS_FOR_CURRENT_SITE = 500;
 const getAllSites = (state) => {
 	const allLocalSites = state.site.localSitesByLocalObjectId;
 	const allServerSites = state.site.sitesByObjectId;
-	return {sites: allLocalSites.concat(allServerSites), noSite: state.site.noSite};
+	return {sites: allLocalSites.concat(allServerSites)};
 };
 
 const getVisibilityFilter = (state) => {
@@ -21,7 +21,7 @@ export default createSelector(
 		[getVisibilityFilter, getAllSites],
 		(currentPosition, sites) => {
 			if (currentPosition === NULL_LOCATION) {
-				return sites.noSite;
+				return undefined;
 			}
 			// get the closest site
 			const minDistSite = sites.sites.minBy(site => {
@@ -32,7 +32,7 @@ export default createSelector(
 					< MIN_DIST_METERS_FOR_CURRENT_SITE) {
 				return minDistSite;
 			} else {
-				return sites.noSite;
+				return undefined;
 			}
 		}
 );

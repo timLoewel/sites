@@ -1,7 +1,7 @@
 /**
  * Created by tim on 15/03/17.
  */
-//
+//@flow
 import {Observable} from 'rxjs/Observable';
 import {combineEpics} from 'redux-observable';
 import {
@@ -13,8 +13,7 @@ import {
 import {save, uploadJpg} from '../server/parseServer';
 import {uploadLocalData} from '../server/serverReducer';
 import {setServerReadyForRequests, subscribeToQuery} from '../server/serverSocketReducer';
-
-const PHOTO = 'Photo';
+import {ServerClassNames} from '../ModelTypes';
 
 const serverReadyForRequestsEpic = (action$, store) =>
 		action$.ofType(setServerReadyForRequests.getType())
@@ -23,7 +22,7 @@ const serverReadyForRequestsEpic = (action$, store) =>
 				})
 				.map(() => {
 					return subscribeToQuery(`{
-	"className": "${PHOTO}",
+	"className": "${ServerClassNames.Photo}",
 	"where": {
 		"creator": {
 			"__type": "Pointer",
@@ -32,7 +31,7 @@ const serverReadyForRequestsEpic = (action$, store) =>
 		}
 	}
 }`)
-});
+				});
 
 
 // upload the photo to the cloud
@@ -61,7 +60,10 @@ const uploadNewLocalPhotoFileEpic = (action$, store) =>
 				.flatMap(savePhotoFileToServerAction =>
 						uploadJpg(savePhotoFileToServerAction.payload.uriPhotoLocal, store.getState().profile.sessionToken)
 								.map((uploadResult) =>
-										savePhotoFileToServerDone({...savePhotoFileToServerAction.payload, uriPhotoServer: JSON.parse(uploadResult.data).url}))
+										savePhotoFileToServerDone({
+											...savePhotoFileToServerAction.payload,
+											uriPhotoServer: JSON.parse(uploadResult.data).url
+										}))
 				).catch(error => {
 			console.log('error moving the image file');
 			console.log(error);
@@ -73,7 +75,7 @@ const uploadNewLocalPhotoFileEpic = (action$, store) =>
 const uploadNewLocalPhotoJsonEpic = (action$, store) =>
 		action$.ofType(savePhotoFileToServerDone.getType())
 				.flatMap(savePhotoFileToServerDoneAction =>
-						save(PHOTO, savePhotoFileToServerDoneAction.payload, store.getState().profile.sessionToken)
+						save(ServerClassNames.Photo, savePhotoFileToServerDoneAction.payload, store.getState().profile.sessionToken)
 								.do((saveResult) => {
 									console.log(saveResult);
 								}).map((saveResult) => savePhotoJsonToServerDone({...savePhotoFileToServerDoneAction.payload, ...saveResult.response}))

@@ -5,29 +5,9 @@
 import {createAction, createReducer} from 'redux-act';
 import {OrderedMap} from 'immutable';
 import {addObject, removeObject} from '../server/serverReducer';
-import type {Location, Address, SearchablePosition} from '../systemState/geolocationReducer';
 
 const PHOTO = 'Photo';
 
-export type Photo = {
-	uriOriginalPhoto: string,
-	height: number,
-	width: number,
-	orientation: number,
-	createdAtMillis: number,
-	shareableUri: string,
-	description: string,
-	site: string,
-	creator: {
-		"__type": "Pointer",
-		"className": "_User",
-		"objectId": string
-	},
-	creatorName: string,//store.getState().profile.currentUser.name,
-	searchablePosition: SearchablePosition, // geopoint of the selectedLocation
-	selectedLocation: Location,//store.getState().ui.cameraReducer.selectedLocation,
-	systemLocation: Location
-}
 
 /**
  * photo:{thumbnailData, photoUri, description, creatorObjectId, creatorName, selectedLocation, systemLocation, siteObjectId	}
@@ -49,7 +29,7 @@ export const savePhotoJsonToServerDone = createAction('savePhotoJsonToServerDone
 /**
  * retrieve the local uri / thumbnail of the last photo in the repo, or undefined if none
  */
-export function getLastPhotoThumbnail(state) {
+export function getLastPhotoThumbnail(state: any) {
 
 	if (!state.photo.localPhotosByLocalObjectId.isEmpty()) {
 		return state.photo.localPhotosByLocalObjectId.last().thumbnailData;
