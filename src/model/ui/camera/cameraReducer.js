@@ -1,19 +1,9 @@
 /**
  * Created by tim on 02/01/17.
  */
+//@flow
 
 import {createAction, createReducer} from 'redux-act';
-
-/**
- * a photo goes through these states
- * @type {{CREATED: string, JSON_UPLOADED: string, UPLOADING_IMAGE: string, ON_SERVER: string}}
- */
-export const PHOTO_STATE = {
-	CREATED: 'created',
-	JSON_UPLOADED: 'jsonUploaded',
-	UPLOADING_IMAGE: 'uploadingImage',
-	ON_SERVER: 'onServer',
-};
 
 /**
  * call when a photo was done, or when the camera view is entered

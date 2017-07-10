@@ -54,6 +54,7 @@
     "babel-preset-react-native": "1.9.1",
     "flow-bin": "0.38.0",
     "flow-typed": "^2.1.2",
+    "flowgen": "^1.2.0",
     "jest": "19.0.2",
     "slack-cli": "^1.0.18"
   },
