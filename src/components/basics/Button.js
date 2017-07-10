@@ -9,10 +9,38 @@ import {
 	Text,
 	TouchableOpacity,
 	View,
-	ViewPropTypes,
 } from 'react-native';
 
-import coalesceNonElementChildren from './coalesceNonElementChildren';
+
+function coalesceNonElementChildren(children, coalesceNodes) {
+	var coalescedChildren = [];
+
+	var contiguousNonElements = [];
+	Children.forEach(children, (child) => {
+		if (!React.isValidElement(child)) {
+			contiguousNonElements.push(child);
+			return;
+		}
+
+		if (contiguousNonElements.length) {
+			coalescedChildren.push(
+					coalesceNodes(contiguousNonElements, coalescedChildren.length)
+			);
+			contiguousNonElements = [];
+		}
+
+		coalescedChildren.push(child);
+	});
+
+	if (contiguousNonElements.length) {
+		coalescedChildren.push(
+				coalesceNodes(contiguousNonElements, coalescedChildren.length)
+		);
+	}
+
+	return coalescedChildren;
+}
+
 
 const systemButtonOpacity = 0.2;
 
@@ -20,7 +48,7 @@ export default class Button extends Component {
 	static propTypes = {
 		...TouchableOpacity.propTypes,
 		allowFontScaling: Text.propTypes.allowFontScaling,
-		containerStyle: ViewPropTypes.style,
+		containerStyle: View.propTypes.style,
 		disabled: PropTypes.bool,
 		style: Text.propTypes.style,
 		styleDisabled: Text.propTypes.style,
