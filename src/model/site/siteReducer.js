@@ -38,7 +38,7 @@ export const createNewSite = (selectedLocation: ILocation, systemLocation: ILoca
 	return {
 		localObjectId: localObjectId,
 		name: localObjectId,
-		searchablePosition: {
+		searchableLocation: {
 			"__type": 'GeoPoint',
 			longitude: selectedLocation.longitude,
 			latitude: selectedLocation.latitude,

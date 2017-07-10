@@ -48,7 +48,7 @@ const photographingEpic = (action$: any, store: any):any =>
 													objectId: photographingAction.payload.creatorObjectId,
 												},
 												creatorName: photographingAction.payload.creatorName,//store.getState().profile.currentUser.name,
-												searchablePosition: {
+												searchableLocation: {
 													__type: 'GeoPoint',
 													longitude: photographingAction.payload.selectedLocation.longitude,
 													latitude: photographingAction.payload.selectedLocation.latitude

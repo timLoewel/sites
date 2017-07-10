@@ -33,7 +33,7 @@ export type IAddress = {
 /**
  * location that can be searched in parseJs queries
  */
-export type ISearchablePosition = {
+export type ISearchableLocation = {
 	longitude: number,
 	latitude: number,
 	__type: 'GeoPoint',
@@ -53,6 +53,10 @@ export type ILocation = {
 export type IObjectId = string;
 export type ISessionToken = string;
 
+export type IUser = {
+	objectId: IObjectId,
+	name: string
+}
 export type ICameraViewComponentProps = {
 	setPhotographing: (IPhotoCapture) => void,
 	gotoPhotos: () => void,
@@ -69,6 +73,12 @@ export type ICameraViewComponentProps = {
 	lastPhotoThumbnail: string // base64 image
 }
 
+export type IUserPointer = {
+	"__type": "Pointer",
+	"className": "_User",
+	"objectId": string
+}
+
 export type IPhoto = {
 	uriOriginalPhoto: string,
 	height: number,
@@ -78,13 +88,9 @@ export type IPhoto = {
 	shareableUri: string,
 	description: string,
 	site: string,
-	creator: {
-		"__type": "Pointer",
-		"className": "_User",
-		"objectId": IObjectId
-	},
+	creator: IUserPointer,
 	creatorName: string,//store.getState().profile.currentUser.name,
-	searchablePosition: ISearchablePosition, // geopoint of the selectedLocation
+	searchableLocation: ISearchableLocation, // geopoint of the selectedLocation
 	selectedLocation: Location,//store.getState().ui.cameraReducer.selectedLocation,
 	systemLocation: Location
 };
@@ -104,13 +110,9 @@ export type IPhotoCapture = {
 export type ISite = {
 	localObjectId: IObjectId,
 	name: string,
-	searchablePosition: ISearchablePosition,
+	searchableLocation: ISearchableLocation,
 	selectedLocation: ILocation,
 	systemLocation: ILocation,
-	creator: {
-		"__type": "Pointer",
-		"className": "_User",
-		"objectId": IObjectId
-	},
+	creator: IUserPointer,
 	publicUrl: string
 };

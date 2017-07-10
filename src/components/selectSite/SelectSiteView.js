@@ -14,7 +14,7 @@ import {
 	View,
 	FlatList,
 } from 'react-native';
-import Button from 'react-native-button';
+import Button from '../basics/button';
 import {selectCloseSites} from '../../model/site/siteSelectors';
 import I18n from '../../assets/translations';
 import {NavigationActions} from 'react-navigation';
