@@ -16,10 +16,7 @@ import {
 
 class SinglePhotoView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'SinglePhoto',
-			// visible: false,
-		},
+		tabBarLabel: 'SinglePhoto',
 	};
 
 	render() {

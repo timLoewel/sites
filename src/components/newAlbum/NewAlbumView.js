@@ -16,10 +16,7 @@ import {
 
 class NewAlbumView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'NewAlbum',
-			// visible: false,
-		},
+		tabBarLabel: 'NewAlbum',
 	};
 
 	render() {

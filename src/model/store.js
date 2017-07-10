@@ -1,18 +1,18 @@
 import {AsyncStorage} from 'react-native';
-import {composeWithDevTools} from 'redux-devtools-extension';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import {createStore, applyMiddleware, compose, Store} from 'redux';
 import {persistStore, autoRehydrate} from 'redux-persist';
 import * as env from '../../env';
 
-import {createEpicMiddleware} from 'redux-observable';
-import {reduxFormMiddleware} from 'redux-form-actions';
+import { createEpicMiddleware } from 'redux-observable';
+import { reduxFormMiddleware } from 'redux-form-actions';
 import createSagaMiddleware from 'redux-saga'
 import sagas from './sagas';
 
 import reducer from './reducer';
 import rootEpic from './epics';
-import {createAction, createReducer} from 'redux-act';
+import { createAction, createReducer } from 'redux-act';
 import immutableTransform from 'redux-persist-transform-immutable';
 
 const SCHEMA_VERSION = '0.1';
@@ -21,20 +21,19 @@ let persistor;
 
 export const storeInitialized = createAction('storeInitialized: store has been initialized');
 
-export default async function configureStore(onCompletion: () => void): Store {
+export default async function configureStore(onCompletion: ()=>void): Store {
 	console.log('current schema version: ', SCHEMA_VERSION);
 	const schemaVersionStored = await AsyncStorage.getItem(SCHEMA_VERSION_KEY);
 	console.log('schema version stored: ', schemaVersionStored);
 // create the saga middleware
 	const sagaMiddleware = createSagaMiddleware();
-
 	const enhancer = composeWithDevTools(
 			applyMiddleware(
 					reduxFormMiddleware,
 					createEpicMiddleware(rootEpic),
 					sagaMiddleware
 			)
-			, autoRehydrate()// do not set config {log: true} as that clashes with redux-observable
+			,autoRehydrate()// do not set config {log: true} as that clashes with redux-observable
 	);
 
 	const store = createStore(reducer, undefined, enhancer);
@@ -55,7 +54,7 @@ export default async function configureStore(onCompletion: () => void): Store {
 }
 
 export function resetStore() {
-	if (persistor) {
+	if (persistor){
 		persistor.purge();
 	}
 }

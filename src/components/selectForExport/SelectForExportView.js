@@ -16,10 +16,7 @@ import {
 
 class SelectForExportView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'SelectForExport',
-			// visible: false,
-		},
+		tabBarLabel: 'SelectForExport',
 	};
 
 	render() {

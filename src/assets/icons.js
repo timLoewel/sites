@@ -375,6 +375,7 @@ glyphMapLinestyleTTF = {
 'change-site': 0xf169,
 'site-marker': 0xf16a,
 'many-sites': 0xf16b,
+'indoor-position': 0xf16c,
 };
 
 export const SketchIcon = createIconSet(glyphMapFlaticonTTF, 'Flaticon',  'Flaticon.ttf');

@@ -16,10 +16,7 @@ import {
 
 class SelectLocationView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'SelectLocation',
-			// visible: false,
-		},
+		tabBarLabel: 'SelectLocation',
 	};
 
 	render() {

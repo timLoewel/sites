@@ -34,7 +34,8 @@ import SelectLocationView from '../selectLocation/SelectLocationView';
 import SelectSiteView from '../selectSite/SelectSiteView';
 import SingleAlbumView from '../singleAlbum/SingleAlbumView';
 import SinglePhotoView from '../singlePhoto/SinglePhotoView';
-import SingleSiteView from '../singleSite/SingleSiteView';
+// import SingleSiteView from '../singleSite/SingleSiteView';
+// import EditSingleSiteView from '../singleSite/EditSingleSiteView';
 
 /**
  * Created by tim on 10/03/17.
@@ -50,17 +51,16 @@ export const MainTabsScreen = TabNavigator({
 	// 	screen: ProfileView,
 	// },
 }, {
-	lazyLoad: true,
+	lazy: true,
 	swipeEnabled: true,
 	animationEnabled: true,
 	initialRouteName: 'Camera',
 	order: ['Camera', 'Photos'],// 'Sites', 'Profile']
 
 	tabBarOptions: {
-		visible:false,
 		activeTintColor: '#e91e63',
 		tabBarPosition: 'top',
-		style: {height:0}
+		style: {height:40}
 	},
 
 });
@@ -72,9 +72,7 @@ export const AppNavigator = StackNavigator({
 			MainTabs: {
 						screen: MainTabsScreen,
 						navigationOptions: {
-							header: {
-								visible: false,
-							}
+							header: null
 						},
 					},
 			// SingleSite: {
@@ -109,7 +107,9 @@ export const AppNavigator = StackNavigator({
 			// SelectForExport: {screen: SelectForExportView},
 			// Comments: {screen: CommentsView},
 			// SelectContact: {screen: SelectContactView},
-			// SelectSite: {screen: SelectSiteView},
+			SelectSite: {screen: SelectSiteView},
+			// EditSite: {screen: EditSingleSiteView},
+			// ViewSite: {screen: SingleSiteView},
 			// SelectLocation: {screen: SelectLocationView},
 			// Contacts: {screen: ContactsView,navigationOptions: {
 			// 	cardStack: {

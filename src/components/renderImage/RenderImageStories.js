@@ -3,7 +3,7 @@
  */
 import React from 'react';
 import {View, Text, ScrollView,} from 'react-native';
-import {storiesOf, action, linkTo} from '@kadira/react-native-storybook';
+import {storiesOf, action, linkTo} from '@storybook/react-native';
 import moment from 'moment';
 import CenterView from '../basics/CenterView';
 import RenderImage from './RenderImage';

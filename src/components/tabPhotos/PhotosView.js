@@ -10,10 +10,7 @@ import PhotoAlbum from './PhotoAlbum';
 
 class PhotosView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'Photos',
-			// visible: false,
-		},
+		tabBarLabel:'Photos',
 	};
 
 

@@ -65,7 +65,6 @@ const reducer = createReducer({
 				sitesByObjectId: state.sitesByObjectId.set(
 						payload.objectId, {...state.localSitesByLocalObjectId.get(payload.localObjectId), ...payload}),
 			}),
-
 			[addObject]: (state, payload) => {
 				if (payload.className === SITE) {
 					return {

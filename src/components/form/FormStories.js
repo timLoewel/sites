@@ -1,5 +1,5 @@
 import React from 'react';
-import {storiesOf, action, linkTo} from '@kadira/react-native-storybook';
+import {storiesOf, action, linkTo} from '@storybook/react-native';
 
 import CenterView from '../basics/CenterView';
 

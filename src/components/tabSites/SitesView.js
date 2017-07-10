@@ -16,10 +16,7 @@ import {
 
 class SitesView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'Sites',
-			// visible: false,
-		},
+		tabBarLabel: 'Sites',
 	};
 
 	render() {

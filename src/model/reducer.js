@@ -1,5 +1,5 @@
 import {combineReducers} from 'redux';
-import {reducer as formReducer} from 'redux-form-actions';
+import {reducer as formReducer} from 'redux-form';
 
 import uiReducer from './ui/uiReducer';
 import profileReducer from './profile/profileReducer';

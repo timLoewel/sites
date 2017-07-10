@@ -16,10 +16,7 @@ import {
 
 class SingleAlbumView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'SingleAlbum',
-			// visible: false,
-		},
+		tabBarLabel: 'SingleAlbum',
 	};
 
 	render() {

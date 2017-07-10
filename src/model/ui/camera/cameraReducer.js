@@ -39,6 +39,7 @@ export const enqueuePhotoForRendering = createAction('enqueuePhotoForRendering: 
 export const setPhotoLocation = createAction('setPhotoLocation: set the address the photo was shot at');
 
 export const setPhotoDescription = createAction('setPhotoDescription: set the photo description');
+
 export const setOnSiteLocation = createAction('setOnSiteLocation: set the on site location (indoor)');
 /**
  * sets the information rendered into the photo
@@ -68,23 +69,15 @@ export const photoReady = createAction('photoReady: photo ready');
 
 const reducer = createReducer({
 			[screenshotDone]: (state, payload) => ({
+				...state,
 				isReadyForScreenshot: false,
 				screenshotDimensions: {height:0, width:0},
 				isDoingScreenshot: false,
-				photosWaitingForRendering: state.photosWaitingForRendering.shift(),//remove from front
-				selectedLocation: state.selectedLocation,
-				onSiteLocation: state.onSiteLocation,
-				description: state.description,
+				photosWaitingForRendering: state.photosWaitingForRendering.slice(1),//remove from front
 			}),
 			[enqueuePhotoForRendering]: (state, payload) => ({
 				...state,
-				isReadyForScreenshot: state.isReadyForScreenshot,
-				screenshotDimensions: state.screenshotDimensions,
-				isDoingScreenshot: state.isDoingScreenshot,
-				photosWaitingForRendering: state.photosWaitingForRendering.push(payload),//add to end
-				selectedLocation: state.selectedLocation,
-				onSiteLocation: state.onSiteLocation,
-				description: state.description,
+				photosWaitingForRendering: state.photosWaitingForRendering.concat(payload),//add to end
 			}),
 			[setPhotoLocation]: (state, payload) => ({
 				...state,
@@ -97,6 +90,7 @@ const reducer = createReducer({
 			[doingScreenshot]: (state, payload) => ({
 				...state,
 				isReadyForScreenshot: false,
+
 				isDoingScreenshot: true,
 			}),
 			[readyForScreenshot]: (state, payload) => ({
@@ -108,7 +102,7 @@ const reducer = createReducer({
 			[setOnSiteLocation]: (state, payload) => ({
 				...state,
 				onSiteLocation: payload,
-			}),
+			}), 
 		},
 		{
 			isReadyForScreenshot: false, // is RenderImage View ready to trigger the screenshot?

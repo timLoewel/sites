@@ -1,8 +1,6 @@
 /**
  * Created by tim on 11/04/17.
  */
-//@flow
-
 import {Observable} from 'rxjs/Observable';
 
 import 'rxjs/add/observable/empty';
@@ -14,7 +12,6 @@ import {addNewLocalSite, saveSiteJsonToServerDone} from './siteReducer';
 import {setServerReadyForRequests, subscribeToQuery} from '../server/serverSocketReducer';
 import {save} from '../server/parseServer';
 
-const SITE_CLASS_NAME = 'Site';
 
 const serverReadyForRequestsEpic = (action$, store) =>
 		action$.ofType(setServerReadyForRequests.getType())
@@ -22,8 +19,8 @@ const serverReadyForRequestsEpic = (action$, store) =>
 					console.log('initialzing site query');
 				})
 				.map(() => subscribeToQuery(
-						`{
-	"className": "${SITE_CLASS_NAME}",
+`{
+	"className": "${SITE}",
 	"where": {
 		"creator": {
 			"__type": "Pointer",

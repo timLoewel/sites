@@ -16,10 +16,7 @@ import {
 
 class SelectContactsView extends React.Component {
 	static navigationOptions = {
-		tabBar: {
-			label: 'SelectContacts',
-			// visible: false,
-		},
+		tabBarLabel: 'SelectContacts',
 	};
 
 	render() {
