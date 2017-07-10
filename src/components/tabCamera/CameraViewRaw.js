@@ -339,7 +339,7 @@ class CameraView extends Component {
 					backgroundColor: theme.inputBGColor}}
 				>
 					{this._renderDescriptionInput()}
-					{this.state.descriptionFocused?undefined:this._renderShutterButtonRow()}
+					{this.state.descriptionFocused ? undefined : this._renderShutterButtonRow()}
 				</View>)
 	}
 
