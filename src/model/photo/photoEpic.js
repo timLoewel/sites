@@ -1,7 +1,7 @@
 /**
  * Created by tim on 15/03/17.
  */
-//@flow
+// @flow
 import { Observable } from "rxjs/Observable";
 import { combineEpics } from "redux-observable";
 import {
@@ -24,8 +24,8 @@ const serverReadyForRequestsEpic = (action$, store) =>
     .do(r => {
       console.log("initialzing photo query");
     })
-    .map(() => {
-      return subscribeToQuery(`{
+    .map(() =>
+      subscribeToQuery(`{
 	"className": "${ServerClassNames.Photo}",
 	"where": {
 		"creator": {
@@ -34,8 +34,8 @@ const serverReadyForRequestsEpic = (action$, store) =>
 			"objectId": "${store.getState().profile.objectId}"
 		}
 	}
-}`);
-    });
+}`)
+    );
 
 // upload the photo to the cloud
 const batchUploadAllPendingEpic = (action$, store) =>

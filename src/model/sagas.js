@@ -12,10 +12,7 @@ const clientId = env.AUTH0_CLIENT_ID;
 const domain = env.AUTH0_DOMAIN;
 
 if (!(clientId && domain)) {
-  throw "Authentication not enabled: Auth0 configuration not provided clientId" +
-    clientId +
-    " domain " +
-    domain;
+  throw `Authentication not enabled: Auth0 configuration not provided clientId${clientId} domain ${domain}`;
 }
 
 const lock = new Auth0Lock({
@@ -24,9 +21,9 @@ const lock = new Auth0Lock({
   useBrowser: true
 });
 
-createLoginPromise = options => {
-  return new Promise((resolve, reject) => {
-    lock.show(options, function(error, profile, token) {
+createLoginPromise = options =>
+  new Promise((resolve, reject) => {
+    lock.show(options, (error, profile, token) => {
       if (error) {
         console.error("login error", error);
         reject({ error });
@@ -36,7 +33,6 @@ createLoginPromise = options => {
       }
     });
   });
-};
 
 function* showLogin() {
   const { isLoggedIn, locale } = yield select(state => ({

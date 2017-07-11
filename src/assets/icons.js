@@ -2,6 +2,7 @@
  * Created by tim on 22/11/16.
  */
 import { createIconSet } from "react-native-vector-icons";
+
 const glyphMapSiteTTF = {
   logout: 61696,
   "arrow-down": 61697,
@@ -388,4 +389,4 @@ export const LineStyleIcon = createIconSet(
 );
 
 // export default createIconSet(glyphMap, 'SitesIcons',  'SitesIcons.ttf');
-//export default createIconSet(glyphMap, 'EvilIcons', 'EvilIcons.ttf');
+// export default createIconSet(glyphMap, 'EvilIcons', 'EvilIcons.ttf');

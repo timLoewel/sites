@@ -21,10 +21,10 @@ const printAllActions = action$ =>
     console.log(a);
   });
 
-//start first buffer after 5s, and every 5s after
+// start first buffer after 5s, and every 5s after
 const startInterval1 = Observable.interval(15000);
 
-//emit value after 3s, closing corresponding buffer
+// emit value after 3s, closing corresponding buffer
 const closingInterval1 = val => {
   console.log(`Value ${val} emitted, starting buffer! Closing in 3s!`);
   return Observable.interval(3000);
@@ -39,9 +39,7 @@ const testEpic = (action$, store) =>
     .do(v => {
       console.log(v);
     })
-    .map(() => {
-      return { type: "test" };
-    });
+    .map(() => ({ type: "test" }));
 
 // //emit value every second
 // const sourceInterval = Observable.interval(1000).map(v=>v+'hallo');

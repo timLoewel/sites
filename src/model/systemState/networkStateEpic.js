@@ -44,15 +44,14 @@ function getConnectionActionFromNetworkState(networkState) {
   const hasWifi = networkState.toLowerCase().includes("wifi");
   if (isConnected) {
     return setConnected({
-      isConnected: isConnected,
-      hasWifi: hasWifi
+      isConnected,
+      hasWifi
     });
-  } else {
-    return setDisconnected();
   }
+  return setDisconnected();
 }
 
-//get initial network state
+// get initial network state
 const initialNetworkstateEpic = action$ =>
   action$
     .ofType(startNetworkMonitor.getType())

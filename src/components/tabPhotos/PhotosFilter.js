@@ -9,17 +9,14 @@ const getAllPhotos = state => {
   return allLocalPhotos.concat(allServerPhotos);
 };
 
-const getVisibilityFilter = state => {
-  return {
-    filterType: 0
-  };
-};
+const getVisibilityFilter = state => ({
+  filterType: 0
+});
 
 export const getVisiblePhotos = createSelector(
   [getVisibilityFilter, getAllPhotos],
-  (visibilityFilter, photos) => {
+  (visibilityFilter, photos) =>
     // return taskCards.filter(card => card.siteObjectId == visibilityFilter.siteObjectId)
 
-    return photos.toArray();
-  }
+    photos.toArray()
 );

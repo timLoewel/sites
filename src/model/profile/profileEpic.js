@@ -13,10 +13,7 @@ const clientId = env.AUTH0_CLIENT_ID;
 const domain = env.AUTH0_DOMAIN;
 
 if (!(clientId && domain)) {
-  throw "Authentication not enabled: Auth0 configuration not provided clientId" +
-    clientId +
-    " domain " +
-    domain;
+  throw `Authentication not enabled: Auth0 configuration not provided clientId${clientId} domain ${domain}`;
 }
 
 const lock = new Auth0Lock({
@@ -38,7 +35,7 @@ function showLogin(locale) {
         return;
       }
       // Authentication worked!
-      observer.next({ profile: profile, token: token });
+      observer.next({ profile, token });
       observer.complete();
     });
   });
@@ -54,7 +51,7 @@ const showLoginEpic = (action$, store) =>
     .flatMap(() =>
       showLogin(store.getState().profile.currentUser.locale)
         .map(result => userLoginSuccess(result))
-        .catch(error => userLoginFailed({ error: error }))
+        .catch(error => userLoginFailed({ error }))
     );
 
 export default combineEpics();

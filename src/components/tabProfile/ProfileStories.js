@@ -47,7 +47,7 @@ storiesOf("Profile", module)
   )
   .add("touched", () =>
     <ProfileForm
-      dirty={true}
+      dirty
       pristine={false}
       handleSubmit={action("clicked-touched")}
     />

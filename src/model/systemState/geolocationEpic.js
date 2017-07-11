@@ -139,7 +139,7 @@ const configureBackgroundGeolocation = () =>
 const onStoreInitializedEpic = (action$, store) =>
   action$.ofType(storeInitialized.getType()).map(action => startGPS());
 
-//start gps, continually update position
+// start gps, continually update position
 const startGPSEpic = action$ =>
   action$
     .ofType(startGPS.getType())
@@ -154,21 +154,21 @@ const startGPSEpic = action$ =>
                 .takeUntil(action$.ofType(stopGPS.getType()))
                 .map(location => setCurrentLocation(location))
             )
-            .catch(error => gpsError({ error: error, epic: "startGPS" }))
+            .catch(error => gpsError({ error, epic: "startGPS" }))
         )
     );
 
-//stop gps, update position
+// stop gps, update position
 const stopGPSEpic = action$ =>
   action$
     .ofType(stopGPS.getType())
     .flatMap(action =>
       stopBackgroundGeolocationObservable().catch(error =>
-        Observable.of(gpsError({ error: error, epic: "stopGPS" }))
+        Observable.of(gpsError({ error, epic: "stopGPS" }))
       )
     );
 
-//start gps, update position
+// start gps, update position
 const printGeolocationErrorsEpic = action$ =>
   action$
     .ofType(startGPS.getType())
@@ -176,9 +176,7 @@ const printGeolocationErrorsEpic = action$ =>
       getLocationErrorEventObservable()
         .takeUntil(action$.ofType(stopGPS.getType()))
         .flatMap(error =>
-          Observable.of(
-            gpsError({ error: error, epic: "printGeolocationErrorsEpic" })
-          )
+          Observable.of(gpsError({ error, epic: "printGeolocationErrorsEpic" }))
         )
     );
 
@@ -190,7 +188,7 @@ const updateLocationEpic = action$ =>
       getCurrentPositionObservable()
         .map(location => setCurrentLocation(location))
         .catch(error =>
-          Observable.of(gpsError({ error: error, epic: "updateLocationEpic" }))
+          Observable.of(gpsError({ error, epic: "updateLocationEpic" }))
         )
     );
 

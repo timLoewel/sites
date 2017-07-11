@@ -1,7 +1,7 @@
 /**
  * Created by tim on 16/03/17.
  */
-"use strict";
+
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Exif from "react-native-exif";

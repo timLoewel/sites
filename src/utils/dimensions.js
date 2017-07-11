@@ -1,6 +1,6 @@
 import ExtraDimensions from "react-native-extra-dimensions-android";
 import { Dimensions, Platform } from "react-native";
-//@flow
+// @flow
 
 export default (get = () => {
   let { width, height } = Dimensions.get("window");
@@ -10,5 +10,5 @@ export default (get = () => {
     const softMenuHeight = ExtraDimensions.get("SOFT_MENU_BAR_HEIGHT");
     height = windowHeight - (statusBarHeight + softMenuHeight);
   }
-  return { width: width, height: height };
+  return { width, height };
 });

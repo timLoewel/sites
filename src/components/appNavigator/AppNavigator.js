@@ -111,7 +111,7 @@ export const AppNavigator = StackNavigator({
   // 	cardStack: {
   // 		gesturesEnabled: true
   // 	}
-  //}},
+  // }},
 });
 
 export const AppWithNavigationState = connect(state => ({

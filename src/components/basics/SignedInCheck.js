@@ -2,8 +2,6 @@
  * Created by tim on 24/03/17.
  */
 
-"use strict";
-
 import React, { Component } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 import CenterView from "./CenterView";
@@ -17,13 +15,12 @@ class SignedInCheck extends Component {
           {this.props.children}
         </View>
       );
-    } else {
-      return (
-        <CenterView>
-          <ActivityIndicator animating={true} size="large" />
-        </CenterView>
-      );
     }
+    return (
+      <CenterView>
+        <ActivityIndicator animating size="large" />
+      </CenterView>
+    );
   }
 }
 

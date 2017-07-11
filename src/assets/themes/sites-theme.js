@@ -1,3 +1,8 @@
+// @flow
+
+// @flow-ignore magicNumber, unusedProperty
+// TODO add these ignores
+
 import Color from "color";
 import { Platform, PixelRatio } from "react-native";
 import getDimensions from "../../utils/dimensions";

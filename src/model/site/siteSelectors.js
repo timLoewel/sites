@@ -15,31 +15,28 @@ const getAllSites = state => {
   const allServerSites = state.site.sitesByObjectId;
   const allSites = allLocalSites.concat(allServerSites);
   return {
-    allSites: allSites
+    allSites
   };
 };
 
-const getVisibilityFilter = state => {
-  return {
-    location: state.geolocation.location,
-    selectedSiteObjectId: state.site.selectedSiteObjectId,
-    noSiteObjectId: state.site.noSiteObjectId
-  };
-};
+const getVisibilityFilter = state => ({
+  location: state.geolocation.location,
+  selectedSiteObjectId: state.site.selectedSiteObjectId,
+  noSiteObjectId: state.site.noSiteObjectId
+});
 
 export const selectCloseSites = createSelector(
   [getVisibilityFilter, getAllSites],
   (filter, sites) => {
     if (filter.location === NULL_LOCATION) {
-      //TODO return the users most used sites?
+      // TODO return the users most used sites?
       return {};
     }
-    return sites.allSites.takeWhile(site => {
-      return (
+    return sites.allSites.takeWhile(
+      site =>
         haversineDistance(site.selectedLocation, filter.location) <
         MIN_DIST_METERS_FOR_CLOSE_SITE
-      );
-    });
+    );
   }
 );
 
@@ -81,9 +78,9 @@ export const selectCurrentSite = createSelector(
     }
 
     // get the closest site
-    const minDistSite = sites.allSites.minBy(site => {
-      return haversineDistance(site.selectedLocation, filter.location);
-    });
+    const minDistSite = sites.allSites.minBy(site =>
+      haversineDistance(site.selectedLocation, filter.location)
+    );
 
     if (
       minDistSite &&
@@ -91,9 +88,8 @@ export const selectCurrentSite = createSelector(
         MIN_DIST_METERS_FOR_CURRENT_SITE
     ) {
       return minDistSite;
-    } else {
-      return noSite;
     }
+    return noSite;
   }
 );
 

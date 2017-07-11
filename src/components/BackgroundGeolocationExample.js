@@ -60,14 +60,14 @@ export default React.createClass({
         }
         // }
       },
-      function(state) {
+      state => {
         console.log(
           "- BackgroundGeolocation is configured and ready: ",
           state.enabled
         );
 
         if (!state.enabled) {
-          BackgroundGeolocation.start(function() {
+          BackgroundGeolocation.start(() => {
             console.log("- Start success");
           });
         }
@@ -84,15 +84,15 @@ export default React.createClass({
         maximumAge: 0,
         persist: false
       },
-      function(location) {
+      location => {
         console.log(
           "- manual get current position: ",
           JSON.stringify(location)
         );
       },
-      function(error) {
+      error => {
         console.info("ERROR: Could not get current position", error);
-      }.bind(this)
+      }
     );
   },
 
@@ -114,9 +114,9 @@ export default React.createClass({
     console.log("- [js]location: ", JSON.stringify(location));
   },
   onError(error) {
-    let type = error.type;
-    let code = error.code;
-    alert(type + " Error: " + code);
+    const type = error.type;
+    const code = error.code;
+    alert(`${type} Error: ${code}`);
   },
   onActivityChange(activityName) {
     console.log("- Current motion activity: ", activityName); // eg: 'on_foot', 'still', 'in_vehicle'

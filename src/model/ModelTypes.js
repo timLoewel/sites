@@ -57,21 +57,22 @@ export type IUser = {
   objectId: IObjectId,
   name: string
 };
-export type ICameraViewComponentProps = {
-  setPhotographing: IPhotoCapture => void,
-  gotoPhotos: () => void,
-  addNewLocalSite: ISite => void,
 
-  siteName: ?string,
-  selectedLocation: ILocation,
-  description: string,
-  systemLocation: ILocation,
-  creatorObjectId: IObjectId,
-  creatorName: string,
-  photoForRendering: IPhotoCapture,
-  currentSite: ?ISite,
-  lastPhotoThumbnail: string // base64 image
-};
+// export type ICameraViewComponentProps = {
+//   setPhotographing: (capture: IPhotoCapture) => void,
+//   gotoPhotos: () => void,
+//   addNewLocalSite: (site: ISite) => void,
+//
+//   siteName: ?string,
+//   selectedLocation: ILocation,
+//   description: string,
+//   systemLocation: ILocation,
+//   creatorObjectId: IObjectId,
+//   creatorName: string,
+//   photoForRendering: IPhotoCapture,
+//   currentSite: ?ISite,
+//   lastPhotoThumbnail: string // base64 image
+// };
 
 export type IUserPointer = {
   "__type": "Pointer",

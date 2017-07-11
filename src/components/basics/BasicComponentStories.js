@@ -3,6 +3,7 @@ import { storiesOf, action, linkTo } from "@storybook/react-native";
 
 import CenterView from "./CenterView";
 import RoundThumbnail from "./RoundThumbnail";
+
 const profileImage = require("../../assets/images/avatar2016.jpg");
 
 storiesOf("Basics", module)

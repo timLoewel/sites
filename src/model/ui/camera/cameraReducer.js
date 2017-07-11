@@ -1,7 +1,7 @@
 /**
  * Created by tim on 02/01/17.
  */
-//@flow
+// @flow
 
 import { createAction, createReducer } from "redux-act";
 
@@ -94,11 +94,11 @@ const reducer = createReducer(
       isReadyForScreenshot: false,
       screenshotDimensions: { height: 0, width: 0 },
       isDoingScreenshot: false,
-      photosWaitingForRendering: state.photosWaitingForRendering.slice(1) //remove from front
+      photosWaitingForRendering: state.photosWaitingForRendering.slice(1) // remove from front
     }),
     [enqueuePhotoForRendering]: (state, payload) => ({
       ...state,
-      photosWaitingForRendering: state.photosWaitingForRendering.concat(payload) //add to end
+      photosWaitingForRendering: state.photosWaitingForRendering.concat(payload) // add to end
     }),
     [setPhotoLocation]: (state, payload) => ({
       ...state,
@@ -129,7 +129,7 @@ const reducer = createReducer(
     isReadyForScreenshot: false, // is RenderImage View ready to trigger the screenshot?
     screenshotDimensions: { height: 0, width: 0 }, // the final dimensions of the view that should be screenshot
     isDoingScreenshot: false, // semaphore, so that we do not snap the same image twice, if a render happens during doingScreenshot
-    photosWaitingForRendering: [], //fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
+    photosWaitingForRendering: [], // fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
     selectedLocation: undefined,
     onSiteLocation: "",
     description: ""
