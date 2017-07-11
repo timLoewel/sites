@@ -10,8 +10,10 @@ import React, { Component } from "react";
 import type {
   ILocation,
   IObjectId,
+  IPhotoCapture,
   ISearchableLocation,
-  IUserPointer
+  IUserPointer,
+  ISite
 } from "../../model/ModelTypes";
 
 import {
@@ -47,7 +49,7 @@ import { NULL_LOCATION } from "../../model/systemState/geolocationReducer";
 // 	</View>
 // </TouchableHighlight>;
 
-const { width: windowWidth, height: windowHeight } = getDimensions();
+const { height: windowHeight } = getDimensions();
 
 /**
  * shows a photo viewfinder and annotation input and triggers taking the photo and rendering it together
@@ -85,13 +87,13 @@ class CameraView extends Component {
     lastPhotoThumbnail: string,
 
     // Actions
-    setPhotographing: any => void,
-    addNewLocalSite: any => void,
-    gotoPhotos: any => void,
-    gotoSelectSite: any => void,
-    setPhotoLocation: any => void,
-    setPhotoDescription: string => void,
-    setOnSiteLocation: string => void,
+    setPhotographing: (photoCapture: IPhotoCapture) => void,
+    addNewLocalSite: (site: ISite) => void,
+    gotoPhotos: () => void,
+    gotoSelectSite: () => void,
+    setPhotoLocation: (location: ILocation) => void,
+    setPhotoDescription: (description: string) => void,
+    setOnSiteLocation: (onSiteLocation: string) => void,
     creatorObjectId: IObjectId,
     creatorName: string
   };
@@ -503,17 +505,19 @@ class CameraView extends Component {
   }
 
   _takePicture() {
-    this.props.setPhotographing({
-      capture: this.camera.capture(),
-      createdAtMillis: moment().valueOf(),
-      shareableUri: createShareableImageUri(),
-      description: this.props.description,
-      creatorObjectId: this.props.creatorObjectId,
-      creatorName: this.props.creatorName,
-      selectedLocation: this.props.selectedLocation,
-      systemLocation: this.props.systemLocation,
-      site: this._getSite()
-    });
+    this.props.setPhotographing(
+      ({
+        capture: this.camera.capture(),
+        createdAtMillis: moment().valueOf(),
+        shareableUri: createShareableImageUri(),
+        description: this.props.description,
+        creatorObjectId: this.props.creatorObjectId,
+        creatorName: this.props.creatorName,
+        selectedLocation: this.props.selectedLocation,
+        systemLocation: this.props.systemLocation,
+        site: this._getSite()
+      }: IPhotoCapture)
+    );
   }
 }
 
