@@ -1,60 +1,66 @@
-import {AsyncStorage} from 'react-native';
-import { composeWithDevTools } from 'redux-devtools-extension';
+import { AsyncStorage } from "react-native";
+import { composeWithDevTools } from "redux-devtools-extension";
 
-import {createStore, applyMiddleware, compose, Store} from 'redux';
-import {persistStore, autoRehydrate} from 'redux-persist';
-import * as env from '../../env';
+import { createStore, applyMiddleware, compose, Store } from "redux";
+import { persistStore, autoRehydrate } from "redux-persist";
+import * as env from "../../env";
 
-import { createEpicMiddleware } from 'redux-observable';
-import { reduxFormMiddleware } from 'redux-form-actions';
-import createSagaMiddleware from 'redux-saga'
-import sagas from './sagas';
+import { createEpicMiddleware } from "redux-observable";
+import { reduxFormMiddleware } from "redux-form-actions";
+import createSagaMiddleware from "redux-saga";
+import sagas from "./sagas";
 
-import reducer from './reducer';
-import rootEpic from './epics';
-import { createAction, createReducer } from 'redux-act';
-import immutableTransform from 'redux-persist-transform-immutable';
+import reducer from "./reducer";
+import rootEpic from "./epics";
+import { createAction, createReducer } from "redux-act";
+import immutableTransform from "redux-persist-transform-immutable";
 
-const SCHEMA_VERSION = '0.1';
-const SCHEMA_VERSION_KEY = env.APP_NAME + ':SchemaVersion'
+const SCHEMA_VERSION = "0.1";
+const SCHEMA_VERSION_KEY = env.APP_NAME + ":SchemaVersion";
 let persistor;
 
-export const storeInitialized = createAction('storeInitialized: store has been initialized');
+export const storeInitialized = createAction(
+  "storeInitialized: store has been initialized"
+);
 
-export default async function configureStore(onCompletion: ()=>void): Store {
-	console.log('current schema version: ', SCHEMA_VERSION);
-	const schemaVersionStored = await AsyncStorage.getItem(SCHEMA_VERSION_KEY);
-	console.log('schema version stored: ', schemaVersionStored);
-// create the saga middleware
-	const sagaMiddleware = createSagaMiddleware();
-	const enhancer = composeWithDevTools(
-			applyMiddleware(
-					reduxFormMiddleware,
-					createEpicMiddleware(rootEpic),
-					sagaMiddleware
-			)
-			,autoRehydrate()// do not set config {log: true} as that clashes with redux-observable
-	);
+export default async function configureStore(onCompletion: () => void): Store {
+  console.log("current schema version: ", SCHEMA_VERSION);
+  const schemaVersionStored = await AsyncStorage.getItem(SCHEMA_VERSION_KEY);
+  console.log("schema version stored: ", schemaVersionStored);
+  // create the saga middleware
+  const sagaMiddleware = createSagaMiddleware();
+  const enhancer = composeWithDevTools(
+    applyMiddleware(
+      reduxFormMiddleware,
+      createEpicMiddleware(rootEpic),
+      sagaMiddleware
+    ),
+    autoRehydrate() // do not set config {log: true} as that clashes with redux-observable
+  );
 
-	const store = createStore(reducer, undefined, enhancer);
-	persistor = persistStore(store, {
-		storage: AsyncStorage,
-		blacklist: ['ui', 'serverSocket', 'systemState'],
-		transforms: [immutableTransform()]
-	}, onCompletion);
+  const store = createStore(reducer, undefined, enhancer);
+  persistor = persistStore(
+    store,
+    {
+      storage: AsyncStorage,
+      blacklist: ["ui", "serverSocket", "systemState"],
+      transforms: [immutableTransform()]
+    },
+    onCompletion
+  );
 
-	if (schemaVersionStored !== SCHEMA_VERSION) {
-		await persistor.purge();
-		AsyncStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
-	}
-	// then run the saga
-	sagaMiddleware.run(sagas);
+  if (schemaVersionStored !== SCHEMA_VERSION) {
+    await persistor.purge();
+    AsyncStorage.setItem(SCHEMA_VERSION_KEY, SCHEMA_VERSION);
+  }
+  // then run the saga
+  sagaMiddleware.run(sagas);
 
-	return store;
+  return store;
 }
 
 export function resetStore() {
-	if (persistor){
-		persistor.purge();
-	}
+  if (persistor) {
+    persistor.purge();
+  }
 }

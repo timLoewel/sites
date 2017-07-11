@@ -3,12 +3,14 @@
  */
 //@flow
 
-import {createAction, createReducer} from 'redux-act';
+import { createAction, createReducer } from "redux-act";
 
 /**
  * call when a photo was done, or when the camera view is entered
  */
-export const resetLastPhoto = createAction('resetLastPhoto: reset the data of the last photo shot');
+export const resetLastPhoto = createAction(
+  "resetLastPhoto: reset the data of the last photo shot"
+);
 
 /**
  * set the meta data of the photo just shot
@@ -27,20 +29,32 @@ export const resetLastPhoto = createAction('resetLastPhoto: reset the data of th
  * @param photoData
  * @returns {{type: string, payload: {uri: string, photoHeight: number, photoWidth: number, orientation: number, createdAt}}}
  */
-export const setRawPhotoLocalData = createAction('setRawPhotoLocalData: set the data of the photo just shot');
+export const setRawPhotoLocalData = createAction(
+  "setRawPhotoLocalData: set the data of the photo just shot"
+);
 
-export const screenshotDone = createAction('screenshotDone: (PHOTO) screenshot done.');
+export const screenshotDone = createAction(
+  "screenshotDone: (PHOTO) screenshot done."
+);
 
-export const enqueuePhotoForRendering = createAction('enqueuePhotoForRendering: (PHOTO) add the photo to the queue, so that it gets rendered');
+export const enqueuePhotoForRendering = createAction(
+  "enqueuePhotoForRendering: (PHOTO) add the photo to the queue, so that it gets rendered"
+);
 /**
  * payload: {address:{formattedAddress}, location: {latitude, longitude}}
  * @type {ActionCreator<P, M>}
  */
-export const setPhotoLocation = createAction('setPhotoLocation: set the address the photo was shot at');
+export const setPhotoLocation = createAction(
+  "setPhotoLocation: set the address the photo was shot at"
+);
 
-export const setPhotoDescription = createAction('setPhotoDescription: set the photo description');
+export const setPhotoDescription = createAction(
+  "setPhotoDescription: set the photo description"
+);
 
-export const setOnSiteLocation = createAction('setOnSiteLocation: set the on site location (indoor)');
+export const setOnSiteLocation = createAction(
+  "setOnSiteLocation: set the on site location (indoor)"
+);
 /**
  * sets the information rendered into the photo
  */
@@ -51,69 +65,75 @@ export const setOnSiteLocation = createAction('setOnSiteLocation: set the on sit
  *    photoPromise: Promise
  *
  */
-export const photographing = createAction('photographing: taking a photo');
+export const photographing = createAction("photographing: taking a photo");
 
-export const doingScreenshot = createAction('doingScreenshot: doing Screenshot');
+export const doingScreenshot = createAction(
+  "doingScreenshot: doing Screenshot"
+);
 
-export const readyForScreenshot = createAction('readyForScreenshot: the photo has been rendered, is ready for screenshot');
+export const readyForScreenshot = createAction(
+  "readyForScreenshot: the photo has been rendered, is ready for screenshot"
+);
 
 /**
  * payload is the type of error
  */
-export const errorOnPhoto = createAction('errorOnPhoto: error while taking a photo');
+export const errorOnPhoto = createAction(
+  "errorOnPhoto: error while taking a photo"
+);
 
 /**
  * the payload should be the result of the react-native-camera.capture
  */
-export const photoReady = createAction('photoReady: photo ready');
+export const photoReady = createAction("photoReady: photo ready");
 
-const reducer = createReducer({
-			[screenshotDone]: (state, payload) => ({
-				...state,
-				isReadyForScreenshot: false,
-				screenshotDimensions: {height:0, width:0},
-				isDoingScreenshot: false,
-				photosWaitingForRendering: state.photosWaitingForRendering.slice(1),//remove from front
-			}),
-			[enqueuePhotoForRendering]: (state, payload) => ({
-				...state,
-				photosWaitingForRendering: state.photosWaitingForRendering.concat(payload),//add to end
-			}),
-			[setPhotoLocation]: (state, payload) => ({
-				...state,
-				selectedLocation: payload,
-			}),
-			[setPhotoDescription]: (state, payload) => ({
-				...state,
-				description: payload,
-			}),
-			[doingScreenshot]: (state, payload) => ({
-				...state,
-				isReadyForScreenshot: false,
+const reducer = createReducer(
+  {
+    [screenshotDone]: (state, payload) => ({
+      ...state,
+      isReadyForScreenshot: false,
+      screenshotDimensions: { height: 0, width: 0 },
+      isDoingScreenshot: false,
+      photosWaitingForRendering: state.photosWaitingForRendering.slice(1) //remove from front
+    }),
+    [enqueuePhotoForRendering]: (state, payload) => ({
+      ...state,
+      photosWaitingForRendering: state.photosWaitingForRendering.concat(payload) //add to end
+    }),
+    [setPhotoLocation]: (state, payload) => ({
+      ...state,
+      selectedLocation: payload
+    }),
+    [setPhotoDescription]: (state, payload) => ({
+      ...state,
+      description: payload
+    }),
+    [doingScreenshot]: (state, payload) => ({
+      ...state,
+      isReadyForScreenshot: false,
 
-				isDoingScreenshot: true,
-			}),
-			[readyForScreenshot]: (state, payload) => ({
-				...state,
-				isReadyForScreenshot: true,
-				screenshotDimensions: payload,
-				isDoingScreenshot: false,
-			}),
-			[setOnSiteLocation]: (state, payload) => ({
-				...state,
-				onSiteLocation: payload,
-			}), 
-		},
-		{
-			isReadyForScreenshot: false, // is RenderImage View ready to trigger the screenshot?
-			screenshotDimensions: {height:0, width:0}, // the final dimensions of the view that should be screenshot
-			isDoingScreenshot: false,// semaphore, so that we do not snap the same image twice, if a render happens during doingScreenshot
-			photosWaitingForRendering: [],//fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
-			selectedLocation: undefined,
-			onSiteLocation: '',
-			description: '',
-		}
+      isDoingScreenshot: true
+    }),
+    [readyForScreenshot]: (state, payload) => ({
+      ...state,
+      isReadyForScreenshot: true,
+      screenshotDimensions: payload,
+      isDoingScreenshot: false
+    }),
+    [setOnSiteLocation]: (state, payload) => ({
+      ...state,
+      onSiteLocation: payload
+    })
+  },
+  {
+    isReadyForScreenshot: false, // is RenderImage View ready to trigger the screenshot?
+    screenshotDimensions: { height: 0, width: 0 }, // the final dimensions of the view that should be screenshot
+    isDoingScreenshot: false, // semaphore, so that we do not snap the same image twice, if a render happens during doingScreenshot
+    photosWaitingForRendering: [], //fifo queue, as long as there are photos in here, the RenderImage View keeps doing shots
+    selectedLocation: undefined,
+    onSiteLocation: "",
+    description: ""
+  }
 );
-
 
 export default reducer;

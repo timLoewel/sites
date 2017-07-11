@@ -1,25 +1,27 @@
 /**
  * Created by tim on 18/04/17.
  */
-import {Observable} from 'rxjs/Observable';
-import {combineEpics} from 'redux-observable';
-import {setConnected} from '../systemState/systemStateReducer';
-import {userLoginSuccess} from '../profile/profileReducer';
+import { Observable } from "rxjs/Observable";
+import { combineEpics } from "redux-observable";
+import { setConnected } from "../systemState/systemStateReducer";
+import { userLoginSuccess } from "../profile/profileReducer";
 
-import {WebSocketSubject, WebSocketSubjectConfig} from 'rxjs/observable/dom/WebSocketSubject';
-import {Subject} from 'rxjs/Subject';
-import {createAction} from 'redux-act';
 import {
-	setServerReadyForRequests,
-	resetServerConnection,
-	setServerConnection,
-	subscribeToQuery,
-	subscribedToQuery,
-	undefinedMessageFromServer
-} from './serverSocketReducer';
+  WebSocketSubject,
+  WebSocketSubjectConfig
+} from "rxjs/observable/dom/WebSocketSubject";
+import { Subject } from "rxjs/Subject";
+import { createAction } from "redux-act";
+import {
+  setServerReadyForRequests,
+  resetServerConnection,
+  setServerConnection,
+  subscribeToQuery,
+  subscribedToQuery,
+  undefinedMessageFromServer
+} from "./serverSocketReducer";
 
-import * as env from '../../../env';
-
+import * as env from "../../../env";
 
 // const openConnectionEpic = (action$, store) =>
 // 		action$.ofType(setConnected.getType())
@@ -33,7 +35,7 @@ import * as env from '../../../env';
 const wsSContainer = {};
 
 function sendConnectMessage(v, sessionToken) {
-	v.target.send(`{
+  v.target.send(`{
 			"op": "connect",
 			"restAPIKey": "${env.PARSE_REST_API_KEY}",
 			"applicationId": "${env.PARSE_APP_ID}",
@@ -42,35 +44,40 @@ function sendConnectMessage(v, sessionToken) {
 }
 
 function openConnection(sessionToken) {
-	const openObserver: NextObserver<Event> = {
-		next: (v) => sendConnectMessage(v, sessionToken)
-	};
-	const closeObserver: NextObserver<CloseEvent> = {next: () => console.log('disconnected')};
-	const url = env.PARSE_SERVER_WS_HOST;
-	wsSContainer.wwS = WebSocketSubject.create({url, openObserver, closeObserver});
+  const openObserver: NextObserver<Event> = {
+    next: v => sendConnectMessage(v, sessionToken)
+  };
+  const closeObserver: NextObserver<CloseEvent> = {
+    next: () => console.log("disconnected")
+  };
+  const url = env.PARSE_SERVER_WS_HOST;
+  wsSContainer.wwS = WebSocketSubject.create({
+    url,
+    openObserver,
+    closeObserver
+  });
 }
 
-	const mapServerMessage = (serverMsg) => {
-	console.log('server message: ', serverMsg);
-	if (serverMsg.op) {
-		switch (serverMsg.op) {
-			case 'connected':
-				return setServerReadyForRequests();
+const mapServerMessage = serverMsg => {
+  console.log("server message: ", serverMsg);
+  if (serverMsg.op) {
+    switch (serverMsg.op) {
+      case "connected":
+        return setServerReadyForRequests();
 
-			case 'create':
-			case 'enter':
-			case 'update':
-				return updateObject(serverMsg.object);
-			case 'leave' :
-			case 'delete':
-				return removeObject(serverMsg.object);
-			case 'subscribed':
-				return subscribedToQuery(serverMsg.requestId);
-		}
-	}
-		return undefinedMessageFromServer(serverMsg);
+      case "create":
+      case "enter":
+      case "update":
+        return updateObject(serverMsg.object);
+      case "leave":
+      case "delete":
+        return removeObject(serverMsg.object);
+      case "subscribed":
+        return subscribedToQuery(serverMsg.requestId);
+    }
+  }
+  return undefinedMessageFromServer(serverMsg);
 };
-
 
 // Observable.create(observer =>
 // 		BackgroundGeolocation.getCurrentPosition({
@@ -90,62 +97,73 @@ function openConnection(sessionToken) {
 // 			"sessionToken":"${sessionToken}"
 // 			}`); // send init message
 // }
-const testAction = createAction('test');
+const testAction = createAction("test");
 
 const openConnectionEpic = (action$, store) =>
-		action$.filter(action => {
-			return (action.type === setConnected.getType()
-					|| action.type === userLoginSuccess.getType())
-					&& store.getState().profile.sessionToken
-					&& store.getState().systemState.isConnected
-		}).map(a => {
-							openConnection(store.getState().profile.sessionToken);
-							return setServerConnection();
-				}).takeUntil(action$.ofType(resetServerConnection.getType()));
-
+  action$
+    .filter(action => {
+      return (
+        (action.type === setConnected.getType() ||
+          action.type === userLoginSuccess.getType()) &&
+        store.getState().profile.sessionToken &&
+        store.getState().systemState.isConnected
+      );
+    })
+    .map(a => {
+      openConnection(store.getState().profile.sessionToken);
+      return setServerConnection();
+    })
+    .takeUntil(action$.ofType(resetServerConnection.getType()));
 
 const subscribeToClassEpic = (action$, store) =>
-		action$.ofType(subscribeToQuery.getType())
-				.do((q)=> {
-						console.log('subscribing to query ', q.payload);
-				})
-				.flatMap(subscribeToQueryAction => {
-					const requestId = store.getState().server.requestIds.get(subscribeToQueryAction.payload);
-					const queryString = subscribeToQueryAction.payload;
-					const message = `{
+  action$
+    .ofType(subscribeToQuery.getType())
+    .do(q => {
+      console.log("subscribing to query ", q.payload);
+    })
+    .flatMap(subscribeToQueryAction => {
+      const requestId = store
+        .getState()
+        .server.requestIds.get(subscribeToQueryAction.payload);
+      const queryString = subscribeToQueryAction.payload;
+      const message = `{
 									"op": "subscribe",
 									"requestId": ${requestId},
 									"query": ${queryString},
 									"sessionToken": "${store.getState().profile.sessionToken}"
 								}`;
-					wsSContainer.wwS.next(message);
-					return Observable.empty();
-				});
+      wsSContainer.wwS.next(message);
+      return Observable.empty();
+    });
 
 const dispatchChangesFromServerEpic = (action$, store) =>
-		action$.ofType(setServerConnection.getType())
-				.flatMap((setServerConnectionAction) => {
-					console.log('dispatchChangesFromServerEpic started');
-					// setServerConnectionAction.payload.map(mapServerMessage).do((msg) => {console.log('message from server: ', msg)}).subscribe((a) => {
-					// 	console.log('subscription in server connection epic: ', a);
-					// });
-					// the payload of the setServerConnection action is the websocket subject.
-					// we then map the server messages to actions
-					// return setServerConnectionAction.payload
-							// .do((msg) => {console.log('message from server: ', msg)})
-							// .map(mapServerMessage)
-					const ticks = Observable.interval(1000)
-							.map((x)=> testAction(x + ' ticks')).take(25);
-					const tacks = Observable.interval(2000)
-							.map((x)=> testAction(x + ' tacks')).take(12);
+  action$
+    .ofType(setServerConnection.getType())
+    .flatMap(setServerConnectionAction => {
+      console.log("dispatchChangesFromServerEpic started");
+      // setServerConnectionAction.payload.map(mapServerMessage).do((msg) => {console.log('message from server: ', msg)}).subscribe((a) => {
+      // 	console.log('subscription in server connection epic: ', a);
+      // });
+      // the payload of the setServerConnection action is the websocket subject.
+      // we then map the server messages to actions
+      // return setServerConnectionAction.payload
+      // .do((msg) => {console.log('message from server: ', msg)})
+      // .map(mapServerMessage)
+      const ticks = Observable.interval(1000)
+        .map(x => testAction(x + " ticks"))
+        .take(25);
+      const tacks = Observable.interval(2000)
+        .map(x => testAction(x + " tacks"))
+        .take(12);
 
-					return Observable.create(function(observer) {
-						wsSContainer.wwS.map(mapServerMessage).subscribe((msg)=> {
-							observer.next(msg)
-						});
-					});
-				}).catch(err => resetServerConnection())
-				.takeUntil(action$.ofType(resetServerConnection.getType()));
+      return Observable.create(function(observer) {
+        wsSContainer.wwS.map(mapServerMessage).subscribe(msg => {
+          observer.next(msg);
+        });
+      });
+    })
+    .catch(err => resetServerConnection())
+    .takeUntil(action$.ofType(resetServerConnection.getType()));
 
 // const source = Observable.timer(1000, 2000);
 // //output: 0,1,2,3,4,5......
@@ -192,4 +210,8 @@ const dispatchChangesFromServerEpic = (action$, store) =>
 // };
 //
 // subscribeToClassEpic, dispatchChangesFromServerEpic
-export default combineEpics(openConnectionEpic, dispatchChangesFromServerEpic, subscribeToClassEpic);
+export default combineEpics(
+  openConnectionEpic,
+  dispatchChangesFromServerEpic,
+  subscribeToClassEpic
+);

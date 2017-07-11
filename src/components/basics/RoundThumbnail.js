@@ -1,8 +1,8 @@
 /**
  * Created by tim on 14/03/17.
  */
-import styled from 'styled-components/native';
-import theme from '../../assets/themes/sites-theme';
+import styled from "styled-components/native";
+import theme from "../../assets/themes/sites-theme";
 
 const RoundThumbnail = styled.Image`
   height=${props => props.size};

@@ -1,40 +1,37 @@
 /**
  * Created by tim on 10/03/17.
  */
-import {connect} from 'react-redux';
+import { connect } from "react-redux";
 
-import React from 'react';
+import React from "react";
 import {
-	AppRegistry,
-	AsyncStorage,
-	Button,
-	StyleSheet,
-	Text,
-	View,
-} from 'react-native';
-
+  AppRegistry,
+  AsyncStorage,
+  Button,
+  StyleSheet,
+  Text,
+  View
+} from "react-native";
 
 class ContactsView extends React.Component {
-	static navigationOptions = {
-		tabBarLabel:'Contacts',
-	};
+  static navigationOptions = {
+    tabBarLabel: "Contacts"
+  };
 
-	render() {
-		return (
-				<Button
-						onPress={() => this.props.navigation.navigate('NewPhoto')}
-						title="take Photo"
-				/>
-		);
-	}
+  render() {
+    return (
+      <Button
+        onPress={() => this.props.navigation.navigate("NewPhoto")}
+        title="take Photo"
+      />
+    );
+  }
 }
 
-const mapStateToProps = state => ({
-});
+const mapStateToProps = state => ({});
 
 function bindAction(dispatch) {
-	return {
-	};
+  return {};
 }
 
 export default connect(mapStateToProps, bindAction)(ContactsView);

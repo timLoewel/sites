@@ -2,55 +2,63 @@
  * Created by tim on 13/03/17.
  */
 
-import React from 'react';
-import {ScrollView, Text, View, Button} from 'react-native';
-import I18n from '../../assets/translations';
-import {Field, reduxForm} from 'redux-form';
-import FormTextInput from '../form/FormTextInput';
+import React from "react";
+import { ScrollView, Text, View, Button } from "react-native";
+import I18n from "../../assets/translations";
+import { Field, reduxForm } from "redux-form";
+import FormTextInput from "../form/FormTextInput";
 
-const formStates = ['asyncValidating', 'dirty', 'pristine', 'valid', 'invalid', 'submitting',
-	'submitSucceeded', 'submitFailed'];
+const formStates = [
+  "asyncValidating",
+  "dirty",
+  "pristine",
+  "valid",
+  "invalid",
+  "submitting",
+  "submitSucceeded",
+  "submitFailed"
+];
 
 class ProfileForm extends React.Component {
+  render() {
+    return (
+      <View>
+        <Field
+          name={"firstName"}
+          title={I18n.t("profile.firstNameTitle")}
+          placeholder={I18n.t("profile.firstNamePlaceholder")}
+          component={FormTextInput}
+        />
+        <Field
+          name={"lastName"}
+          title={I18n.t("profile.lastNameTitle")}
+          placeholder={I18n.t("profile.lastNamePlaceholder")}
+          component={FormTextInput}
+        />
+        <Field
+          name={"email"}
+          title={I18n.t("profile.emailTitle")}
+          placeholder={I18n.t("profile.emailPlaceholder")}
+          component={FormTextInput}
+        />
 
-
-	render() {
-		return (
-				<View>
-					<Field
-							name={'firstName'}
-							title = {I18n.t('profile.firstNameTitle')}
-							placeholder={I18n.t('profile.firstNamePlaceholder')}
-							component={FormTextInput}
-					/>
-					<Field
-							name={'lastName'}
-							title = {I18n.t('profile.lastNameTitle')}
-							placeholder={I18n.t('profile.lastNamePlaceholder')}
-							component={FormTextInput}
-					/>
-					<Field
-							name={'email'}
-							title = {I18n.t('profile.emailTitle')}
-							placeholder={I18n.t('profile.emailPlaceholder')}
-							component={FormTextInput}
-					/>
-
-					<Button title={I18n.t('profile.saveButtonTitle')} onPress={this.props.handleSubmit}/>
-					<Button title={I18n.t('profile.cancelButtonTitle')} onPress={this.props.reset}/>
-				</View>
-		);
-	}
+        <Button
+          title={I18n.t("profile.saveButtonTitle")}
+          onPress={this.props.handleSubmit}
+        />
+        <Button
+          title={I18n.t("profile.cancelButtonTitle")}
+          onPress={this.props.reset}
+        />
+      </View>
+    );
+  }
 }
 
-
 export default reduxForm({
-	form: 'ProfileForm',
-	initialValues: {
-
-	}
+  form: "ProfileForm",
+  initialValues: {}
 })(ProfileForm);
-
 
 //
 //

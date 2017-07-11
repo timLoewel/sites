@@ -1,20 +1,18 @@
-import React from 'react';
-import {Text} from 'react-native';
-import {storiesOf, action, linkTo} from '@storybook/react-native';
+import React from "react";
+import { Text } from "react-native";
+import { storiesOf, action, linkTo } from "@storybook/react-native";
 
-import CenterView from '../basics/CenterView';
-import {reducer as formReducer} from 'redux-form';
+import CenterView from "../basics/CenterView";
+import { reducer as formReducer } from "redux-form";
 
-import ProfileForm from './ProfileForm';
-import {composeWithDevTools} from 'redux-devtools-extension';
+import ProfileForm from "./ProfileForm";
+import { composeWithDevTools } from "redux-devtools-extension";
 
-import {createStore, applyMiddleware, compose} from 'redux';
+import { createStore, applyMiddleware, compose } from "redux";
 
-import {Provider} from 'react-redux';
+import { Provider } from "react-redux";
 
-const enhancer = composeWithDevTools(
-		applyMiddleware()
-);
+const enhancer = composeWithDevTools(applyMiddleware());
 
 const store = createStore(formReducer, enhancer);
 
@@ -38,20 +36,25 @@ const store = createStore(formReducer, enhancer);
 // 		validExceptSubmit: validExceptSubmit,
 // 		warning: warning
 
-
-storiesOf('Profile', module)
-		.addDecorator(getStory => (
-				<Provider store={store}>{getStory()}</Provider>
-		))
-		.add('initial', () => (
-				<ProfileForm handleSubmit={action('clicked-initial')}/>
-		))
-		.add('touched', () => (
-				<ProfileForm dirty={true} pristine={false} handleSubmit={action('clicked-touched')}/>
-		))
-		.add('with entries', () => (
-				<ProfileForm handleSubmit={action('clicked-with Entries')}/>
-		))
-		.add('with errors', () => (
-				<ProfileForm handleSubmit={action('clicked-with errors')}/>
-		));
+storiesOf("Profile", module)
+  .addDecorator(getStory =>
+    <Provider store={store}>
+      {getStory()}
+    </Provider>
+  )
+  .add("initial", () =>
+    <ProfileForm handleSubmit={action("clicked-initial")} />
+  )
+  .add("touched", () =>
+    <ProfileForm
+      dirty={true}
+      pristine={false}
+      handleSubmit={action("clicked-touched")}
+    />
+  )
+  .add("with entries", () =>
+    <ProfileForm handleSubmit={action("clicked-with Entries")} />
+  )
+  .add("with errors", () =>
+    <ProfileForm handleSubmit={action("clicked-with errors")} />
+  );
